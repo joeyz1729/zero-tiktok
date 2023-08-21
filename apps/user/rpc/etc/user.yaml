@@ -1,0 +1,22 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:9091
+#Etcd:
+#  Hosts:
+#  - 127.0.0.1:2379
+#  Key: user.rpc
+
+Mysql:
+  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_user?parseTime=true&charset=utf8
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+
+Consul:
+  Host: 127.0.0.1:8500
+  Key: consul-user.rpc
+
+Salt: salt
+
+Snowflake:
+  StartTime: 2023-08-21
+  MachineId: 9091

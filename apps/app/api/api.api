@@ -1,0 +1,184 @@
+// video模块
+@server(
+	prefix: /douyin
+	group: video
+)
+service api-api {
+	@handler Feedhandler
+	get /feed (douyin_feed_request) returns (douyin_feed_response)
+
+	@handler PublishActionHandler
+	post /publish/action (douyin_publish_action_request) returns (douyin_publish_action_response)
+
+	@handler PublishListHandler
+	post /publish/list (douyin_publish_list_request) returns (douyin_publish_list_response)
+}
+
+type (
+	douyin_feed_request {
+	}
+	douyin_feed_response {
+	}
+	douyin_publish_action_request {
+	}
+	douyin_publish_action_response {
+	}
+
+	douyin_publish_list_request {
+	}
+	douyin_publish_list_response {
+	}
+)
+
+// user模块
+@server (
+	prefix: douyin/user
+	group: user
+)
+service api-api {
+	@handler RegisterHandler
+	post /register (userRegisterRequest) returns (userRegisterResponse)
+
+	@handler LoginHandler
+	post /login (douyin_user_login_request) returns (douyin_user_login_response)
+
+	@handler InfoHandler
+	get /info (douyin_user_info_request) returns (douyin_user_info_response)
+}
+
+type (
+	userRegisterRequest {
+		Username string `json:"username"`
+		Password string `json:"Password"`
+	}
+	userRegisterResponse {
+		StatusCode int32  `json:"status_code"`
+		StatusMsg  string `json:"status_msg"`
+		UserId     int64  `json:"user_id"`
+		Token      string `json:"token"`
+	}
+
+	douyin_user_login_request {
+	}
+
+	douyin_user_login_response {
+	}
+
+	douyin_user_info_request {
+	}
+
+	douyin_user_info_response {
+	}
+)
+
+// favorite模块
+@server (
+	prefix: /douyin/favorite
+	group: favorite
+)
+
+service api-api {
+	@handler FavoriteActionHandler
+	post /action (douyin_favorite_action_request) returns (douyin_favorite_action_response);
+
+	@handler FavoriteListHandler
+	get /list (douyin_favorite_list_request) returns (douyin_favorite_list_response);
+}
+
+type (
+	douyin_favorite_action_request {
+	}
+	douyin_favorite_action_response {
+	}
+	douyin_favorite_list_request {
+	}
+	douyin_favorite_list_response {
+	}
+)
+
+@server (
+	prefix: /douyin/comment
+	group: comment
+)
+
+service api-api {
+	@handler CommentActionHandler
+	post /comment (douyin_comment_action_request) returns (douyin_comment_action_response);
+
+	@handler CommentListHandler
+	get /comment/list (douyin_comment_list_request) returns (douyin_comment_list_response);
+}
+
+type (
+	douyin_comment_action_request {
+	}
+	douyin_comment_action_response {
+	}
+	douyin_comment_list_request {
+	}
+	douyin_comment_list_response {
+	}
+)
+
+@server (
+	prefix: /douyin/relation
+	group: relation
+)
+
+service api-api {
+	@handler RelationFollowListHandler
+	get /follow/list (douyin_relation_follow_list_request) returns (douyin_relation_follow_list_response)
+
+	@handler RelationFollowerListHandler
+	get /follower/list (douyin_relation_follower_list_request) returns(douyin_relation_follower_list_response)
+
+	@handler RelationFriendHandler
+	get /friend/list (douyin_relation_friend_list_request) returns(douyin_relation_friend_list_response)
+
+	@handler RelationActionHandler
+	post /action (douyin_relation_action_request) returns(douyin_relation_action_response)
+
+}
+
+type (
+	douyin_relation_follow_list_request {
+	}
+	douyin_relation_follow_list_response {
+	}
+	douyin_relation_follower_list_request {
+	}
+	douyin_relation_follower_list_response {
+	}
+	douyin_relation_friend_list_request {
+	}
+	douyin_relation_friend_list_response {
+	}
+	douyin_relation_action_request {
+	}
+	douyin_relation_action_response {
+	}
+)
+
+@server (
+	prefix: /douyin/message
+	group: message
+)
+
+service api-api {
+	@handler MessageActionHandler
+	post /action (douyin_message_action_request) returns (douyin_message_action_response);
+
+	@handler MessageChatHandler
+	get /chat (douyin_message_chat_request) returns (douyin_message_chat_response);
+}
+
+type (
+	douyin_message_action_request {
+	}
+	douyin_message_action_response {
+	}
+	douyin_message_chat_request {
+	}
+	douyin_message_chat_response {
+	}
+)

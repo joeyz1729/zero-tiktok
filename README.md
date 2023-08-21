@@ -1,0 +1,39 @@
+BFF层负责RESTful API，
+
+微服务板块有user，video，comment，favorite，follow 
+
+BFF层需要先写好api文件，其中包含service内容，request， response，
+以及其中使用的结构，例如user，order的结构体
+
+微服务板块中rpc的proto文件也需要先写好对应的request，response和结构体
+还有rpc调用函数
+
+BFF logic层处理请求参数并调用rpc函数
+rpc函数负责和数据库交互
+
+
+# BFF
+通过api.api编写http路由和handler，然后利用`goctl api go`生成代码。
+
+在svc中添加一个`UserRpc`的client端，用于调用user模块的rpc服务，后续可以添加`VideoRpc, CommentRpc, LikeRpc, FollowRpc`等微服务模块。
+
+修改config和api.yaml添加`RpcClient`的配置，go-zero默认使用etcd作为服务注册和发现，这里修改client配置添加consul。
+
+在程序入口api.go中添加匿名导入`import _ "github.com/zeromicro/zero-contrib/zrpc/registry/consul"`这样在启动后就可以通过consul发现user模块的rpc服务。
+
+# MicroService
+以user模块为例，首先编写`user.proto`文件添加需要调用的函数，通过`goctl rpc protoc user.proto --go_out=. --go-grpc_out=. --zrpc_out=.`生成go代码。
+
+user模块需要通过consul服务注册，与redis和mysql交互，在生成user id和存储password时使用snowflake和加密，在`config.go`和`user.yaml`中添加对应内容。
+
+在svc中添加mysql和redis实例。
+
+修改`user.go`，在启动服务时添加consul注册和snowflake初始化。
+
+
+
+# 启动
+1. 启动user模块 `go run user.go`，监听在9091端口。
+2. 启动其他模块
+3. 启动bff层`go run api.go`，监听8888端口。
+4. 通过postman测试路由 http://127.0.0.1:8888/douyin/user/register 是否能够正常返回

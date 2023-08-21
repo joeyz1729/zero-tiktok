@@ -1,0 +1,6 @@
+Name: api-api
+Host: 0.0.0.0
+Port: 8888
+
+UserRpc:
+  Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
