@@ -1,0 +1,12 @@
+syntax = "v1"
+
+type (
+    douyin_comment_action_request {
+    }
+    douyin_comment_action_response {
+    }
+    douyin_comment_list_request {
+    }
+    douyin_comment_list_response {
+    }
+)

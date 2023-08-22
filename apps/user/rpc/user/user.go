@@ -15,19 +15,22 @@ import (
 type (
 	GetIdByNameRequest  = model.GetIdByNameRequest
 	GetIdByNameResponse = model.GetIdByNameResponse
+	GetUserByIdRequest  = model.GetUserByIdRequest
+	GetUserByIdResponse = model.GetUserByIdResponse
+	LoginRequest        = model.LoginRequest
+	LoginResponse       = model.LoginResponse
 	RegisterRequest     = model.RegisterRequest
 	RegisterResponse    = model.RegisterResponse
 	UserInfo            = model.UserInfo
 	UserInfoRequest     = model.UserInfoRequest
 	UserInfoResponse    = model.UserInfoResponse
-	UserLoginRequest    = model.UserLoginRequest
-	UserLoginResponse   = model.UserLoginResponse
 
 	User interface {
 		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 		Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-		UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 		GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
+		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 	}
 
 	defaultUser struct {
@@ -51,12 +54,17 @@ func (m *defaultUser) Register(ctx context.Context, in *RegisterRequest, opts ..
 	return client.Register(ctx, in, opts...)
 }
 
-func (m *defaultUser) UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error) {
+func (m *defaultUser) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
-	return client.UserLogin(ctx, in, opts...)
+	return client.Login(ctx, in, opts...)
 }
 
 func (m *defaultUser) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.GetIdByName(ctx, in, opts...)
+}
+
+func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.GetUserById(ctx, in, opts...)
 }

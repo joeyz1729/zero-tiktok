@@ -32,12 +32,17 @@ func (s *UserServer) Register(ctx context.Context, in *model.RegisterRequest) (*
 	return l.Register(in)
 }
 
-func (s *UserServer) UserLogin(ctx context.Context, in *model.UserLoginRequest) (*model.UserLoginResponse, error) {
-	l := logic.NewUserLoginLogic(ctx, s.svcCtx)
-	return l.UserLogin(in)
+func (s *UserServer) Login(ctx context.Context, in *model.LoginRequest) (*model.LoginResponse, error) {
+	l := logic.NewLoginLogic(ctx, s.svcCtx)
+	return l.Login(in)
 }
 
 func (s *UserServer) GetIdByName(ctx context.Context, in *model.GetIdByNameRequest) (*model.GetIdByNameResponse, error) {
 	l := logic.NewGetIdByNameLogic(ctx, s.svcCtx)
 	return l.GetIdByName(in)
+}
+
+func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
+	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
+	return l.GetUserById(in)
 }

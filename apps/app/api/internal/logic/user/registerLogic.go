@@ -5,6 +5,7 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
+	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"net/http"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -40,14 +41,25 @@ func (l *RegisterLogic) Register(req *types.UserRegisterRequest) (resp *types.Us
 		logx.Errorw("user.Register failed",
 			logx.Field("err", err),
 		)
-		resp.StatusCode = http.StatusServiceUnavailable
-		resp.StatusMsg = "failed"
-		return resp, err
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "internal server error"
+		return resp, nil
 	}
-	resp.UserId = res.UserId
+
+	aToken, _, err := jwtx.GenToken(resp.UserId, req.Username) // TODO
+	if err != nil {
+		logx.Errorw("jwt.GenToken failed",
+			logx.Field("err", err),
+		)
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "internal server error"
+		return resp, nil
+	}
+
+	resp.UserId = res.GetUserId()
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"
-	resp.Token = "" // TODO
+	resp.Token = aToken
 
 	return resp, nil
 }

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
+	"github.com/YiZou89/zero-tiktok/pkg/tool"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/config"
@@ -42,6 +43,7 @@ func main() {
 	if err != nil {
 		panic("snowflake initialization failed")
 	}
+	tool.NewSalt(c.Salt)
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

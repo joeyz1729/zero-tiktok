@@ -1,0 +1,20 @@
+syntax = "v1"
+
+type (
+    douyin_relation_follow_list_request {
+    }
+    douyin_relation_follow_list_response {
+    }
+    douyin_relation_follower_list_request {
+    }
+    douyin_relation_follower_list_response {
+    }
+    douyin_relation_friend_list_request {
+    }
+    douyin_relation_friend_list_response {
+    }
+    douyin_relation_action_request {
+    }
+    douyin_relation_action_response {
+    }
+)

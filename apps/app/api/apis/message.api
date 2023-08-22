@@ -1,0 +1,12 @@
+syntax = "v1"
+
+type (
+    douyin_message_action_request {
+    }
+    douyin_message_action_response {
+    }
+    douyin_message_chat_request {
+    }
+    douyin_message_chat_response {
+    }
+)

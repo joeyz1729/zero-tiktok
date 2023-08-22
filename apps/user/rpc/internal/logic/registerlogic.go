@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"errors"
+	"github.com/YiZou89/zero-tiktok/pkg/tool"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -29,11 +30,11 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 func (l *RegisterLogic) Register(in *model.RegisterRequest) (*model.RegisterResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.RegisterResponse)
-	_, err := l.svcCtx.UserModel.FindOneByUsername(l.ctx, in.Username)
+	user, err := l.svcCtx.UserModel.FindOneByUsername(l.ctx, in.Username)
 
 	if err == nil {
 		// username already exists.
-		//resp.UserId = user.UserId
+		resp.UserId = user.UserId
 		return resp, errors.New("username already exists")
 	}
 
@@ -52,8 +53,9 @@ func (l *RegisterLogic) Register(in *model.RegisterRequest) (*model.RegisterResp
 	_, err = l.svcCtx.UserModel.Insert(l.ctx, &model.User{
 		UserId:   int64(uid),
 		Username: in.GetUsername(),
-		Password: in.GetPassword(),
+		Password: tool.Encrypt(in.GetPassword()),
 	})
+
 	if err != nil {
 		return resp, errors.New("insert user failed")
 	}

@@ -1,0 +1,18 @@
+syntax = "v1"
+
+
+type (
+    douyin_feed_request {
+    }
+    douyin_feed_response {
+    }
+    douyin_publish_action_request {
+    }
+    douyin_publish_action_response {
+    }
+
+    douyin_publish_list_request {
+    }
+    douyin_publish_list_response {
+    }
+)

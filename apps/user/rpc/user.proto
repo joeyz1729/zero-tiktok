@@ -6,8 +6,9 @@ option go_package="./model";
 service User {
   rpc UserInfo(user_info_request) returns(user_info_response);
   rpc Register(register_request) returns(register_response);
-  rpc UserLogin(user_login_request) returns(user_login_response);
+  rpc Login(login_request) returns(login_response);
   rpc GetIdByName(get_id_by_name_request) returns(get_id_by_name_response);
+  rpc GetUserById(get_user_by_id_request) returns(get_user_by_id_response);
 }
 
 message get_id_by_name_request  {
@@ -40,16 +41,13 @@ message register_response {
   int64 user_id = 1; // 用户id
 }
 
-message user_login_request {
+message login_request {
   string username = 1; // 登录用户名
   string password = 2; // 登录密码
 }
 
-message user_login_response {
-  int32 status_code = 1; // 状态码，0-成功，其他值-失败
-  string status_msg = 2; // 返回状态描述
-  int64 user_id = 3; // 用户id
-  string token = 4; // 用户鉴权token
+message login_response {
+  int64 user_id = 1;
 }
 
 
@@ -65,4 +63,17 @@ message UserInfo {
   int64 total_favorited = 9; //获赞数量
   int64 work_count = 10; //作品数量
   int64 favorite_count = 11; //点赞数量
+}
+
+
+message get_user_by_id_request {
+  int64 user_id = 1;
+}
+
+message get_user_by_id_response {
+  int64 id = 1;
+  string name = 2;
+  string avatar = 3;
+  string background_image = 4;
+  string signature = 5;
 }
