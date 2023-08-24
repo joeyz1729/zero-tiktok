@@ -23,7 +23,7 @@ func NewPublishListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publi
 	}
 }
 
-func (l *PublishListLogic) PublishList(req *types.Douyin_publish_list_request) (resp *types.Douyin_publish_list_response, err error) {
+func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *types.PublishListResponse, err error) {
 	// todo: add your logic here and delete this line
 
 	return

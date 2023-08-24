@@ -14,4 +14,6 @@ type Config struct {
 	}
 
 	UserRpc zrpc.RpcClientConf
+
+	VideoRpc zrpc.RpcClientConf
 }

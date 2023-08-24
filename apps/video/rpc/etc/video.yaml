@@ -5,15 +5,19 @@ ListenOn: 0.0.0.0:9092
 #  - 127.0.0.1:2379
 #  Key: video.rpc
 
+
 Mysql:
-  DataSource: root:Zy_9908091729@tcp(localhost:3306)/learn_go_zero?parseTime=true&charset=utf8
+  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_video?parseTime=true&charset=utf8
 
 CacheRedis:
   - Host: 127.0.0.1:6379
 
 Consul:
   Host: 127.0.0.1:8500
-  Key: tiktok-video.rpc
+  Key: consul-video.rpc
 
-UserRpc:
-  Target: consul://127.0.0.1:8500/consul-model.rpc?wait=14s
+Salt: video_salt
+
+Snowflake:
+  StartTime: 2023-08-24
+  MachineId: 9092

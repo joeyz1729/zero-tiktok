@@ -5,6 +5,10 @@ Port: 8888
 UserRpc:
   Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
 
+VideoRpc:
+  Target: consul://127.0.0.1:8500/consul-video.rpc?wait=14s
+
+
 Auth:
   AccessSecret: "baldur's gate 3"
   AccessExpire: 864000

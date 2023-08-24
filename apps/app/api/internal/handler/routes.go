@@ -23,6 +23,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/feed",
 				Handler: video.FeedHandler(serverCtx),
 			},
+		},
+		rest.WithPrefix("/douyin"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
 			{
 				Method:  http.MethodPost,
 				Path:    "/publish/action",
@@ -34,6 +40,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: video.PublishListHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/douyin"),
 	)
 

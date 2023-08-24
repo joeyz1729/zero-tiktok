@@ -13,7 +13,7 @@ var (
 
 	ErrorInvalidToken = errors.New("invalid token")
 
-	secret = "baldur's gate 3"
+	secret = []byte("baldur's gate 3")
 	issuer = "zero-tiktok"
 )
 
@@ -32,7 +32,7 @@ func GenToken(userId int64, username string) (aToken, rToken string, err error) 
 			Issuer:    issuer,
 		},
 	}
-	aToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, c).SignedString([]byte(secret))
+	aToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, c).SignedString(secret)
 	if err != nil {
 		return "", "", err
 	}
@@ -50,6 +50,7 @@ func GenToken(userId int64, username string) (aToken, rToken string, err error) 
 func ParseToken(tokenStr string) (claims *Claims, err error) {
 	claims = new(Claims)
 	token, err := jwt.ParseWithClaims(tokenStr, claims, keyFunc)
+	//fmt.Printf("%v, %v\n", token, claims)
 	if err != nil {
 		return nil, err
 	}

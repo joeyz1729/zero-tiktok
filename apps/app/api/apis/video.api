@@ -1,18 +1,42 @@
 syntax = "v1"
 
+import "user.api"
 
 type (
-    douyin_feed_request {
+    FeedRequest {
+        LatestTime int64 `json:"latest_time"`
+        Token string `json:"token"`
     }
-    douyin_feed_response {
+    FeedResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        VideoList []Video `json:"video_list"`
+        NextTime int64 `json:"next_time"`
     }
-    douyin_publish_action_request {
+    PublishActionRequest {
+        Data []byte `json:"data"`
+        Title string `json:"title"`
+        Token string `json:"token"`
     }
-    douyin_publish_action_response {
+    PublishActionResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
     }
 
-    douyin_publish_list_request {
+    PublishListRequest {
     }
-    douyin_publish_list_response {
+    PublishListResponse {
+    }
+
+    Video {
+        Id int64 `json:"id"`
+        Author User `json:"user"`
+        PlayUrl string `json:"play_url"`
+        CoverUrl string `json:"cover_url"`
+        FavoriteCount int64 `json:"favorite_count"`
+        CommentCount int64 `json:"comment_count"`
+        IsFavorite bool `json:"is_favorite"`
+        Title string `json:"title"`
     }
 )
+

@@ -3,12 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
+	"github.com/YiZou89/zero-tiktok/pkg/tool"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/server"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -27,7 +29,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		video.RegisterVideoServer(grpcServer, server.NewVideoServer(ctx))
+		model.RegisterVideoServer(grpcServer, server.NewVideoServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
@@ -36,6 +38,13 @@ func main() {
 	defer s.Stop()
 
 	_ = consul.RegisterService(c.ListenOn, c.Consul)
+
+	err := snowflake.Init(c.Snowflake.StartTime, c.Snowflake.MachineId)
+	if err != nil {
+		panic("snowflake initialization failed")
+	}
+
+	tool.NewSalt(c.Salt)
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

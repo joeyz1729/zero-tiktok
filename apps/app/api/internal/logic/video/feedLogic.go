@@ -3,10 +3,10 @@ package video
 import (
 	"context"
 
+	"github.com/zeromicro/go-zero/core/logx"
+
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type FeedLogic struct {
@@ -23,7 +23,7 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 	}
 }
 
-func (l *FeedLogic) Feed(req *types.Douyin_feed_request) (resp *types.Douyin_feed_response, err error) {
+func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err error) {
 	// todo: add your logic here and delete this line
 
 	return

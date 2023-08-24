@@ -42,7 +42,7 @@ func (l *RegisterLogic) Register(req *types.UserRegisterRequest) (resp *types.Us
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "internal server error"
+		resp.StatusMsg = "username already exists"
 		return resp, nil
 	}
 

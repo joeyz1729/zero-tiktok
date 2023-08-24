@@ -17,5 +17,10 @@ type Config struct {
 
 	Consul consul.Conf
 
-	UserRpc zrpc.RpcClientConf
+	Snowflake struct {
+		StartTime string
+		MachineId uint16
+	}
+
+	Salt string
 }

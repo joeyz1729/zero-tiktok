@@ -16,14 +16,21 @@ import (
 	group: video
 )
 service api-api {
-	@handler Feedhandler
-	get /feed (douyin_feed_request) returns (douyin_feed_response)
+	@handler FeedHandler
+	get /feed (FeedRequest) returns (FeedResponse)
+}
 
+@server(
+	prefix: /douyin
+	group: video
+	jwt: Auth
+)
+service api-api {
 	@handler PublishActionHandler
-	post /publish/action (douyin_publish_action_request) returns (douyin_publish_action_response)
+	post /publish/action (PublishActionRequest) returns (PublishActionResponse)
 
 	@handler PublishListHandler
-	post /publish/list (douyin_publish_list_request) returns (douyin_publish_list_response)
+	post /publish/list (PublishListRequest) returns (PublishListResponse)
 }
 
 // user模块

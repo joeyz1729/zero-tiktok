@@ -50,22 +50,44 @@ type User struct {
 	FavoriteCount   int64  `json:"favorite_count"`
 }
 
-type Douyin_feed_request struct {
+type FeedRequest struct {
+	LatestTime int64  `json:"latest_time"`
+	Token      string `json:"token"`
 }
 
-type Douyin_feed_response struct {
+type FeedResponse struct {
+	StatusCode int32   `json:"status_code"`
+	StatusMsg  string  `json:"status_msg"`
+	VideoList  []Video `json:"video_list"`
+	NextTime   int64   `json:"next_time"`
 }
 
-type Douyin_publish_action_request struct {
+type PublishActionRequest struct {
+	Data  []byte `json:"data"`
+	Title string `json:"title"`
+	Token string `json:"token"`
 }
 
-type Douyin_publish_action_response struct {
+type PublishActionResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
 }
 
-type Douyin_publish_list_request struct {
+type PublishListRequest struct {
 }
 
-type Douyin_publish_list_response struct {
+type PublishListResponse struct {
+}
+
+type Video struct {
+	Id            int64  `json:"id"`
+	Author        User   `json:"user"`
+	PlayUrl       string `json:"play_url"`
+	CoverUrl      string `json:"cover_url"`
+	FavoriteCount int64  `json:"favorite_count"`
+	CommentCount  int64  `json:"comment_count"`
+	IsFavorite    bool   `json:"is_favorite"`
+	Title         string `json:"title"`
 }
 
 type Douyin_favorite_action_request struct {

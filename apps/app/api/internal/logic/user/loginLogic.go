@@ -35,7 +35,7 @@ func (l *LoginLogic) Login(req *types.UserLoginRequest) (resp *types.UserLoginRe
 		resp.StatusMsg = "internal service error"
 		return resp, nil
 	}
-	aToken, _, err := jwtx.GenToken(resp.UserId, req.Username)
+	aToken, _, err := jwtx.GenToken(res.GetUserId(), req.Username)
 	if err != nil {
 		resp.StatusCode = http.StatusInternalServerError
 		resp.StatusMsg = "internal service error"
