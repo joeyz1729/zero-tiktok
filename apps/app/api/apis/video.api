@@ -13,6 +13,7 @@ type (
         VideoList []Video `json:"video_list"`
         NextTime int64 `json:"next_time"`
     }
+
     PublishActionRequest {
         Data []byte `json:"data"`
         Title string `json:"title"`
@@ -24,8 +25,13 @@ type (
     }
 
     PublishListRequest {
+        UserId int64 `json:"user_id"`
+        Token string `json:"token"`
     }
     PublishListResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        VideoList []Video `json:"video_list"`
     }
 
     Video {

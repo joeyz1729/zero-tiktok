@@ -11,7 +11,7 @@ import (
 
 func RelationFollowerListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.Douyin_relation_follower_list_request
+		var req types.FollowerListRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return

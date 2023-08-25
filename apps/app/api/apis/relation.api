@@ -1,20 +1,39 @@
 syntax = "v1"
 
+import "user.api"
 type (
-    douyin_relation_follow_list_request {
+    RelationActionRequest {
+        Token string `json:"token"`
+        ToUserId int64 `json:"to_user_id"`
+        ActionType int32 `json:"action_type"`
     }
-    douyin_relation_follow_list_response {
+    RelationActionResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
     }
-    douyin_relation_follower_list_request {
+
+    FollowListRequest {
+        UserId int64 `json:"user_id"`
+        Token string `json:"token"`
     }
-    douyin_relation_follower_list_response {
+    FollowListResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        UserList []User `json:"user_list"`
+    }
+
+
+    FollowerListRequest {
+        UserId int64 `json:"user_id"`
+        Token string `json:"token"`
+    }
+    FollowerListResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        UserList []User `json:"user_list"`
     }
     douyin_relation_friend_list_request {
     }
     douyin_relation_friend_list_response {
-    }
-    douyin_relation_action_request {
-    }
-    douyin_relation_action_response {
     }
 )

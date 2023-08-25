@@ -35,7 +35,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: video.PublishActionHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodPost,
+				Method:  http.MethodGet,
 				Path:    "/publish/list",
 				Handler: video.PublishListHandler(serverCtx),
 			},
@@ -107,6 +107,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodPost,
+				Path:    "/action",
+				Handler: relation.RelationActionHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodGet,
 				Path:    "/follow/list",
 				Handler: relation.RelationFollowListHandler(serverCtx),
@@ -115,16 +120,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/follower/list",
 				Handler: relation.RelationFollowerListHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/friend/list",
-				Handler: relation.RelationFriendHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/action",
-				Handler: relation.RelationActionHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/douyin/relation"),

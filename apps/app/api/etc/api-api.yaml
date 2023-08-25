@@ -8,6 +8,8 @@ UserRpc:
 VideoRpc:
   Target: consul://127.0.0.1:8500/consul-video.rpc?wait=14s
 
+FollowRpc:
+  Target: consul://127.0.0.1:8500/consul-follow.rpc?wait=14s
 
 Auth:
   AccessSecret: "baldur's gate 3"

@@ -74,9 +74,14 @@ type PublishActionResponse struct {
 }
 
 type PublishListRequest struct {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
 }
 
 type PublishListResponse struct {
+	StatusCode int32   `json:"status_code"`
+	StatusMsg  string  `json:"status_msg"`
+	VideoList  []Video `json:"video_list"`
 }
 
 type Video struct {
@@ -114,28 +119,43 @@ type Douyin_comment_list_request struct {
 type Douyin_comment_list_response struct {
 }
 
-type Douyin_relation_follow_list_request struct {
+type RelationActionRequest struct {
+	Token      string `json:"token"`
+	ToUserId   int64  `json:"to_user_id"`
+	ActionType int32  `json:"action_type"`
 }
 
-type Douyin_relation_follow_list_response struct {
+type RelationActionResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
 }
 
-type Douyin_relation_follower_list_request struct {
+type FollowListRequest struct {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
 }
 
-type Douyin_relation_follower_list_response struct {
+type FollowListResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+	UserList   []User `json:"user_list"`
+}
+
+type FollowerListRequest struct {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
+}
+
+type FollowerListResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+	UserList   []User `json:"user_list"`
 }
 
 type Douyin_relation_friend_list_request struct {
 }
 
 type Douyin_relation_friend_list_response struct {
-}
-
-type Douyin_relation_action_request struct {
-}
-
-type Douyin_relation_action_response struct {
 }
 
 type Douyin_message_action_request struct {

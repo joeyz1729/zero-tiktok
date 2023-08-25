@@ -30,7 +30,7 @@ service api-api {
 	post /publish/action (PublishActionRequest) returns (PublishActionResponse)
 
 	@handler PublishListHandler
-	post /publish/list (PublishListRequest) returns (PublishListResponse)
+	get /publish/list (PublishListRequest) returns (PublishListResponse)
 }
 
 // user模块
@@ -86,17 +86,17 @@ service api-api {
 	group: relation
 )
 service api-api {
+	@handler RelationActionHandler
+	post /action (RelationActionRequest) returns(RelationActionResponse)
+
 	@handler RelationFollowListHandler
-	get /follow/list (douyin_relation_follow_list_request) returns (douyin_relation_follow_list_response)
+	get /follow/list (FollowListRequest) returns (FollowListResponse)
 
 	@handler RelationFollowerListHandler
-	get /follower/list (douyin_relation_follower_list_request) returns(douyin_relation_follower_list_response)
+	get /follower/list (FollowerListRequest) returns(FollowerListResponse)
 
-	@handler RelationFriendHandler
-	get /friend/list (douyin_relation_friend_list_request) returns(douyin_relation_friend_list_response)
-
-	@handler RelationActionHandler
-	post /action (douyin_relation_action_request) returns(douyin_relation_action_response)
+	//	@handler RelationFriendHandler
+	//	get /friend/list (douyin_relation_friend_list_request) returns(douyin_relation_friend_list_response)
 
 }
 
