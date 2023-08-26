@@ -95,16 +95,26 @@ type Video struct {
 	Title         string `json:"title"`
 }
 
-type Douyin_favorite_action_request struct {
+type FavoriteActionRequest struct {
+	Token      string `json:"token"`
+	VideoId    int64  `json:"video_id"`
+	ActionType int32  `json:"action_type"`
 }
 
-type Douyin_favorite_action_response struct {
+type FavoriteActionResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
 }
 
-type Douyin_favorite_list_request struct {
+type FavoriteListRequest struct {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
 }
 
-type Douyin_favorite_list_response struct {
+type FavoriteListResponse struct {
+	StatusCode int32   `json:"status_code"`
+	StatusMsg  string  `json:"status_msg"`
+	VideoList  []Video `json:"video_list"`
 }
 
 type Douyin_comment_action_request struct {

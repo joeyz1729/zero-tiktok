@@ -23,7 +23,7 @@ func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favo
 	}
 }
 
-func (l *FavoriteListLogic) FavoriteList(req *types.Douyin_favorite_list_request) (resp *types.Douyin_favorite_list_response, err error) {
+func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteActionRequest) (resp *types.FavoriteActionResponse, err error) {
 	// todo: add your logic here and delete this line
 
 	return

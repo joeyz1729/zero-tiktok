@@ -46,3 +46,29 @@ type (
     }
 )
 
+
+type (
+    FavoriteActionRequest {
+        Token string       `json:"token"`
+        VideoId int64 `json:"video_id"`
+        ActionType int32   `json:"action_type"`
+    }
+    FavoriteActionResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+    }
+
+
+    FavoriteListRequest {
+        UserId int64 `json:"user_id"`
+        Token string `json:"token"`
+    }
+    FavoriteListResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        VideoList []Video `json:"video_list"`
+    }
+
+
+
+)

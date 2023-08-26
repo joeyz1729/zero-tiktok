@@ -3,7 +3,7 @@ syntax = "v1"
 import (
 	"apis/user.api"
 	"apis/video.api"
-	"apis/favorite.api"
+
 	"apis/comment.api"
 	"apis/relation.api"
 	"apis/message.api"
@@ -63,10 +63,10 @@ service api-api {
 )
 service api-api {
 	@handler FavoriteActionHandler
-	post /action (douyin_favorite_action_request) returns (douyin_favorite_action_response);
+	post /action (FavoriteActionRequest) returns (FavoriteActionResponse);
 
 	@handler FavoriteListHandler
-	get /list (douyin_favorite_list_request) returns (douyin_favorite_list_response);
+	get /list (FavoriteActionRequest) returns (FavoriteActionResponse);
 }
 
 @server (
