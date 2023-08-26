@@ -68,6 +68,7 @@ service api-api {
 	get /list (FavoriteListRequest) returns (FavoriteListResponse);
 }
 
+// comment模块
 @server (
 	prefix: /douyin/comment
 	group: comment
@@ -80,6 +81,7 @@ service api-api {
 	get /list (CommentListRequest) returns (CommentListResponse);
 }
 
+// relation模块
 @server (
 	prefix: /douyin/relation
 	group: relation
@@ -99,6 +101,7 @@ service api-api {
 
 }
 
+// message模块
 @server (
 	prefix: /douyin/message
 	group: message
