@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package comment;
-option go_package="./comment";
+option go_package="./model";
 
 message Request {
   string ping = 1;
@@ -12,5 +12,54 @@ message Response {
 }
 
 service Comment {
-  rpc Ping(Request) returns(Response);
+  rpc GetComment(get_comment_request) returns(get_comment_response);
+  rpc GetCommentList(get_comment_list_request) returns(get_comment_list_response);
+  rpc AddComment(add_comment_request) returns(add_comment_response);
+  rpc DelComment(del_comment_request) returns(del_comment_response);
+}
+
+message get_comment_request {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  int64 comment_id = 3;
+}
+
+message get_comment_response {
+  bool if_exist = 1;
+}
+
+message get_comment_list_request {
+  int64 video_id = 1;
+}
+
+message get_comment_list_response {
+  int64 comment_len = 1;
+  repeated CommentInfo comment_list = 2;
+}
+
+message CommentInfo {
+  int64 comment_id = 1;
+  int64 author_id = 2;
+  string content = 3;
+  string create_time = 4;
+}
+
+message add_comment_request {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  string comment_text = 3;
+}
+
+message add_comment_response {
+  string msg = 1;
+}
+
+message del_comment_request {
+  int64 video_id = 1;
+  int64 user_id = 2;
+  int64 comment_id = 3;
+}
+
+message del_comment_response {
+  string msg = 1;
 }

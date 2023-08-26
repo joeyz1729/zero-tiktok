@@ -1,6 +1,22 @@
-Name: comment.rpc
-ListenOn: 0.0.0.0:8080
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: comment.rpc
+Name: model.rpc
+ListenOn: 0.0.0.0:9095
+#Etcd:
+#  Hosts:
+#  - 127.0.0.1:2379
+#  Key: model.rpc
+
+Mysql:
+  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_comment?parseTime=true&charset=utf8
+
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+
+Consul:
+  Host: 127.0.0.1:8500
+  Key: consul-comment.rpc
+
+
+Snowflake:
+  StartTime: 2023-08-21
+  MachineId: 9095
