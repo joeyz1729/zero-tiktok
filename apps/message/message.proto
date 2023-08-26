@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package message;
+option go_package="./model";
+
+message action_request {
+  int64 user_id = 1;
+  int64 to_user_id = 2;
+  string content = 3;
+}
+
+message action_response {
+  string msg = 1;
+}
+
+service Message {
+  rpc Action(action_request) returns(action_response);
+}

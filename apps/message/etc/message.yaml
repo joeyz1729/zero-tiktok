@@ -1,0 +1,16 @@
+Name: message.rpc
+ListenOn: 0.0.0.0:9096
+#Etcd:
+#  Hosts:
+#  - 127.0.0.1:2379
+#  Key: model.rpc
+
+Mysql:
+  DataSource: root:Zy_9908091729@(localhost:3306)/tiktok_message?parseTime=true&charset=utf8
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+
+Consul:
+  Host: 127.0.0.1:8500
+  Key: consul-message.rpc
