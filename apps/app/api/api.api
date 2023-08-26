@@ -106,8 +106,8 @@ service api-api {
 
 service api-api {
 	@handler MessageActionHandler
-	post /action (douyin_message_action_request) returns (douyin_message_action_response);
+	post /action (MessageActionRequest) returns (MessageActionResponse);
 
 	@handler MessageChatHandler
-	get /chat (douyin_message_chat_request) returns (douyin_message_chat_response);
+	get /chat (MessageChatRequest) returns (MessageChatResponse);
 }

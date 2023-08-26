@@ -5,6 +5,7 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/comment"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
+	"github.com/YiZou89/zero-tiktok/apps/message/message"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -22,6 +23,8 @@ type ServiceContext struct {
 	FavoriteRpc favorite.Favorite
 
 	CommentRpc comment.Comment
+
+	MessageRpc message.Message
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -32,5 +35,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		FollowRpc:   follow.NewFollow(zrpc.MustNewClient(c.FollowRpc)),
 		FavoriteRpc: favorite.NewFavorite(zrpc.MustNewClient(c.FavoriteRpc)),
 		CommentRpc:  comment.NewComment(zrpc.MustNewClient(c.CommentRpc)),
+		MessageRpc:  message.NewMessage(zrpc.MustNewClient(c.MessageRpc)),
 	}
 }

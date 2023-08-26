@@ -2,6 +2,9 @@ package message
 
 import (
 	"context"
+	"github.com/YiZou89/zero-tiktok/apps/message/message"
+	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
+	"net/http"
 
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
@@ -23,8 +26,45 @@ func NewMessageActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Mes
 	}
 }
 
-func (l *MessageActionLogic) MessageAction(req *types.Douyin_message_action_request) (resp *types.Douyin_message_action_response, err error) {
+func (l *MessageActionLogic) MessageAction(req *types.MessageActionRequest) (resp *types.MessageActionResponse, err error) {
 	// todo: add your logic here and delete this line
+	resp = new(types.MessageActionResponse)
+	if req.ActionType != int32(1) {
+		logx.Errorw("invalid action type",
+			logx.Field("err", err),
+		)
+		resp.StatusCode = http.StatusOK
+		resp.StatusMsg = "invalid action type"
+		return resp, nil
+	}
 
-	return
+	claims, err := jwtx.ParseToken(req.Token)
+	if err != nil {
+		logx.Errorw("jwt parse token failed",
+			logx.Field("err", err),
+		)
+		resp.StatusCode = http.StatusUnauthorized
+		resp.StatusMsg = "invalid token"
+		return resp, nil
+	}
+
+	uid := claims.UserId
+	actionRes := new(message.ActionResponse)
+	actionRes, err = l.svcCtx.MessageRpc.Action(l.ctx, &message.ActionRequest{
+		UserId:   uid,
+		ToUserId: req.ToUserId,
+		Content:  req.Content,
+	})
+	if err != nil {
+		logx.Errorw("message rpc failed",
+			logx.Field("err", err),
+		)
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = actionRes.Msg
+		return resp, nil
+	}
+
+	resp.StatusCode = http.StatusOK
+	resp.StatusMsg = "success"
+	return resp, nil
 }

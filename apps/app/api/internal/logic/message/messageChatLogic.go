@@ -23,7 +23,7 @@ func NewMessageChatLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Messa
 	}
 }
 
-func (l *MessageChatLogic) MessageChat(req *types.Douyin_message_chat_request) (resp *types.Douyin_message_chat_response, err error) {
+func (l *MessageChatLogic) MessageChat(req *types.MessageChatRequest) (resp *types.MessageChatResponse, err error) {
 	// todo: add your logic here and delete this line
 
 	return

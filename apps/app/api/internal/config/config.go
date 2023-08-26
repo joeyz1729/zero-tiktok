@@ -22,4 +22,6 @@ type Config struct {
 	FavoriteRpc zrpc.RpcClientConf
 
 	CommentRpc zrpc.RpcClientConf
+
+	MessageRpc zrpc.RpcClientConf
 }

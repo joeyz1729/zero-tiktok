@@ -187,14 +187,34 @@ type Douyin_relation_friend_list_request struct {
 type Douyin_relation_friend_list_response struct {
 }
 
-type Douyin_message_action_request struct {
+type MessageActionRequest struct {
+	Token      string `json:"token"`
+	ToUserId   int64  `json:"to_user_id"`
+	ActionType int32  `json:"action_type"`
+	Content    string `json:"content"`
 }
 
-type Douyin_message_action_response struct {
+type MessageActionResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
 }
 
-type Douyin_message_chat_request struct {
+type MessageChatRequest struct {
+	Token      string `json:"token"`
+	ToUserId   int64  `json:"to_user_id"`
+	PreMsgTime int64  `json:"pre_msg_time"`
 }
 
-type Douyin_message_chat_response struct {
+type MessageChatResponse struct {
+	StatusCode  int32     `json:"status_code"`
+	StatusMsg   string    `json:"status_msg"`
+	MessageList []Message `json:"message_list"`
+}
+
+type Message struct {
+	Id         int64  `json:"id"`
+	ToUserId   int64  `json:"to_user_id"`
+	FromUserId int64  `json:"from_user_id"`
+	Content    string `json:"content"`
+	CreateTime string `json:"create_time"`
 }

@@ -17,6 +17,9 @@ FavoriteRpc:
 CommentRpc:
   Target: consul://127.0.0.1:8500/consul-comment.rpc?wait=14s
 
+MessageRpc:
+  Target: consul://127.0.0.1:8500/consul-message.rpc?wait=14s
+
 Auth:
   AccessSecret: "baldur's gate 3"
   AccessExpire: 864000
