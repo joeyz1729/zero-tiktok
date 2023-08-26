@@ -9,21 +9,21 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type CommentListLogic struct {
+type ListLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewCommentListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CommentListLogic {
-	return &CommentListLogic{
+func NewListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListLogic {
+	return &ListLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *CommentListLogic) CommentList(req *types.Douyin_comment_list_request) (resp *types.Douyin_comment_list_response, err error) {
+func (l *ListLogic) List(req *types.CommentListRequest) (resp *types.CommentListResponse, err error) {
 	// todo: add your logic here and delete this line
 
 	return

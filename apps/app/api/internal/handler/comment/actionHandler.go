@@ -9,16 +9,16 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-func CommentActionHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ActionHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.Douyin_comment_action_request
+		var req types.CommentActionRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := comment.NewCommentActionLogic(r.Context(), svcCtx)
-		resp, err := l.CommentAction(&req)
+		l := comment.NewActionLogic(r.Context(), svcCtx)
+		resp, err := l.Action(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

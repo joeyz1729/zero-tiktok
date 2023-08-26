@@ -1,12 +1,37 @@
 syntax = "v1"
 
+import "user.api"
+
 type (
-    douyin_comment_action_request {
+    CommentActionRequest {
+        Token string `json:"token"`
+        VideoId int64 `json:"video_id"`
+        ActionType int32 `json:"action_type"`
+        CommentText string `json:"comment_text"`
+        CommentId int64 `json:"comment_id"`
     }
-    douyin_comment_action_response {
+    CommentActionResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg   string `json:"status_msg"`
+
     }
-    douyin_comment_list_request {
+
+
+
+    CommentListRequest {
+        Token string `json:"token"`
+        VideoId int64 `json:"video_id"`
     }
-    douyin_comment_list_response {
+    CommentListResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        CommentList []Comment `json:"comment_list"`
     }
 )
+
+type Comment {
+    Id int64 `json:"id"`
+    UserInfo User `json:"user"`
+    Content string `json:"content"`
+    CreateDate string `json:"create_date"`
+}

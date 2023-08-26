@@ -117,16 +117,35 @@ type FavoriteListResponse struct {
 	VideoList  []Video `json:"video_list"`
 }
 
-type Douyin_comment_action_request struct {
+type CommentActionRequest struct {
+	Token       string `json:"token"`
+	VideoId     int64  `json:"video_id"`
+	ActionType  int32  `json:"action_type"`
+	CommentText string `json:"comment_text"`
+	CommentId   int64  `json:"comment_id"`
 }
 
-type Douyin_comment_action_response struct {
+type CommentActionResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
 }
 
-type Douyin_comment_list_request struct {
+type CommentListRequest struct {
+	Token   string `json:"token"`
+	VideoId int64  `json:"video_id"`
 }
 
-type Douyin_comment_list_response struct {
+type CommentListResponse struct {
+	StatusCode  int32     `json:"status_code"`
+	StatusMsg   string    `json:"status_msg"`
+	CommentList []Comment `json:"comment_list"`
+}
+
+type Comment struct {
+	Id         int64  `json:"id"`
+	UserInfo   User   `json:"user"`
+	Content    string `json:"content"`
+	CreateDate string `json:"create_date"`
 }
 
 type RelationActionRequest struct {

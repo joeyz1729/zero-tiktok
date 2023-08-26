@@ -92,13 +92,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/comment",
-				Handler: comment.CommentActionHandler(serverCtx),
+				Path:    "/action",
+				Handler: comment.ActionHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/comment/list",
-				Handler: comment.CommentListHandler(serverCtx),
+				Path:    "/list",
+				Handler: comment.ListHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/douyin/comment"),

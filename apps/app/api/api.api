@@ -3,7 +3,6 @@ syntax = "v1"
 import (
 	"apis/user.api"
 	"apis/video.api"
-
 	"apis/comment.api"
 	"apis/relation.api"
 	"apis/message.api"
@@ -74,11 +73,11 @@ service api-api {
 	group: comment
 )
 service api-api {
-	@handler CommentActionHandler
-	post /comment (douyin_comment_action_request) returns (douyin_comment_action_response);
+	@handler ActionHandler
+	post /action (CommentActionRequest) returns (CommentActionResponse);
 
-	@handler CommentListHandler
-	get /comment/list (douyin_comment_list_request) returns (douyin_comment_list_response);
+	@handler ListHandler
+	get /list (CommentListRequest) returns (CommentListResponse);
 }
 
 @server (
