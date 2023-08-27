@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
@@ -20,20 +21,22 @@ var (
 	videoRows                = strings.Join(videoFieldNames, ",")
 	videoRowsExpectAutoSet   = strings.Join(stringx.Remove(videoFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	videoRowsWithPlaceHolder = strings.Join(stringx.Remove(videoFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
+
+	cacheVideoIdPrefix      = "cache:video:id:"
+	cacheVideoVideoIdPrefix = "cache:video:videoId:"
 )
 
 type (
 	videoModel interface {
 		Insert(ctx context.Context, data *Video) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*Video, error)
-		FindOneByPlayUrl(ctx context.Context, playUrl string) (*Video, error)
 		FindOneByVideoId(ctx context.Context, videoId int64) (*Video, error)
 		Update(ctx context.Context, data *Video) error
 		Delete(ctx context.Context, id int64) error
 	}
 
 	defaultVideoModel struct {
-		conn  sqlx.SqlConn
+		sqlc.CachedConn
 		table string
 	}
 
@@ -46,48 +49,47 @@ type (
 		CoverUrl    string         `db:"cover_url"`
 		Data        sql.NullString `db:"data"`
 		PublishTime time.Time      `db:"publish_time"`
+		CreateTime  time.Time      `db:"create_time"`
 		UpdateTime  time.Time      `db:"update_time"`
 	}
 )
 
-func newVideoModel(conn sqlx.SqlConn) *defaultVideoModel {
+func newVideoModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultVideoModel {
 	return &defaultVideoModel{
-		conn:  conn,
-		table: "`video`",
+		CachedConn: sqlc.NewConn(conn, c, opts...),
+		table:      "`video`",
 	}
 }
 
 func (m *defaultVideoModel) withSession(session sqlx.Session) *defaultVideoModel {
 	return &defaultVideoModel{
-		conn:  sqlx.NewSqlConnFromSession(session),
-		table: "`video`",
+		CachedConn: m.CachedConn.WithSession(session),
+		table:      "`video`",
 	}
 }
 
 func (m *defaultVideoModel) Delete(ctx context.Context, id int64) error {
-	query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	data, err := m.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	videoIdKey := fmt.Sprintf("%s%v", cacheVideoIdPrefix, id)
+	videoVideoIdKey := fmt.Sprintf("%s%v", cacheVideoVideoIdPrefix, data.VideoId)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, id)
+	}, videoIdKey, videoVideoIdKey)
 	return err
 }
 
 func (m *defaultVideoModel) FindOne(ctx context.Context, id int64) (*Video, error) {
-	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", videoRows, m.table)
+	videoIdKey := fmt.Sprintf("%s%v", cacheVideoIdPrefix, id)
 	var resp Video
-	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultVideoModel) FindOneByPlayUrl(ctx context.Context, playUrl string) (*Video, error) {
-	var resp Video
-	query := fmt.Sprintf("select %s from %s where `play_url` = ? limit 1", videoRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, playUrl)
+	err := m.QueryRowCtx(ctx, &resp, videoIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", videoRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
@@ -99,9 +101,15 @@ func (m *defaultVideoModel) FindOneByPlayUrl(ctx context.Context, playUrl string
 }
 
 func (m *defaultVideoModel) FindOneByVideoId(ctx context.Context, videoId int64) (*Video, error) {
+	videoVideoIdKey := fmt.Sprintf("%s%v", cacheVideoVideoIdPrefix, videoId)
 	var resp Video
-	query := fmt.Sprintf("select %s from %s where `video_id` = ? limit 1", videoRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, videoId)
+	err := m.QueryRowIndexCtx(ctx, &resp, videoVideoIdKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+		query := fmt.Sprintf("select %s from %s where `video_id` = ? limit 1", videoRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, videoId); err != nil {
+			return nil, err
+		}
+		return resp.Id, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -113,15 +121,37 @@ func (m *defaultVideoModel) FindOneByVideoId(ctx context.Context, videoId int64)
 }
 
 func (m *defaultVideoModel) Insert(ctx context.Context, data *Video) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, videoRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.VideoId, data.AuthorId, data.Title, data.PlayUrl, data.CoverUrl, data.Data, data.PublishTime)
+	videoIdKey := fmt.Sprintf("%s%v", cacheVideoIdPrefix, data.Id)
+	videoVideoIdKey := fmt.Sprintf("%s%v", cacheVideoVideoIdPrefix, data.VideoId)
+	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, videoRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.VideoId, data.AuthorId, data.Title, data.PlayUrl, data.CoverUrl, data.Data, data.PublishTime)
+	}, videoIdKey, videoVideoIdKey)
 	return ret, err
 }
 
 func (m *defaultVideoModel) Update(ctx context.Context, newData *Video) error {
-	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, videoRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.VideoId, newData.AuthorId, newData.Title, newData.PlayUrl, newData.CoverUrl, newData.Data, newData.PublishTime, newData.Id)
+	data, err := m.FindOne(ctx, newData.Id)
+	if err != nil {
+		return err
+	}
+
+	videoIdKey := fmt.Sprintf("%s%v", cacheVideoIdPrefix, data.Id)
+	videoVideoIdKey := fmt.Sprintf("%s%v", cacheVideoVideoIdPrefix, data.VideoId)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, videoRowsWithPlaceHolder)
+		return conn.ExecCtx(ctx, query, newData.VideoId, newData.AuthorId, newData.Title, newData.PlayUrl, newData.CoverUrl, newData.Data, newData.PublishTime, newData.Id)
+	}, videoIdKey, videoVideoIdKey)
 	return err
+}
+
+func (m *defaultVideoModel) formatPrimary(primary any) string {
+	return fmt.Sprintf("%s%v", cacheVideoIdPrefix, primary)
+}
+
+func (m *defaultVideoModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary any) error {
+	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", videoRows, m.table)
+	return conn.QueryRowCtx(ctx, v, query, primary)
 }
 
 func (m *defaultVideoModel) tableName() string {

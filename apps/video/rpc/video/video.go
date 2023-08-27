@@ -13,12 +13,22 @@ import (
 )
 
 type (
-	PublishActionRequest  = model.PublishActionRequest
-	PublishActionResponse = model.PublishActionResponse
+	FeedRequest             = model.FeedRequest
+	FeedResponse            = model.FeedResponse
+	GetListByUserIdRequest  = model.GetListByUserIdRequest
+	GetListByUserIdResponse = model.GetListByUserIdResponse
+	GetVideoByIdRequest     = model.GetVideoByIdRequest
+	GetVideoByIdResponse    = model.GetVideoByIdResponse
+	PublishActionRequest    = model.PublishActionRequest
+	PublishActionResponse   = model.PublishActionResponse
+	VideoInfo               = model.VideoInfo
 
 	Video interface {
 		// rpc Feed(feed_request) returns(feed_response);
 		PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
+		GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
+		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
+		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 	}
 
 	defaultVideo struct {
@@ -36,4 +46,19 @@ func NewVideo(cli zrpc.Client) Video {
 func (m *defaultVideo) PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.PublishAction(ctx, in, opts...)
+}
+
+func (m *defaultVideo) GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.GetListByUserId(ctx, in, opts...)
+}
+
+func (m *defaultVideo) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.GetVideoById(ctx, in, opts...)
+}
+
+func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.Feed(ctx, in, opts...)
 }

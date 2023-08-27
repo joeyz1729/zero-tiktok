@@ -25,6 +25,21 @@ func NewGetVideoByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetV
 
 func (l *GetVideoByIdLogic) GetVideoById(in *model.GetVideoByIdRequest) (*model.GetVideoByIdResponse, error) {
 	// todo: add your logic here and delete this line
+	resp := new(model.GetVideoByIdResponse)
+	vi, err := l.svcCtx.VideoModel.FindOneByVideoId(l.ctx, in.VideoId)
+	if err != nil {
+		logx.Errorw("mysql query failed",
+			logx.Field("err", err),
+		)
+		return resp, nil
+	}
 
-	return &model.GetVideoByIdResponse{}, nil
+	resp.VideoInfo = &model.VideoInfo{
+		VideoId:  in.VideoId,
+		AuthorId: vi.AuthorId,
+		PlayUrl:  vi.PlayUrl,
+		CoverUrl: vi.CoverUrl,
+		Title:    vi.Title,
+	}
+	return resp, nil
 }

@@ -19,7 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Video_PublishAction_FullMethodName = "/video.Video/PublishAction"
+	Video_PublishAction_FullMethodName   = "/video.Video/PublishAction"
+	Video_GetListByUserId_FullMethodName = "/video.Video/GetListByUserId"
+	Video_GetVideoById_FullMethodName    = "/video.Video/GetVideoById"
+	Video_Feed_FullMethodName            = "/video.Video/Feed"
 )
 
 // VideoClient is the client API for Video service.
@@ -28,6 +31,9 @@ const (
 type VideoClient interface {
 	// rpc Feed(feed_request) returns(feed_response);
 	PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
+	GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
+	GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
+	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 }
 
 type videoClient struct {
@@ -47,12 +53,42 @@ func (c *videoClient) PublishAction(ctx context.Context, in *PublishActionReques
 	return out, nil
 }
 
+func (c *videoClient) GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error) {
+	out := new(GetListByUserIdResponse)
+	err := c.cc.Invoke(ctx, Video_GetListByUserId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoClient) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
+	out := new(GetVideoByIdResponse)
+	err := c.cc.Invoke(ctx, Video_GetVideoById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoClient) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
+	out := new(FeedResponse)
+	err := c.cc.Invoke(ctx, Video_Feed_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VideoServer is the server API for Video service.
 // All implementations must embed UnimplementedVideoServer
 // for forward compatibility
 type VideoServer interface {
 	// rpc Feed(feed_request) returns(feed_response);
 	PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error)
+	GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error)
+	GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error)
+	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
 	mustEmbedUnimplementedVideoServer()
 }
 
@@ -62,6 +98,15 @@ type UnimplementedVideoServer struct {
 
 func (UnimplementedVideoServer) PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishAction not implemented")
+}
+func (UnimplementedVideoServer) GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListByUserId not implemented")
+}
+func (UnimplementedVideoServer) GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVideoById not implemented")
+}
+func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
 }
 func (UnimplementedVideoServer) mustEmbedUnimplementedVideoServer() {}
 
@@ -94,6 +139,60 @@ func _Video_PublishAction_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_GetListByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetListByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetListByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetListByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetListByUserId(ctx, req.(*GetListByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Video_GetVideoById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVideoByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetVideoById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetVideoById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetVideoById(ctx, req.(*GetVideoByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Video_Feed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).Feed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_Feed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).Feed(ctx, req.(*FeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Video_ServiceDesc is the grpc.ServiceDesc for Video service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,6 +203,18 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublishAction",
 			Handler:    _Video_PublishAction_Handler,
+		},
+		{
+			MethodName: "GetListByUserId",
+			Handler:    _Video_GetListByUserId_Handler,
+		},
+		{
+			MethodName: "GetVideoById",
+			Handler:    _Video_GetVideoById_Handler,
+		},
+		{
+			MethodName: "Feed",
+			Handler:    _Video_Feed_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

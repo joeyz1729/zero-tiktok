@@ -27,3 +27,18 @@ func (s *VideoServer) PublishAction(ctx context.Context, in *model.PublishAction
 	l := logic.NewPublishActionLogic(ctx, s.svcCtx)
 	return l.PublishAction(in)
 }
+
+func (s *VideoServer) GetListByUserId(ctx context.Context, in *model.GetListByUserIdRequest) (*model.GetListByUserIdResponse, error) {
+	l := logic.NewGetListByUserIdLogic(ctx, s.svcCtx)
+	return l.GetListByUserId(in)
+}
+
+func (s *VideoServer) GetVideoById(ctx context.Context, in *model.GetVideoByIdRequest) (*model.GetVideoByIdResponse, error) {
+	l := logic.NewGetVideoByIdLogic(ctx, s.svcCtx)
+	return l.GetVideoById(in)
+}
+
+func (s *VideoServer) Feed(ctx context.Context, in *model.FeedRequest) (*model.FeedResponse, error) {
+	l := logic.NewFeedLogic(ctx, s.svcCtx)
+	return l.Feed(in)
+}
