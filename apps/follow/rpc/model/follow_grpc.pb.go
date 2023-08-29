@@ -4,7 +4,7 @@
 // - protoc             v4.24.0--rc2
 // source: follow.proto
 
-package follow
+package model
 
 import (
 	context "context"
@@ -19,14 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Follow_Ping_FullMethodName = "/follow.Follow/Ping"
+	Follow_Action_FullMethodName         = "/follow.Follow/Action"
+	Follow_GetFollowIds_FullMethodName   = "/follow.Follow/GetFollowIds"
+	Follow_GetFollowerIds_FullMethodName = "/follow.Follow/GetFollowerIds"
 )
 
 // FollowClient is the client API for Follow service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FollowClient interface {
-	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
+	GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error)
+	GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error)
 }
 
 type followClient struct {
@@ -37,9 +41,27 @@ func NewFollowClient(cc grpc.ClientConnInterface) FollowClient {
 	return &followClient{cc}
 }
 
-func (c *followClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, Follow_Ping_FullMethodName, in, out, opts...)
+func (c *followClient) Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
+	out := new(ActionResponse)
+	err := c.cc.Invoke(ctx, Follow_Action_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *followClient) GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error) {
+	out := new(GetFollowIdsResponse)
+	err := c.cc.Invoke(ctx, Follow_GetFollowIds_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *followClient) GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error) {
+	out := new(GetFollowerIdsResponse)
+	err := c.cc.Invoke(ctx, Follow_GetFollowerIds_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +72,9 @@ func (c *followClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallO
 // All implementations must embed UnimplementedFollowServer
 // for forward compatibility
 type FollowServer interface {
-	Ping(context.Context, *Request) (*Response, error)
+	Action(context.Context, *ActionRequest) (*ActionResponse, error)
+	GetFollowIds(context.Context, *GetFollowIdsRequest) (*GetFollowIdsResponse, error)
+	GetFollowerIds(context.Context, *GetFollowerIdsRequest) (*GetFollowerIdsResponse, error)
 	mustEmbedUnimplementedFollowServer()
 }
 
@@ -58,8 +82,14 @@ type FollowServer interface {
 type UnimplementedFollowServer struct {
 }
 
-func (UnimplementedFollowServer) Ping(context.Context, *Request) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+func (UnimplementedFollowServer) Action(context.Context, *ActionRequest) (*ActionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Action not implemented")
+}
+func (UnimplementedFollowServer) GetFollowIds(context.Context, *GetFollowIdsRequest) (*GetFollowIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollowIds not implemented")
+}
+func (UnimplementedFollowServer) GetFollowerIds(context.Context, *GetFollowerIdsRequest) (*GetFollowerIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollowerIds not implemented")
 }
 func (UnimplementedFollowServer) mustEmbedUnimplementedFollowServer() {}
 
@@ -74,20 +104,56 @@ func RegisterFollowServer(s grpc.ServiceRegistrar, srv FollowServer) {
 	s.RegisterService(&Follow_ServiceDesc, srv)
 }
 
-func _Follow_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+func _Follow_Action_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FollowServer).Ping(ctx, in)
+		return srv.(FollowServer).Action(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Follow_Ping_FullMethodName,
+		FullMethod: Follow_Action_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowServer).Ping(ctx, req.(*Request))
+		return srv.(FollowServer).Action(ctx, req.(*ActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Follow_GetFollowIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFollowIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FollowServer).GetFollowIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Follow_GetFollowIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FollowServer).GetFollowIds(ctx, req.(*GetFollowIdsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Follow_GetFollowerIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFollowerIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FollowServer).GetFollowerIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Follow_GetFollowerIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FollowServer).GetFollowerIds(ctx, req.(*GetFollowerIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -100,8 +166,16 @@ var Follow_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FollowServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Ping",
-			Handler:    _Follow_Ping_Handler,
+			MethodName: "Action",
+			Handler:    _Follow_Action_Handler,
+		},
+		{
+			MethodName: "GetFollowIds",
+			Handler:    _Follow_GetFollowIds_Handler,
+		},
+		{
+			MethodName: "GetFollowerIds",
+			Handler:    _Follow_GetFollowerIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

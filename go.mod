@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/sony/sonyflake v1.2.0
 	github.com/zeromicro/go-zero v1.5.4
 	github.com/zeromicro/zero-contrib/zrpc/registry/consul v0.0.0-20230807142214-5952d42ba776

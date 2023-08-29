@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/favorite"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/internal/server"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/config"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/server"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -26,13 +27,15 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		favorite.RegisterFavoriteServer(grpcServer, server.NewFavoriteServer(ctx))
+		model.RegisterFavoriteServer(grpcServer, server.NewFavoriteServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
 		}
 	})
 	defer s.Stop()
+
+	_ = consul.RegisterService(c.ListenOn, c.Consul)
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

@@ -1,6 +1,16 @@
-Name: favorite.rpc
-ListenOn: 0.0.0.0:8080
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: favorite.rpc
+Name: rpc.rpc
+ListenOn: 0.0.0.0:9094
+#Etcd:
+#  Hosts:
+#  - 127.0.0.1:2379
+#  Key: rpc.rpc
+
+Mysql:
+  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+
+Consul:
+  Host: 127.0.0.1:8500
+  Key: consul-favorite.rpc

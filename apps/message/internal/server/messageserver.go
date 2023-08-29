@@ -26,3 +26,8 @@ func (s *MessageServer) Action(ctx context.Context, in *model.ActionRequest) (*m
 	l := logic.NewActionLogic(ctx, s.svcCtx)
 	return l.Action(in)
 }
+
+func (s *MessageServer) List(ctx context.Context, in *model.ListRequest) (*model.ListResponse, error) {
+	l := logic.NewListLogic(ctx, s.svcCtx)
+	return l.List(in)
+}

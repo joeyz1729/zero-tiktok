@@ -4,7 +4,7 @@
 // - protoc             v4.24.0--rc2
 // source: favorite.proto
 
-package favorite
+package model
 
 import (
 	context "context"
@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Favorite_Ping_FullMethodName = "/favorite.Favorite/Ping"
+	Favorite_Action_FullMethodName      = "/favorite.Favorite/Action"
+	Favorite_GetVideoIds_FullMethodName = "/favorite.Favorite/GetVideoIds"
 )
 
 // FavoriteClient is the client API for Favorite service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FavoriteClient interface {
-	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
+	GetVideoIds(ctx context.Context, in *GetVideoIdsRequest, opts ...grpc.CallOption) (*GetVideoIdsResponse, error)
 }
 
 type favoriteClient struct {
@@ -37,9 +39,18 @@ func NewFavoriteClient(cc grpc.ClientConnInterface) FavoriteClient {
 	return &favoriteClient{cc}
 }
 
-func (c *favoriteClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, Favorite_Ping_FullMethodName, in, out, opts...)
+func (c *favoriteClient) Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
+	out := new(ActionResponse)
+	err := c.cc.Invoke(ctx, Favorite_Action_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *favoriteClient) GetVideoIds(ctx context.Context, in *GetVideoIdsRequest, opts ...grpc.CallOption) (*GetVideoIdsResponse, error) {
+	out := new(GetVideoIdsResponse)
+	err := c.cc.Invoke(ctx, Favorite_GetVideoIds_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +61,8 @@ func (c *favoriteClient) Ping(ctx context.Context, in *Request, opts ...grpc.Cal
 // All implementations must embed UnimplementedFavoriteServer
 // for forward compatibility
 type FavoriteServer interface {
-	Ping(context.Context, *Request) (*Response, error)
+	Action(context.Context, *ActionRequest) (*ActionResponse, error)
+	GetVideoIds(context.Context, *GetVideoIdsRequest) (*GetVideoIdsResponse, error)
 	mustEmbedUnimplementedFavoriteServer()
 }
 
@@ -58,8 +70,11 @@ type FavoriteServer interface {
 type UnimplementedFavoriteServer struct {
 }
 
-func (UnimplementedFavoriteServer) Ping(context.Context, *Request) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+func (UnimplementedFavoriteServer) Action(context.Context, *ActionRequest) (*ActionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Action not implemented")
+}
+func (UnimplementedFavoriteServer) GetVideoIds(context.Context, *GetVideoIdsRequest) (*GetVideoIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVideoIds not implemented")
 }
 func (UnimplementedFavoriteServer) mustEmbedUnimplementedFavoriteServer() {}
 
@@ -74,20 +89,38 @@ func RegisterFavoriteServer(s grpc.ServiceRegistrar, srv FavoriteServer) {
 	s.RegisterService(&Favorite_ServiceDesc, srv)
 }
 
-func _Favorite_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+func _Favorite_Action_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FavoriteServer).Ping(ctx, in)
+		return srv.(FavoriteServer).Action(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Favorite_Ping_FullMethodName,
+		FullMethod: Favorite_Action_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FavoriteServer).Ping(ctx, req.(*Request))
+		return srv.(FavoriteServer).Action(ctx, req.(*ActionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Favorite_GetVideoIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVideoIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FavoriteServer).GetVideoIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Favorite_GetVideoIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FavoriteServer).GetVideoIds(ctx, req.(*GetVideoIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -100,8 +133,12 @@ var Favorite_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FavoriteServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Ping",
-			Handler:    _Favorite_Ping_Handler,
+			MethodName: "Action",
+			Handler:    _Favorite_Action_Handler,
+		},
+		{
+			MethodName: "GetVideoIds",
+			Handler:    _Favorite_GetVideoIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

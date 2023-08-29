@@ -15,9 +15,13 @@ import (
 type (
 	ActionRequest  = model.ActionRequest
 	ActionResponse = model.ActionResponse
+	ListRequest    = model.ListRequest
+	ListResponse   = model.ListResponse
+	MessageInfo    = model.MessageInfo
 
 	Message interface {
 		Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
+		List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
 	}
 
 	defaultMessage struct {
@@ -34,4 +38,9 @@ func NewMessage(cli zrpc.Client) Message {
 func (m *defaultMessage) Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
 	client := model.NewMessageClient(m.cli.Conn())
 	return client.Action(ctx, in, opts...)
+}
+
+func (m *defaultMessage) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
+	client := model.NewMessageClient(m.cli.Conn())
+	return client.List(ctx, in, opts...)
 }

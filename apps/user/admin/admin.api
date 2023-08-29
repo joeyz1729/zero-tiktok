@@ -3,7 +3,7 @@ type Request {
 }
 
 type Response {
-	Message string `json:"message"`
+	Message string `json:"model"`
 }
 
 service admin-api {

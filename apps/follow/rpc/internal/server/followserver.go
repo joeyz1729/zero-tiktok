@@ -6,14 +6,14 @@ package server
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow/follow"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow/internal/logic"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/logic"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
 )
 
 type FollowServer struct {
 	svcCtx *svc.ServiceContext
-	follow.UnimplementedFollowServer
+	model.UnimplementedFollowServer
 }
 
 func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
@@ -22,7 +22,17 @@ func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
 	}
 }
 
-func (s *FollowServer) Ping(ctx context.Context, in *follow.Request) (*follow.Response, error) {
-	l := logic.NewPingLogic(ctx, s.svcCtx)
-	return l.Ping(in)
+func (s *FollowServer) Action(ctx context.Context, in *model.ActionRequest) (*model.ActionResponse, error) {
+	l := logic.NewActionLogic(ctx, s.svcCtx)
+	return l.Action(in)
+}
+
+func (s *FollowServer) GetFollowIds(ctx context.Context, in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
+	l := logic.NewGetFollowIdsLogic(ctx, s.svcCtx)
+	return l.GetFollowIds(in)
+}
+
+func (s *FollowServer) GetFollowerIds(ctx context.Context, in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
+	l := logic.NewGetFollowerIdsLogic(ctx, s.svcCtx)
+	return l.GetFollowerIds(in)
 }

@@ -6,14 +6,14 @@ package server
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/favorite"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/internal/logic"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/favorite/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/logic"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
 )
 
 type FavoriteServer struct {
 	svcCtx *svc.ServiceContext
-	favorite.UnimplementedFavoriteServer
+	model.UnimplementedFavoriteServer
 }
 
 func NewFavoriteServer(svcCtx *svc.ServiceContext) *FavoriteServer {
@@ -22,7 +22,12 @@ func NewFavoriteServer(svcCtx *svc.ServiceContext) *FavoriteServer {
 	}
 }
 
-func (s *FavoriteServer) Ping(ctx context.Context, in *favorite.Request) (*favorite.Response, error) {
-	l := logic.NewPingLogic(ctx, s.svcCtx)
-	return l.Ping(in)
+func (s *FavoriteServer) Action(ctx context.Context, in *model.ActionRequest) (*model.ActionResponse, error) {
+	l := logic.NewActionLogic(ctx, s.svcCtx)
+	return l.Action(in)
+}
+
+func (s *FavoriteServer) GetVideoIds(ctx context.Context, in *model.GetVideoIdsRequest) (*model.GetVideoIdsResponse, error) {
+	l := logic.NewGetVideoIdsLogic(ctx, s.svcCtx)
+	return l.GetVideoIds(in)
 }

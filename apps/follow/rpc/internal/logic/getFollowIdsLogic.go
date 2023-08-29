@@ -25,6 +25,17 @@ func NewGetFollowIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetF
 
 func (l *GetFollowIdsLogic) GetFollowIds(in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
 	// todo: add your logic here and delete this line
-
-	return &model.GetFollowIdsResponse{}, nil
+	resp := new(model.GetFollowIdsResponse)
+	var followIds []int64
+	sqlStr := `select follower_id from tiktok_follow.follow where user_id = ?`
+	err := l.svcCtx.FollowDB.Select(&followIds, sqlStr, in.GetUserId())
+	if err != nil {
+		logx.Errorw("mysql query failed",
+			logx.Field("err", err),
+		)
+		resp.FollowIds = []int64{}
+		return resp, err
+	}
+	resp.FollowIds = followIds
+	return resp, nil
 }

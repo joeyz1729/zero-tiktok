@@ -26,6 +26,16 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.ActionResponse)
+	var err error
+	insertStr := `insert into tiktok_message.message(user_id, to_user_id, content) value(?, ?, ?)`
+	_, err = l.svcCtx.MessageDB.Exec(insertStr, in.UserId, in.ToUserId, in.Content)
+	if err != nil {
+		logx.Errorw("insert message record failed",
+			logx.Field("err", err),
+		)
+		resp.Msg = "insert message record failed"
+		return resp, err
+	}
 
 	resp.Msg = "success"
 	return resp, nil
