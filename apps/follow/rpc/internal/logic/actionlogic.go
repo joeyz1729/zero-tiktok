@@ -3,10 +3,9 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
-
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,10 +27,11 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.ActionResponse)
-	var ifCancel bool
+	var err error
 
+	var ifCancel bool
 	sqlStr := fmt.Sprintf(`select cancel from tiktok_follow.follow where user_id = ? and follower_id = ? limit 1`)
-	err := l.svcCtx.FollowDB.Get(&ifCancel, sqlStr, in.UserId, in.ToUserId)
+	err = l.svcCtx.FollowDB.Get(&ifCancel, sqlStr, in.UserId, in.ToUserId)
 	if err != nil {
 		fmt.Println(err)
 		if err != sqlc.ErrNotFound {

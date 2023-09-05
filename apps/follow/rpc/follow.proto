@@ -15,6 +15,9 @@ service Follow {
   rpc Action(action_request) returns(action_response);
   rpc GetFollowIds(get_follow_ids_request) returns(get_follow_ids_response);
   rpc GetFollowerIds(get_follower_ids_request) returns(get_follower_ids_response);
+  rpc GetRelation(get_relation_request) returns(get_relation_response);
+  rpc Add(add_request) returns(add_response);
+  rpc Del(del_request) returns(del_response);
 }
 
 message action_request {
@@ -42,4 +45,34 @@ message get_follower_ids_request {
 
 message get_follower_ids_response {
   repeated int64 follower_ids = 1;
+}
+
+message get_relation_request {
+  int64 user_id = 1;
+  int64 to_user_id = 2;
+}
+
+message get_relation_response {
+  int32 if_following = 1;
+  int32 if_follower = 2;
+}
+
+message add_request {
+  int64 user_id = 1; // 用户鉴权token
+  int64 to_user_id = 2; // 对方用户id
+}
+
+message add_response {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message del_request {
+  int64 user_id = 1; // 用户鉴权token
+  int64 to_user_id = 2; // 对方用户id
+}
+
+message del_response {
+  int32 code = 1;
+  string msg = 2;
 }

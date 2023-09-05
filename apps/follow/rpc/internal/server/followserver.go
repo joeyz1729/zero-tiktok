@@ -36,3 +36,18 @@ func (s *FollowServer) GetFollowerIds(ctx context.Context, in *model.GetFollower
 	l := logic.NewGetFollowerIdsLogic(ctx, s.svcCtx)
 	return l.GetFollowerIds(in)
 }
+
+func (s *FollowServer) GetRelation(ctx context.Context, in *model.GetRelationRequest) (*model.GetRelationResponse, error) {
+	l := logic.NewGetRelationLogic(ctx, s.svcCtx)
+	return l.GetRelation(in)
+}
+
+func (s *FollowServer) Add(ctx context.Context, in *model.AddRequest) (*model.AddResponse, error) {
+	l := logic.NewAddLogic(ctx, s.svcCtx)
+	return l.Add(in)
+}
+
+func (s *FollowServer) Del(ctx context.Context, in *model.DelRequest) (*model.DelResponse, error) {
+	l := logic.NewDelLogic(ctx, s.svcCtx)
+	return l.Del(in)
+}

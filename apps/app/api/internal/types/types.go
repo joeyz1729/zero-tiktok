@@ -181,6 +181,18 @@ type FollowerListResponse struct {
 	UserList   []User `json:"user_list"`
 }
 
+type FollowCheckRequest struct {
+	UserId   int64 `json:"user_id"`
+	ToUserId int64 `json:"to_user_id"`
+}
+
+type FollowCheckResponse struct {
+	StatusCode  int32  `json:"status_code"`
+	StatusMsg   string `json:"status_msg"`
+	IfFollowing int32  `json:"if_following"`
+	IfFollower  int32  `json:"if_follower"`
+}
+
 type Douyin_relation_friend_list_request struct {
 }
 

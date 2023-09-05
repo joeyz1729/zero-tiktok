@@ -15,10 +15,16 @@ import (
 type (
 	ActionRequest          = model.ActionRequest
 	ActionResponse         = model.ActionResponse
+	AddRequest             = model.AddRequest
+	AddResponse            = model.AddResponse
+	DelRequest             = model.DelRequest
+	DelResponse            = model.DelResponse
 	GetFollowIdsRequest    = model.GetFollowIdsRequest
 	GetFollowIdsResponse   = model.GetFollowIdsResponse
 	GetFollowerIdsRequest  = model.GetFollowerIdsRequest
 	GetFollowerIdsResponse = model.GetFollowerIdsResponse
+	GetRelationRequest     = model.GetRelationRequest
+	GetRelationResponse    = model.GetRelationResponse
 	Request                = model.Request
 	Response               = model.Response
 
@@ -26,6 +32,9 @@ type (
 		Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
 		GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error)
 		GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error)
+		GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
+		Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error)
+		Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error)
 	}
 
 	defaultFollow struct {
@@ -52,4 +61,19 @@ func (m *defaultFollow) GetFollowIds(ctx context.Context, in *GetFollowIdsReques
 func (m *defaultFollow) GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error) {
 	client := model.NewFollowClient(m.cli.Conn())
 	return client.GetFollowerIds(ctx, in, opts...)
+}
+
+func (m *defaultFollow) GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error) {
+	client := model.NewFollowClient(m.cli.Conn())
+	return client.GetRelation(ctx, in, opts...)
+}
+
+func (m *defaultFollow) Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error) {
+	client := model.NewFollowClient(m.cli.Conn())
+	return client.Add(ctx, in, opts...)
+}
+
+func (m *defaultFollow) Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error) {
+	client := model.NewFollowClient(m.cli.Conn())
+	return client.Del(ctx, in, opts...)
 }

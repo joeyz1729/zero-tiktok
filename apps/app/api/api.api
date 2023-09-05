@@ -96,6 +96,9 @@ service api-api {
 	@handler RelationFollowerListHandler
 	get /follower/list (FollowerListRequest) returns(FollowerListResponse)
 
+	@handler RelationFollowCheckHandler
+	get /check (FollowCheckRequest) returns(FollowCheckResponse)
+
 	//	@handler RelationFriendHandler
 	//	get /friend/list (douyin_relation_friend_list_request) returns(douyin_relation_friend_list_response)
 

@@ -15,6 +15,8 @@ type (
     FollowListRequest {
         UserId int64 `json:"user_id"`
         Token string `json:"token"`
+        NextId string `json:"next_id"`
+        PageSize int64 `json:"page_size"`
     }
     FollowListResponse {
         StatusCode int32 `json:"status_code"`
@@ -26,12 +28,25 @@ type (
     FollowerListRequest {
         UserId int64 `json:"user_id"`
         Token string `json:"token"`
+        Page int64 `json:"page"`
+        Size int64 `json:"size"`
     }
     FollowerListResponse {
         StatusCode int32 `json:"status_code"`
         StatusMsg string `json:"status_msg"`
         UserList []User `json:"user_list"`
     }
+    FollowCheckRequest {
+        UserId int64 `json:"user_id"`
+        ToUserId int64 `json:"to_user_id"`
+    }
+    FollowCheckResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        IfFollowing int32 `json:"if_following"`
+        IfFollower int32 `json:"if_follower"`
+    }
+
     douyin_relation_friend_list_request {
     }
     douyin_relation_friend_list_response {

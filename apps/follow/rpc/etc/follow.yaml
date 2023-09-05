@@ -15,3 +15,11 @@ CacheRedis:
 Consul:
   Host: 127.0.0.1:8500
   Key: consul-follow.rpc
+
+
+RedisDB:
+  Host: "127.0.0.1"
+  Port: 6379
+  Password: ""
+  DB: 0
+  PoolSize: 100

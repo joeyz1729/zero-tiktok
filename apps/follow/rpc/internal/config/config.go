@@ -15,5 +15,13 @@ type Config struct {
 
 	CacheRedis cache.CacheConf
 
+	RedisDB struct {
+		Host     string
+		Port     int
+		DB       int
+		PoolSize int
+		Password string
+	}
+
 	Consul consul.Conf
 }

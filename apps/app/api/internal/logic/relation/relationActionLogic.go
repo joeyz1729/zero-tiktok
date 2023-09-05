@@ -40,13 +40,25 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 	}
 
 	userId := claims.UserId
-	res, err := l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{
-		UserId:     userId,
-		ToUserId:   req.ToUserId,
-		ActionType: req.ActionType,
-	})
+	var msg string
+	if req.ActionType == int32(1) {
+		res := new(follow.AddResponse)
+		res, err = l.svcCtx.FollowRpc.Add(l.ctx, &follow.AddRequest{
+			UserId:   userId,
+			ToUserId: req.ToUserId,
+		})
+		msg = res.Msg
+	} else {
+		res := new(follow.DelResponse)
+		res, err = l.svcCtx.FollowRpc.Del(l.ctx, &follow.DelRequest{
+			UserId:   userId,
+			ToUserId: req.ToUserId,
+		})
+		msg = res.Msg
+	}
+
 	if err != nil {
-		logx.Errorw("rpc follow action failed",
+		logx.Errorw("rpc follow add failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
@@ -55,6 +67,7 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 	}
 
 	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = res.Msg
+	resp.StatusMsg = msg
 	return resp, nil
+
 }
