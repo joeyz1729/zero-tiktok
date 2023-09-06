@@ -40,6 +40,11 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 	}
 
 	userId := claims.UserId
+	if userId == req.ToUserId {
+		resp.StatusCode = http.StatusServiceUnavailable
+		resp.StatusMsg = "can not follow oneself"
+		return resp, nil
+	}
 	var msg string
 	if req.ActionType == int32(1) {
 		res := new(follow.AddResponse)

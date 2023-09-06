@@ -15,8 +15,8 @@ type (
     FollowListRequest {
         UserId int64 `json:"user_id"`
         Token string `json:"token"`
-        NextId string `json:"next_id"`
-        PageSize int64 `json:"page_size"`
+        Page int64 `json:"page"`
+        Size int64 `json:"size"`
     }
     FollowListResponse {
         StatusCode int32 `json:"status_code"`
@@ -28,12 +28,12 @@ type (
     FollowerListRequest {
         UserId int64 `json:"user_id"`
         Token string `json:"token"`
-        Page int64 `json:"page"`
-        Size int64 `json:"size"`
+        PageToken string `json:"page_token"`
     }
     FollowerListResponse {
         StatusCode int32 `json:"status_code"`
         StatusMsg string `json:"status_msg"`
+        NextToken string `json:"next_token"`
         UserList []User `json:"user_list"`
     }
     FollowCheckRequest {

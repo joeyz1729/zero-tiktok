@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data"
 	"strconv"
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
@@ -28,14 +29,18 @@ func (l *GetFollowIdsLogic) GetFollowIds(in *model.GetFollowIdsRequest) (*model.
 	// todo: add your logic here and delete this line
 	resp := new(model.GetFollowIdsResponse)
 	mid := strconv.Itoa(int(in.UserId))
-	res, nextCursor, err := l.svcCtx.FollowCache.SScan(l.ctx, "tiktok:following:"+mid, 0, "", 1).Result()
+	page, size := int(in.Page), int(in.Size)
+	page, size = 1, 10
+	start, end := (page-1)*size, page*size-1
+	// redis cache
+	res, err := l.svcCtx.FollowCache.ZRange(l.ctx, data.FollowingPrefix+mid, int64(start), int64(end)).Result()
 	if err != nil {
 		logx.Errorw("[redis] get following list failed",
 			logx.Field("err", err),
 		)
 		return resp, err
 	}
-	logx.Infof("[redis] get following list success, next cursor: %d", nextCursor)
+
 	resp.FollowIds = make([]int64, len(res))
 	for i := range res {
 		id, err := strconv.Atoi(res[i])
@@ -46,6 +51,8 @@ func (l *GetFollowIdsLogic) GetFollowIds(in *model.GetFollowIdsRequest) (*model.
 		resp.FollowIds[i] = int64(id)
 	}
 	return resp, nil
+
+	// use mysql database
 	//var followIds []int64
 	//sqlStr := `select follower_id from tiktok_follow.follow where user_id = ?`
 	//err := l.svcCtx.FollowDB.Select(&followIds, sqlStr, in.GetUserId())

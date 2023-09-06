@@ -2,8 +2,10 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
@@ -46,8 +48,8 @@ func (l *AddLogic) Add(in *model.AddRequest) (*model.AddResponse, error) {
 	logx.Info("add bloom filter success")
 
 	pipeline := l.svcCtx.FollowCache.TxPipeline()
-	_, err = pipeline.SAdd(l.ctx, data.FollowingPrefix+mid, fid).Result()
-	_, err = pipeline.SAdd(l.ctx, data.FollowerPrefix+fid, mid).Result()
+	_, err = pipeline.ZAdd(l.ctx, data.FollowingPrefix+mid, &redis.Z{Score: float64(time.Now().Unix()), Member: fid}).Result()
+	_, err = pipeline.ZAdd(l.ctx, data.FollowerPrefix+fid, &redis.Z{Score: float64(time.Now().Unix()), Member: mid}).Result()
 	_, err = pipeline.Incr(l.ctx, data.FollowingCountPerfix+mid).Result()
 	_, err = pipeline.Incr(l.ctx, data.FollowerCountPrefix+fid).Result()
 	_, err = pipeline.Exec(l.ctx)
@@ -67,7 +69,7 @@ func (l *AddLogic) Add(in *model.AddRequest) (*model.AddResponse, error) {
 		// TODO add rabbitmq
 		logx.Info("[mysql] asynchronous add database")
 		sqlStr := `insert into tiktok_follow.follow(user_id, follower_id) value(?, ?)`
-		_, err := l.svcCtx.FollowDB.Exec(sqlStr, in.UserId, in.ToUserId)
+		_, err = l.svcCtx.FollowDB.Exec(sqlStr, in.UserId, in.ToUserId)
 		if err != nil {
 			logx.Errorw("[mysql] add failed",
 				logx.Field("err", err),

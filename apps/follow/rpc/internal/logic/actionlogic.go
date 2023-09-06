@@ -24,6 +24,7 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 	}
 }
 
+// Deprecated: Use Add or Del instead.
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.ActionResponse)

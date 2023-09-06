@@ -162,6 +162,8 @@ type RelationActionResponse struct {
 type FollowListRequest struct {
 	UserId int64  `json:"user_id"`
 	Token  string `json:"token"`
+	Page   int64  `json:"page"`
+	Size   int64  `json:"size"`
 }
 
 type FollowListResponse struct {
@@ -171,13 +173,15 @@ type FollowListResponse struct {
 }
 
 type FollowerListRequest struct {
-	UserId int64  `json:"user_id"`
-	Token  string `json:"token"`
+	UserId    int64  `json:"user_id"`
+	Token     string `json:"token"`
+	PageToken string `json:"page_token"`
 }
 
 type FollowerListResponse struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
+	NextToken  string `json:"next_token"`
 	UserList   []User `json:"user_list"`
 }
 

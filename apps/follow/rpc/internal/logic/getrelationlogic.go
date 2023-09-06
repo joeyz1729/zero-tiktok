@@ -6,6 +6,7 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"strconv"
+	"time"
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
@@ -52,26 +53,23 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 	// 2. check redis
 	logx.Info("bloom filter check success, check redis cache")
 	redisKey := data.FollowingPrefix + mid
-	res, err := l.svcCtx.FollowCache.SIsMember(l.ctx, redisKey, fid).Result()
-	// redis success
-	if err == nil {
-		logx.Infof("redis get follow relation success, res: %v", res)
-
-		if res {
-			resp.IfFollowing = 1
-		} else {
-			resp.IfFollowing = 0
-		}
-		return resp, nil
-	}
-	// failed
-	logx.Info("redis cache does not exist, begin get from mysql database")
-	if err != redis.Nil {
+	_, err = l.svcCtx.FollowCache.ZScore(l.ctx, redisKey, fid).Result()
+	// err
+	if err != nil && err != redis.Nil {
 		logx.Errorw("redis get follow relation failed",
 			logx.Field("err", err),
 		)
 		return resp, err
 	}
+	// redis success
+	if err == nil {
+		logx.Info("redis get follow relation success")
+		resp.IfFollowing = 1
+		return resp, nil
+	}
+	// not exist
+	resp.IfFollowing = 0
+
 	// miss
 	sqlStr := `select id from tiktok_follow.follow where user_id = ? and follower_id = ?`
 	_, err = l.svcCtx.FollowDB.Query(sqlStr, in.UserId, in.ToUserId)
@@ -94,8 +92,8 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 		// asynchronous add redis
 		// TODO 异步处理， 消息队列，错误处理，或者刷新时间
 		pipeline := l.svcCtx.FollowCache.TxPipeline()
-		pipeline.SAdd(l.ctx, data.FollowingPrefix+mid, fid)
-		pipeline.SAdd(l.ctx, data.FollowingPrefix+fid, mid)
+		pipeline.ZAdd(l.ctx, data.FollowingPrefix+mid, &redis.Z{Score: float64(time.Now().Unix()), Member: fid}).Result()
+		pipeline.ZAdd(l.ctx, data.FollowerPrefix+fid, &redis.Z{Score: float64(time.Now().Unix()), Member: mid}).Result()
 		_, err := pipeline.Exec(l.ctx)
 		if err != nil {
 			logx.Errorw("[redis] asynchronous add failed",

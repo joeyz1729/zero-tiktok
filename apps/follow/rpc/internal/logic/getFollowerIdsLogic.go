@@ -2,10 +2,9 @@ package logic
 
 import (
 	"context"
-	"strconv"
-
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,34 +26,32 @@ func NewGetFollowerIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 func (l *GetFollowerIdsLogic) GetFollowerIds(in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.GetFollowerIdsResponse)
-	var followerIds []string
+	var res []string
 	var err error
-	followerIds, err = l.svcCtx.FollowCache.SMembers(l.ctx, "tiktok:follower:"+strconv.Itoa(int(in.UserId))).Result()
+	sqlStr := `select user_id from tiktok_follow.follow where follower_id = ? and id >= ? limit ?`
+	err = l.svcCtx.FollowDB.Select(&res, sqlStr, in.GetUserId(), in.GetCursor(), in.GetPageSize())
 	if err != nil {
-		logx.Errorw("[redis] get follower list failed",
+		logx.Errorw("mysql query failed",
 			logx.Field("err", err),
 		)
 		resp.FollowerIds = []int64{}
 		return resp, err
 	}
-	length := min(20, len(followerIds))
-	resp.FollowerIds = make([]int64, length)
-	for i := 0; i < length; i++ {
-		id, err := strconv.Atoi(followerIds[i])
+	logx.Infof("get follower list success, %v", res)
+	resp.FollowerIds = make([]int64, len(res))
+	for i := range res {
+		id, err := strconv.Atoi(res[i])
 		if err != nil {
-			break
+			resp.FollowerIds = []int64{}
+			return resp, err
 		}
 		resp.FollowerIds[i] = int64(id)
 	}
-	//sqlStr := `select user_id from tiktok_follow.follow where follower_id = ?`
-	//err := l.svcCtx.FollowDB.Select(&followerIds, sqlStr, in.GetUserId())
-	//if err != nil {
-	//	logx.Errorw("mysql query failed",
-	//		logx.Field("err", err),
-	//	)
-	//	resp.FollowerIds = []int64{}
-	//	return resp, err
-	//}
+	logx.Info("get next cursor from mysql")
+	var nextCursor int64
+	sqlStr = `select max(id) from tiktok_follow.follow where follower_id = ? and id >= ? limit ?`
+	err = l.svcCtx.FollowDB.Select(&nextCursor, sqlStr, in.GetUserId(), in.GetCursor(), in.GetPageSize())
+	resp.NextCursor = nextCursor + 1
 	return resp, nil
 }
 

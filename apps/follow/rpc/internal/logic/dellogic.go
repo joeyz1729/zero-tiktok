@@ -2,11 +2,11 @@ package logic
 
 import (
 	"context"
-	"net/http"
-	"strconv"
-
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
+	"net/http"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -31,8 +31,13 @@ func (l *DelLogic) Del(in *model.DelRequest) (*model.DelResponse, error) {
 	var err error
 
 	mid, fid := strconv.Itoa(int(in.UserId)), strconv.Itoa(int(in.ToUserId))
-	redisKey := "tiktok:follow:" + mid
-	_, err = l.svcCtx.FollowCache.SRem(l.ctx, redisKey, fid).Result()
+
+	pipeline := l.svcCtx.FollowCache.TxPipeline()
+	_, err = pipeline.ZRem(l.ctx, data.FollowingPrefix+mid, fid).Result()
+	_, err = pipeline.ZRem(l.ctx, data.FollowingPrefix+fid, mid).Result()
+	_, err = pipeline.Decr(l.ctx, data.FollowingCountPerfix+mid).Result()
+	_, err = pipeline.Decr(l.ctx, data.FollowerCountPrefix+fid).Result()
+	_, err = pipeline.Exec(l.ctx)
 	if err != nil {
 		logx.Errorw("[redis] del failed",
 			logx.Field("err", err),
