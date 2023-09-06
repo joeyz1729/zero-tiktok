@@ -22,5 +22,13 @@ type Config struct {
 		MachineId uint16
 	}
 
+	RedisDB struct {
+		Host     string
+		Port     int
+		Password string
+		DB       int
+		PoolSize int
+	}
+
 	Salt string
 }

@@ -21,3 +21,11 @@ Salt: video_salt
 Snowflake:
   StartTime: 2023-08-24
   MachineId: 9092
+
+
+RedisDB:
+  Host: "127.0.0.1"
+  Port: 6379
+  Password: ""
+  DB: 0
+  PoolSize: 100
