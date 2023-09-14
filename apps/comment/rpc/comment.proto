@@ -3,14 +3,6 @@ syntax = "proto3";
 package comment;
 option go_package="./model";
 
-message Request {
-  string ping = 1;
-}
-
-message Response {
-  string pong = 1;
-}
-
 service Comment {
   rpc GetComment(get_comment_request) returns(get_comment_response);
   rpc GetCommentList(get_comment_list_request) returns(get_comment_list_response);

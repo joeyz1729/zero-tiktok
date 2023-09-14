@@ -20,3 +20,12 @@ Consul:
 Snowflake:
   StartTime: 2023-08-21
   MachineId: 9095
+
+KafkaMq:
+  Name: kq
+  Brokers:
+    - 127.0.0.1:19092
+  Group: tiktok
+  Topic: comment
+  Offset: first
+  Consumer: 1

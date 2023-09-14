@@ -22,8 +22,6 @@ type (
 	GetCommentListResponse = model.GetCommentListResponse
 	GetCommentRequest      = model.GetCommentRequest
 	GetCommentResponse     = model.GetCommentResponse
-	Request                = model.Request
-	Response               = model.Response
 
 	Comment interface {
 		GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)

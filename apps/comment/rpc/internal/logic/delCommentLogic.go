@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
+
+	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/kmq"
 	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/model"
 
@@ -46,17 +49,27 @@ func (l *DelCommentLogic) DelComment(in *model.DelCommentRequest) (*model.DelCom
 		return resp, nil
 	}
 
-	// 3. query success
-	delStr := `delete from tiktok_comment.comment where user_id = ? and video_id = ? and comment_id = ?`
-	_, err = l.svcCtx.CommentDB.Exec(delStr, in.UserId, in.VideoId, in.CommentId)
+	kafkaData := kmq.KafkaData{
+		ActionType: false,
+		UserId:     in.UserId,
+		VideoId:    in.VideoId,
+		CommentId:  in.CommentId,
+	}
+	kafkaBytes, err := json.Marshal(kafkaData)
 	if err != nil {
-		logx.Errorw("del comment record failed",
-			logx.Field("err", err),
-		)
-		resp.Msg = err.Error()
+		logx.Errorw("encode kafka data failed",
+			logx.Field("err", err))
+		return resp, err
+	}
+	//kq.NewPusher()
+	if err = l.svcCtx.KafkaPusher.Push(string(kafkaBytes)); err != nil {
+		logx.Errorw("push add comment to kafka failed",
+			logx.Field("err", err))
 		return resp, err
 	}
 
-	resp.Msg = "success"
+	// 3. query success
+
+	resp.Msg = "push kafka mq success"
 	return resp, nil
 }
