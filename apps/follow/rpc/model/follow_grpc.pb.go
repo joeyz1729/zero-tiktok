@@ -25,6 +25,7 @@ const (
 	Follow_GetRelation_FullMethodName    = "/follow.Follow/GetRelation"
 	Follow_Add_FullMethodName            = "/follow.Follow/Add"
 	Follow_Del_FullMethodName            = "/follow.Follow/Del"
+	Follow_GetFollowCount_FullMethodName = "/follow.Follow/GetFollowCount"
 )
 
 // FollowClient is the client API for Follow service.
@@ -37,6 +38,7 @@ type FollowClient interface {
 	GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
 	Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error)
 	Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error)
+	GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error)
 }
 
 type followClient struct {
@@ -101,6 +103,15 @@ func (c *followClient) Del(ctx context.Context, in *DelRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *followClient) GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error) {
+	out := new(GetFollowCountResponse)
+	err := c.cc.Invoke(ctx, Follow_GetFollowCount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FollowServer is the server API for Follow service.
 // All implementations must embed UnimplementedFollowServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type FollowServer interface {
 	GetRelation(context.Context, *GetRelationRequest) (*GetRelationResponse, error)
 	Add(context.Context, *AddRequest) (*AddResponse, error)
 	Del(context.Context, *DelRequest) (*DelResponse, error)
+	GetFollowCount(context.Context, *GetFollowCountRequest) (*GetFollowCountResponse, error)
 	mustEmbedUnimplementedFollowServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedFollowServer) Add(context.Context, *AddRequest) (*AddResponse
 }
 func (UnimplementedFollowServer) Del(context.Context, *DelRequest) (*DelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Del not implemented")
+}
+func (UnimplementedFollowServer) GetFollowCount(context.Context, *GetFollowCountRequest) (*GetFollowCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollowCount not implemented")
 }
 func (UnimplementedFollowServer) mustEmbedUnimplementedFollowServer() {}
 
@@ -257,6 +272,24 @@ func _Follow_Del_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Follow_GetFollowCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFollowCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FollowServer).GetFollowCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Follow_GetFollowCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FollowServer).GetFollowCount(ctx, req.(*GetFollowCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Follow_ServiceDesc is the grpc.ServiceDesc for Follow service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var Follow_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Del",
 			Handler:    _Follow_Del_Handler,
+		},
+		{
+			MethodName: "GetFollowCount",
+			Handler:    _Follow_GetFollowCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

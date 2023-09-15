@@ -42,3 +42,8 @@ func (s *VideoServer) Feed(ctx context.Context, in *model.FeedRequest) (*model.F
 	l := logic.NewFeedLogic(ctx, s.svcCtx)
 	return l.Feed(in)
 }
+
+func (s *VideoServer) GetWorkCount(ctx context.Context, in *model.GetWorkCountRequest) (*model.GetWorkCountResponse, error) {
+	l := logic.NewGetWorkCountLogic(ctx, s.svcCtx)
+	return l.GetWorkCount(in)
+}

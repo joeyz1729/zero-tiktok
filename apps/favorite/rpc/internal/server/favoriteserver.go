@@ -31,3 +31,8 @@ func (s *FavoriteServer) GetVideoIds(ctx context.Context, in *model.GetVideoIdsR
 	l := logic.NewGetVideoIdsLogic(ctx, s.svcCtx)
 	return l.GetVideoIds(in)
 }
+
+func (s *FavoriteServer) GetFavoriteCount(ctx context.Context, in *model.GetFavoriteCountRequest) (*model.GetFavoriteCountResponse, error) {
+	l := logic.NewGetFavoriteCountLogic(ctx, s.svcCtx)
+	return l.GetFavoriteCount(in)
+}

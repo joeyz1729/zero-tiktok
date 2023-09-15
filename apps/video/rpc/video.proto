@@ -10,6 +10,7 @@ service Video {
   rpc GetListByUserId(get_list_by_user_id_request) returns(get_list_by_user_id_response);
   rpc GetVideoById(get_video_by_id_request) returns(get_video_by_id_response);
   rpc Feed(feed_request) returns(feed_response);
+  rpc GetWorkCount(get_work_count_request) returns (get_work_count_response);
 }
 
 
@@ -81,4 +82,12 @@ message get_video_by_id_request {
 
 message get_video_by_id_response {
   VideoInfo video_info = 1;
+}
+
+message get_work_count_request {
+  int64 user_id = 1;
+}
+
+message get_work_count_response{
+  int64 work_count = 1;
 }

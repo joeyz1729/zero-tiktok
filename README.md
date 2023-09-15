@@ -102,14 +102,14 @@ user模块需要通过consul服务注册，与redis和mysql交互，在生成use
 
 # 
 ## 基本环境
-| Name	    | Description	                   |
-|----------|--------------------------------|
-| go-zero  | web & rpc go frame             |
-| Consul   | service registry and discovery |
-| Mysql    | database                       |
-| Redis    | cache                          |
-| RabbitMQ | message queue                  |
-| Docker   | code runtime environment       |
+| Name	   | Description	                   |
+|---------|--------------------------------|
+| go-zero | web & rpc go frame             |
+| Consul  | service registry and discovery |
+| Mysql   | database                       |
+| Redis   | cache                          |
+| Kafka   | message queue                  |
+| Docker  | code runtime environment       |
 
 
 ## 启动

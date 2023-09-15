@@ -84,7 +84,11 @@ func (s *Kmq) consume(ch chan *KafkaData) {
 		}
 		logx.Infof("add comment consume msg: %v\n", in)
 		if in.ActionType {
-			// add action
+			if in.CommentId == 0 {
+				return
+			}
+
+			logx.Info("start insert into comment database")
 			sqlStr := `insert into tiktok_comment.comment(video_id, user_id, comment_id, content) value(?, ?, ?, ?)`
 			_, err := s.db.Exec(sqlStr, in.VideoId, in.UserId, in.CommentId, in.CommentText)
 			if err != nil {

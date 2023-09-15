@@ -19,6 +19,8 @@ type (
 	GetListByUserIdResponse = model.GetListByUserIdResponse
 	GetVideoByIdRequest     = model.GetVideoByIdRequest
 	GetVideoByIdResponse    = model.GetVideoByIdResponse
+	GetWorkCountRequest     = model.GetWorkCountRequest
+	GetWorkCountResponse    = model.GetWorkCountResponse
 	PublishActionRequest    = model.PublishActionRequest
 	PublishActionResponse   = model.PublishActionResponse
 	VideoInfo               = model.VideoInfo
@@ -29,6 +31,7 @@ type (
 		GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
 		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
+		GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
 	}
 
 	defaultVideo struct {
@@ -61,4 +64,9 @@ func (m *defaultVideo) GetVideoById(ctx context.Context, in *GetVideoByIdRequest
 func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.Feed(ctx, in, opts...)
+}
+
+func (m *defaultVideo) GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.GetWorkCount(ctx, in, opts...)
 }

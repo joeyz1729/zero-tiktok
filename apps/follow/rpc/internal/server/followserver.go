@@ -51,3 +51,8 @@ func (s *FollowServer) Del(ctx context.Context, in *model.DelRequest) (*model.De
 	l := logic.NewDelLogic(ctx, s.svcCtx)
 	return l.Del(in)
 }
+
+func (s *FollowServer) GetFollowCount(ctx context.Context, in *model.GetFollowCountRequest) (*model.GetFollowCountResponse, error) {
+	l := logic.NewGetFollowCountLogic(ctx, s.svcCtx)
+	return l.GetFollowCount(in)
+}

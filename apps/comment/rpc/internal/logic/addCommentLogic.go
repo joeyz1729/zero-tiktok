@@ -38,6 +38,8 @@ func (l *AddCommentLogic) AddComment(in *model.AddCommentRequest) (*model.AddCom
 		resp.Msg = err.Error()
 		return resp, err
 	}
+
+	// push kafka mq
 	kafkaData := kmq.KafkaData{
 		ActionType:  true,
 		UserId:      in.UserId,
@@ -52,25 +54,13 @@ func (l *AddCommentLogic) AddComment(in *model.AddCommentRequest) (*model.AddCom
 			logx.Field("err", err))
 		return resp, err
 	}
-	//kq.NewPusher()
+
 	if err = l.svcCtx.KafkaPusher.Push(string(kafkaBytes)); err != nil {
 		logx.Errorw("push add comment to kafka failed",
 			logx.Field("err", err))
 		return resp, err
 	}
 	logx.Info("push add comment success")
-
-	//go func() {
-	//	// biz：检查comment是否符合规范等
-	//	sqlStr := `insert into tiktok_comment.comment(video_id, user_id, comment_id, content) value(?, ?, ?, ?)`
-	//	_, err = l.svcCtx.CommentDB.Exec(sqlStr, in.VideoId, in.UserId, cid, in.CommentText)
-	//	if err != nil {
-	//		logx.Errorw("mysql insert comment record failed",
-	//			logx.Field("err", err),
-	//		)
-	//		//resp.Msg = err.Error()
-	//	}
-	//}()
 
 	resp.Msg = "push kafka mq success"
 	return resp, nil

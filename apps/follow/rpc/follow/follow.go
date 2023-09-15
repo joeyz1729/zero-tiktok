@@ -19,6 +19,8 @@ type (
 	AddResponse            = model.AddResponse
 	DelRequest             = model.DelRequest
 	DelResponse            = model.DelResponse
+	GetFollowCountRequest  = model.GetFollowCountRequest
+	GetFollowCountResponse = model.GetFollowCountResponse
 	GetFollowIdsRequest    = model.GetFollowIdsRequest
 	GetFollowIdsResponse   = model.GetFollowIdsResponse
 	GetFollowerIdsRequest  = model.GetFollowerIdsRequest
@@ -35,6 +37,7 @@ type (
 		GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
 		Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error)
 		Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error)
+		GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error)
 	}
 
 	defaultFollow struct {
@@ -76,4 +79,9 @@ func (m *defaultFollow) Add(ctx context.Context, in *AddRequest, opts ...grpc.Ca
 func (m *defaultFollow) Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error) {
 	client := model.NewFollowClient(m.cli.Conn())
 	return client.Del(ctx, in, opts...)
+}
+
+func (m *defaultFollow) GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error) {
+	client := model.NewFollowClient(m.cli.Conn())
+	return client.GetFollowCount(ctx, in, opts...)
 }

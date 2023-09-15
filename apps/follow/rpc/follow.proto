@@ -18,6 +18,7 @@ service Follow {
   rpc GetRelation(get_relation_request) returns(get_relation_response);
   rpc Add(add_request) returns(add_response);
   rpc Del(del_request) returns(del_response);
+  rpc GetFollowCount(get_follow_count_request) returns(get_follow_count_response);
 }
 
 message action_request {
@@ -80,4 +81,15 @@ message del_request {
 message del_response {
   int32 code = 1;
   string msg = 2;
+}
+
+message get_follow_count_request{
+  int64 user_id = 1;
+  int64 to_user_id = 2;
+}
+
+message get_follow_count_response{
+  int64 follow_count = 1;
+  int64 follower_count = 2;
+  bool is_following = 3;
 }

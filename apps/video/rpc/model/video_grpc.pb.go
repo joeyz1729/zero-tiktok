@@ -23,6 +23,7 @@ const (
 	Video_GetListByUserId_FullMethodName = "/video.Video/GetListByUserId"
 	Video_GetVideoById_FullMethodName    = "/video.Video/GetVideoById"
 	Video_Feed_FullMethodName            = "/video.Video/Feed"
+	Video_GetWorkCount_FullMethodName    = "/video.Video/GetWorkCount"
 )
 
 // VideoClient is the client API for Video service.
@@ -34,6 +35,7 @@ type VideoClient interface {
 	GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
 	GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
+	GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
 }
 
 type videoClient struct {
@@ -80,6 +82,15 @@ func (c *videoClient) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.Ca
 	return out, nil
 }
 
+func (c *videoClient) GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error) {
+	out := new(GetWorkCountResponse)
+	err := c.cc.Invoke(ctx, Video_GetWorkCount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VideoServer is the server API for Video service.
 // All implementations must embed UnimplementedVideoServer
 // for forward compatibility
@@ -89,6 +100,7 @@ type VideoServer interface {
 	GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error)
 	GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error)
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
+	GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error)
 	mustEmbedUnimplementedVideoServer()
 }
 
@@ -107,6 +119,9 @@ func (UnimplementedVideoServer) GetVideoById(context.Context, *GetVideoByIdReque
 }
 func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
+}
+func (UnimplementedVideoServer) GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWorkCount not implemented")
 }
 func (UnimplementedVideoServer) mustEmbedUnimplementedVideoServer() {}
 
@@ -193,6 +208,24 @@ func _Video_Feed_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_GetWorkCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWorkCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetWorkCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetWorkCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetWorkCount(ctx, req.(*GetWorkCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Video_ServiceDesc is the grpc.ServiceDesc for Video service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -215,6 +248,10 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Feed",
 			Handler:    _Video_Feed_Handler,
+		},
+		{
+			MethodName: "GetWorkCount",
+			Handler:    _Video_GetWorkCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
