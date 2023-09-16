@@ -30,6 +30,7 @@ message publish_action_request {
   int64 user_id = 1;
   string title = 2; // 视频标题
   bytes data = 3; // 视频数据
+  string type = 4;
 }
 
 message publish_action_response {

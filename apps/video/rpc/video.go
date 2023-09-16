@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
 	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
 	"github.com/YiZou89/zero-tiktok/pkg/tool"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
@@ -43,6 +44,8 @@ func main() {
 	if err != nil {
 		panic("snowflake initialization failed")
 	}
+
+	minio.Init()
 
 	tool.NewSalt(c.Salt)
 

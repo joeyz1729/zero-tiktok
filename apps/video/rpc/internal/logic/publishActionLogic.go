@@ -1,12 +1,10 @@
 package logic
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/ffmpeg"
+	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
-	"mime/multipart"
-	"path"
 	"time"
 
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
@@ -54,37 +52,34 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	// 读取file信息并修改filename
 	timeNow := time.Now()
 	filename := utils.NewFileName(in.GetUserId(), timeNow.Unix())
-	var data *multipart.FileHeader
-	if err := json.Unmarshal(in.Data, &data); err != nil {
-		logx.Errorw("unmarshal file data failed",
-			logx.Field("err", err))
-		return resp, err
-	}
-	logx.Info("unmarshal file data success", data)
-
-	data.Filename = filename + path.Ext(data.Filename)
-	uploadInfo, err := minio.PutToBucket(l.ctx, minio.MinioVideoBucketName, data)
+	buffer := bytes.NewBuffer(in.Data)
+	uploadInfo, err := minio.PutToBucketByBuf(
+		l.ctx,
+		minio.MinioVideoBucketName,
+		filename+in.Type,
+		buffer,
+	)
 	if err != nil {
 		logx.Errorw("upload file failed",
 			logx.Field("err", err))
 		return resp, err
 	}
 	logx.Info("upload file success", uploadInfo)
-	playURL := minio.MinioVideoBucketName + "/" + data.Filename
-	buf, err := ffmpeg.GetSnapshot(utils.URLConvert(l.ctx, "", "", "", playURL)) //TODO
-	if err != nil {
-		logx.Errorw("get video snapshot failed",
-			logx.Field("err", err))
-		return resp, err
-	}
-	logx.Infof("video cover snapshot size: %d\n", buf.Len())
-	upInfo, err := minio.PutToBucketByBuf(l.ctx, minio.MinioImgBucketName, filename+".png", buf)
-	if err != nil {
-		logx.Errorw("upload cover img failed",
-			logx.Field("err", err))
-		return resp, err
-	}
-	logx.Infof("upload video cover success, size: %d\n", upInfo.Size)
+	playURL := minio.MinioVideoBucketName + "/" + fmt.Sprintf("%s.%s", filename, in.Type)
+	//buf, err := ffmpeg.GetSnapshot(utils.URLConvert(l.ctx, "", "", "", playURL)) //TODO
+	//if err != nil {
+	//	logx.Errorw("get video snapshot failed",
+	//		logx.Field("err", err))
+	//	return resp, err
+	//}
+	//logx.Infof("video cover snapshot size: %d\n", buf.Len())
+	//upInfo, err := minio.PutToBucketByBuf(l.ctx, minio.MinioImgBucketName, filename+".png", buf)
+	//if err != nil {
+	//	logx.Errorw("upload cover img failed",
+	//		logx.Field("err", err))
+	//	return resp, err
+	//}
+	//logx.Infof("upload video cover success, size: %d\n", upInfo.Size)
 
 	go func() {
 		_, err = l.svcCtx.VideoModel.Insert(context.Background(), &model.Video{

@@ -62,12 +62,6 @@ type FeedResponse struct {
 	NextTime   int64   `json:"next_time"`
 }
 
-type PublishActionRequest struct {
-	Data  []byte `json:"data"`
-	Title string `json:"title"`
-	Token string `json:"token"`
-}
-
 type PublishActionResponse struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
