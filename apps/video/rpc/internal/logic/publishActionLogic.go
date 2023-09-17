@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/ffmpeg"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
 	"time"
 
@@ -65,21 +66,29 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 		return resp, err
 	}
 	logx.Info("upload file success", uploadInfo)
-	playURL := minio.MinioVideoBucketName + "/" + fmt.Sprintf("%s.%s", filename, in.Type)
-	//buf, err := ffmpeg.GetSnapshot(utils.URLConvert(l.ctx, "", "", "", playURL)) //TODO
-	//if err != nil {
-	//	logx.Errorw("get video snapshot failed",
-	//		logx.Field("err", err))
-	//	return resp, err
-	//}
-	//logx.Infof("video cover snapshot size: %d\n", buf.Len())
-	//upInfo, err := minio.PutToBucketByBuf(l.ctx, minio.MinioImgBucketName, filename+".png", buf)
-	//if err != nil {
-	//	logx.Errorw("upload cover img failed",
-	//		logx.Field("err", err))
-	//	return resp, err
-	//}
-	//logx.Infof("upload video cover success, size: %d\n", upInfo.Size)
+	playURL := minio.MinioVideoBucketName + "/" + minio.MinioVideoBucketName + in.Type
+	filepath, err := minio.Client.PresignedGetObject(l.ctx, minio.MinioVideoBucketName, filename+in.Type, time.Minute*1, nil)
+	if err != nil {
+		logx.Errorw("get object path failed",
+			logx.Field("err", err))
+		return resp, err
+	}
+	fmt.Printf("get object path success, %s\n", filepath.String())
+
+	buf, err := ffmpeg.GetSnapshot(filepath.String()) //TODO
+	if err != nil || buf.Len() == 0 {
+		logx.Errorw("get video snapshot failed",
+			logx.Field("err", err))
+		return resp, err
+	}
+	logx.Infof("video cover snapshot size: %d\n", buf.Len())
+	upInfo, err := minio.PutToBucketByBuf(l.ctx, minio.MinioImgBucketName, filename+".png", buf)
+	if err != nil {
+		logx.Errorw("upload cover img failed",
+			logx.Field("err", err))
+		return resp, err
+	}
+	logx.Infof("upload video cover success, size: %d\n", upInfo.Size)
 
 	go func() {
 		_, err = l.svcCtx.VideoModel.Insert(context.Background(), &model.Video{

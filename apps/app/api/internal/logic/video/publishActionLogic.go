@@ -3,6 +3,7 @@ package video
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"io"
@@ -65,6 +66,7 @@ func (l *PublishActionLogic) PublishAction() (resp *types.PublishActionResponse,
 
 	file, header, err := l.r.FormFile("data")
 	typ := path.Ext(header.Filename)
+	fmt.Println(typ)
 	defer file.Close()
 	fileData, err := io.ReadAll(file)
 	if err != nil {
@@ -72,6 +74,7 @@ func (l *PublishActionLogic) PublishAction() (resp *types.PublishActionResponse,
 			logx.Field("err", err))
 		return resp, nil
 	}
+	fmt.Printf("read video file, size: %d", len(fileData))
 
 	_, err = l.svcCtx.VideoRpc.PublishAction(l.ctx, &video.PublishActionRequest{
 		UserId: claim.UserId,
