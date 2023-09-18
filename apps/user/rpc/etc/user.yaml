@@ -20,3 +20,9 @@ Salt: salt
 Snowflake:
   StartTime: 2023-08-21
   MachineId: 9091
+
+Telemetry:
+  Name: user-rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

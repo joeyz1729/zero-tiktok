@@ -29,7 +29,7 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.ActionResponse)
-
+	logx.Info(in.UserId, in.VideoId, in.ActionType)
 	var ifCancel bool
 
 	// 1. query record

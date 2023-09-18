@@ -39,7 +39,8 @@ func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (
 		return resp, nil
 	}
 	uid := claims.UserId
-	actionRes, err := l.svcCtx.FavoriteRpc.Action(l.ctx, &favorite.ActionRequest{
+	var actionRes = new(favorite.ActionResponse)
+	actionRes, err = l.svcCtx.FavoriteRpc.Action(l.ctx, &favorite.ActionRequest{
 		UserId:     uid,
 		VideoId:    req.VideoId,
 		ActionType: req.ActionType,

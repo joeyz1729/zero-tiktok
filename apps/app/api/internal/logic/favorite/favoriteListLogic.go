@@ -36,6 +36,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	idsRes, err := l.svcCtx.FavoriteRpc.GetVideoIds(l.ctx, &favorite.GetVideoIdsRequest{
 		UserId: req.UserId,
 	})
+	logx.Info(idsRes.VideoIds)
 	if err != nil {
 		logx.Errorw("favorite rpc failed",
 			logx.Field("err", err),
@@ -54,7 +55,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	resp.VideoList = make([]types.Video, idsRes.VideoNum)
 	for i, vid := range idsRes.VideoIds {
 
-		var videoRes *video.GetVideoByIdResponse
+		var videoRes = new(video.GetVideoByIdResponse)
 		videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &video.GetVideoByIdRequest{
 			VideoId: vid,
 		})
@@ -67,8 +68,10 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 			resp.StatusMsg = "video rpc failed"
 			return resp, nil
 		}
-
-		var userRes *user.GetUserByIdResponse
+		if videoRes.VideoInfo == nil {
+			continue
+		}
+		var userRes = new(user.GetUserByIdResponse)
 		userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
 			UserId: videoRes.VideoInfo.AuthorId,
 		})

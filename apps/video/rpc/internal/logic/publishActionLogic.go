@@ -66,7 +66,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 		return resp, err
 	}
 	logx.Info("upload file success", uploadInfo)
-	playURL := minio.MinioVideoBucketName + "/" + minio.MinioVideoBucketName + in.Type
+	playURL := minio.MinioVideoBucketName + "/" + filename + in.Type
 	filepath, err := minio.Client.PresignedGetObject(l.ctx, minio.MinioVideoBucketName, filename+in.Type, time.Minute*1, nil)
 	if err != nil {
 		logx.Errorw("get object path failed",
