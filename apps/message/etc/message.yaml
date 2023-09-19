@@ -1,5 +1,18 @@
 Name: message.rpc
 ListenOn: 0.0.0.0:9096
+Log:
+  ServiceName: message-rpc
+  Mode: file
+  Path: ./log
+Telemetry:
+  Name: message-rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9086
+  Path: /metrics
 #Etcd:
 #  Hosts:
 #  - 127.0.0.1:2379
@@ -16,8 +29,3 @@ Consul:
   Key: consul-message.rpc
 
 
-Telemetry:
-  Name: message-rpc
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger

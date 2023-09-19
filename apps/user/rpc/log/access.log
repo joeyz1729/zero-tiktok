@@ -1,0 +1,2 @@
+{"@timestamp":"2023-09-19T19:56:06.788+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9081","level":"info"}
+{"@timestamp":"2023-09-19T19:56:25.831+08:00","caller":"consul@v0.0.0-20230807142214-5952d42ba776/register.go:80","content":"update ttl","level":"info"}

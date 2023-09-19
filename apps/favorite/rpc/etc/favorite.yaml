@@ -1,5 +1,18 @@
 Name: rpc.rpc
 ListenOn: 0.0.0.0:9094
+Log:
+  ServiceName: favorite-rpc
+  Mode: file
+  Path: ./log
+Telemetry:
+  Name: favorite-rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9084
+  Path: /metrics
 #Etcd:
 #  Hosts:
 #  - 127.0.0.1:2379
@@ -15,9 +28,3 @@ Consul:
   Host: 127.0.0.1:8500
   Key: consul-favorite.rpc
 
-
-Telemetry:
-  Name: favorite-rpc
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger

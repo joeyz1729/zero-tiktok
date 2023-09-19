@@ -1,5 +1,19 @@
 Name: follow.rpc
 ListenOn: 0.0.0.0:9093
+Log:
+  ServiceName: follow-rpc
+  Mode: file
+  Path: ./log
+Telemetry:
+  Name: follow-rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9083
+  Path: /metrics
+
 #Etcd:
 #  Hosts:
 #  - 127.0.0.1:2379
@@ -24,8 +38,3 @@ RedisDB:
   DB: 0
   PoolSize: 100
 
-Telemetry:
-  Name: follow-rpc
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger

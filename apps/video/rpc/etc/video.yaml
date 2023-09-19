@@ -1,10 +1,22 @@
 Name: video.rpc
 ListenOn: 0.0.0.0:9092
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: video.rpc
-
+Log:
+  ServiceName: video-rpc
+  Mode: file
+  Path: ./log
+Telemetry:
+  Name: video-rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9082
+  Path: /metrics
+  #Etcd:
+  #  Hosts:
+  #  - 127.0.0.1:2379
+  #  Key: video.rpc
 
 Mysql:
   DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_video?parseTime=true&charset=utf8
@@ -30,8 +42,3 @@ RedisDB:
   DB: 0
   PoolSize: 100
 
-Telemetry:
-  Name: video-rpc
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger

@@ -1,6 +1,21 @@
 Name: api-api
 Host: 0.0.0.0
 Port: 8888
+Log:
+  ServiceName: bff-api
+  Mode: file
+  Path: ./log
+Telemetry:
+  Name: bff-api
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9080
+  Path: /metrics
+
+
 
 UserRpc:
   Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
@@ -25,8 +40,3 @@ Auth:
   AccessExpire: 864000
 
 
-Telemetry:
-  Name: bff-api
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger
