@@ -67,6 +67,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/info",
 				Handler: user.InfoHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/mrinfo",
+				Handler: user.MrInfoHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/douyin/user"),

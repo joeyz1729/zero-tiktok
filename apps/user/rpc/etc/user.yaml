@@ -13,10 +13,10 @@ Prometheus:
   Host: 127.0.0.1
   Port: 9081
   Path: /metrics
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: user.rpc
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: user.rpc
 
 Mysql:
   DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_user?parseTime=true&charset=utf8
@@ -24,9 +24,9 @@ Mysql:
 CacheRedis:
   - Host: 127.0.0.1:6379
 
-Consul:
-  Host: 127.0.0.1:8500
-  Key: consul-user.rpc
+#Consul:
+#  Host: 127.0.0.1:8500
+#  Key: consul-user.rpc
 
 Salt: salt
 

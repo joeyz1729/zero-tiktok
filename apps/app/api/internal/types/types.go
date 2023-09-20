@@ -36,6 +36,17 @@ type UserInfoResponse struct {
 	UserInfo   User   `json:"user"`
 }
 
+type UserMrInfoRequest struct {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
+}
+
+type UserMrInfoResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+	UserInfo   User   `json:"user"`
+}
+
 type User struct {
 	Id              int64  `json:"id"`   //用户ID
 	Name            string `json:"name"` //用户名

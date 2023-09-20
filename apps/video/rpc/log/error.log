@@ -1,0 +1,6 @@
+{"@timestamp":"2023-09-20T16:34:29.021+08:00","caller":"model/videomodel.go:41","content":"find videos by user id failed","err":"wrong index 474935232055747458 in sql","level":"error"}
+{"@timestamp":"2023-09-20T16:35:55.490+08:00","caller":"model/videomodel.go:41","content":"find videos by user id failed","err":"wrong index 474935232055747458 in sql","level":"error"}
+{"@timestamp":"2023-09-20T16:35:58.425+08:00","caller":"model/videomodel.go:41","content":"find videos by user id failed","err":"wrong index 474935232055747458 in sql","level":"error"}
+{"@timestamp":"2023-09-20T16:35:59.056+08:00","caller":"model/videomodel.go:41","content":"find videos by user id failed","err":"wrong index 474935232055747458 in sql","level":"error"}
+{"@timestamp":"2023-09-20T16:37:17.865+08:00","caller":"model/videomodel.go:41","content":"find videos by user id failed","err":"wrong index 474935232055747458 in sql","level":"error"}
+{"@timestamp":"2023-09-20T16:57:03.018+08:00","caller":"model/videomodel.go:41","content":"find videos by user id failed","err":"wrong index 479264886078055298 in sql","level":"error"}

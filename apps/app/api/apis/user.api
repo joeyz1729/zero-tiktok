@@ -35,6 +35,18 @@ type (
         StatusMsg  string `json:"status_msg"`
         UserInfo User `json:"user"`
     }
+
+    UserMrInfoRequest {
+        UserId int64 `json:"user_id"`
+        Token string `json:"token"`
+    }
+
+    UserMrInfoResponse {
+        StatusCode int32 `json:"status_code"`
+        StatusMsg string `json:"status_msg"`
+        UserInfo User `json:"user"`
+    }
+
 )
 
 

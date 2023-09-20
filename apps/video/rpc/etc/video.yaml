@@ -13,10 +13,10 @@ Prometheus:
   Host: 127.0.0.1
   Port: 9082
   Path: /metrics
-  #Etcd:
-  #  Hosts:
-  #  - 127.0.0.1:2379
-  #  Key: video.rpc
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: video.rpc
 
 Mysql:
   DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_video?parseTime=true&charset=utf8
@@ -24,9 +24,9 @@ Mysql:
 CacheRedis:
   - Host: 127.0.0.1:6379
 
-Consul:
-  Host: 127.0.0.1:8500
-  Key: consul-video.rpc
+#Consul:
+#  Host: 127.0.0.1:8500
+#  Key: consul-video.rpc
 
 Salt: video_salt
 

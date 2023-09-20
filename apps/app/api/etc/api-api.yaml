@@ -18,22 +18,35 @@ Prometheus:
 
 
 UserRpc:
-  Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
+#  Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
 
 VideoRpc:
-  Target: consul://127.0.0.1:8500/consul-video.rpc?wait=14s
+#  Target: consul://127.0.0.1:8500/consul-video.rpc?wait=14s
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: video.rpc
+
 
 FollowRpc:
   Target: consul://127.0.0.1:8500/consul-follow.rpc?wait=14s
+  NonBlock: true
 
 FavoriteRpc:
   Target: consul://127.0.0.1:8500/consul-favorite.rpc?wait=14s
+  NonBlock: true
 
 CommentRpc:
   Target: consul://127.0.0.1:8500/consul-comment.rpc?wait=14s
+  NonBlock: true
 
 MessageRpc:
   Target: consul://127.0.0.1:8500/consul-message.rpc?wait=14s
+  NonBlock: true
 
 Auth:
   AccessSecret: "baldur's gate 3"

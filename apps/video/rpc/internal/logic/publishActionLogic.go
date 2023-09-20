@@ -37,20 +37,8 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	var err error
 	// snowflake gen video id
 	vid, err := snowflake.GenID()
-	// gen url
-	// 同步加入redis和异步加入rabbitmq修改mysql，
-	// 加入redis后返回
-	_, err = l.svcCtx.VideoCache.ZAdd(l.ctx, "tiktok:video:time", &redis.Z{Score: float64(time.Now().Unix() - time.Date(2023, time.September, 1, 1, 46, 40, 0, time.UTC).Unix()), Member: vid}).Result()
-	if err != nil {
-		logx.Errorw("[redis] add video time zset failed",
-			logx.Field("err", err))
-		return resp, nil
-	}
-	logx.Info("[redis] add video time zset success")
-	resp.VideoId = int64(vid)
-	logx.Info("[mysql] asynchronous add video into database")
 
-	// 读取file信息并修改filename
+	// 视频文件提交到minio
 	timeNow := time.Now()
 	filename := utils.NewFileName(in.GetUserId(), timeNow.Unix())
 	buffer := bytes.NewBuffer(in.Data)
@@ -65,15 +53,16 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 			logx.Field("err", err))
 		return resp, err
 	}
-	logx.Info("upload file success", uploadInfo)
 	playURL := minio.MinioVideoBucketName + "/" + filename + in.Type
+	logx.Info("upload file success", uploadInfo)
+
+	// 获取视频路径，并截取视频帧作为封面
 	filepath, err := minio.Client.PresignedGetObject(l.ctx, minio.MinioVideoBucketName, filename+in.Type, time.Minute*1, nil)
 	if err != nil {
 		logx.Errorw("get object path failed",
 			logx.Field("err", err))
 		return resp, err
 	}
-	fmt.Printf("get object path success, %s\n", filepath.String())
 
 	buf, err := ffmpeg.GetSnapshot(filepath.String()) //TODO
 	if err != nil || buf.Len() == 0 {
@@ -81,22 +70,37 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 			logx.Field("err", err))
 		return resp, err
 	}
-	logx.Infof("video cover snapshot size: %d\n", buf.Len())
-	upInfo, err := minio.PutToBucketByBuf(l.ctx, minio.MinioImgBucketName, filename+".png", buf)
+
+	// 将封面文件上传至minio
+	coverURL := minio.MinioImgBucketName + "/" + filename + ".png"
+	_, err = minio.PutToBucketByBuf(l.ctx, minio.MinioImgBucketName, filename+".png", buf)
 	if err != nil {
 		logx.Errorw("upload cover img failed",
 			logx.Field("err", err))
 		return resp, err
 	}
-	logx.Infof("upload video cover success, size: %d\n", upInfo.Size)
 
+	// 添加到redis，用于发布列表，视频流，用户work count统计
+	pipeline := l.svcCtx.VideoCache.TxPipeline()
+	pipeline.ZAdd(l.ctx, "tiktok:video:time", &redis.Z{Score: float64(time.Now().Unix() - time.Date(2023, time.September, 1, 1, 46, 40, 0, time.UTC).Unix()), Member: vid})
+	pipeline.SAdd(l.ctx, "tiktok:video:user:"+fmt.Sprintf("%d", in.UserId), vid)
+	_, err = pipeline.Exec(l.ctx)
+	if err != nil {
+		logx.Errorw("[redis] add redis failed",
+			logx.Field("err", err))
+		return resp, err
+	}
+	logx.Info("[redis] add redis success")
+
+	// todo, 异步入库
 	go func() {
+
 		_, err = l.svcCtx.VideoModel.Insert(context.Background(), &model.Video{
 			VideoId:     int64(vid),
 			AuthorId:    in.GetUserId(),
 			Title:       in.GetTitle(),
 			PlayUrl:     playURL,
-			CoverUrl:    minio.MinioImgBucketName + "/" + filename + ".png",
+			CoverUrl:    coverURL,
 			PublishTime: timeNow,
 		})
 		if err != nil {
@@ -107,6 +111,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 		}
 	}()
 
+	resp.VideoId = int64(vid)
 	return resp, nil
 
 }

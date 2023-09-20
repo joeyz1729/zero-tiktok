@@ -3,15 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
-	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
-	"github.com/YiZou89/zero-tiktok/pkg/tool"
-	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
-
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/server"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
+	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
+	"github.com/YiZou89/zero-tiktok/pkg/tool"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -38,7 +36,7 @@ func main() {
 	})
 	defer s.Stop()
 
-	_ = consul.RegisterService(c.ListenOn, c.Consul)
+	//_ = consul.RegisterService(c.ListenOn, c.Consul)
 
 	err := snowflake.Init(c.Snowflake.StartTime, c.Snowflake.MachineId)
 	if err != nil {
