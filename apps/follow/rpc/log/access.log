@@ -423,3 +423,33 @@
 {"@timestamp":"2023-09-21T10:59:57.859+08:00","caller":"consul@v0.0.0-20230807142214-5952d42ba776/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2023-09-21T11:00:16.857+08:00","caller":"consul@v0.0.0-20230807142214-5952d42ba776/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2023-09-21T20:45:21.049+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T10:54:50.318+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:02:23.997+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:59455 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"85.2ms","level":"info","span":"ad172c96951bccbb","trace":"90daca19f0d72035a031cde2b4a0bf0f"}
+{"@timestamp":"2023-09-23T11:04:47.627+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:11:04.796+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:11:07.417+08:00","caller":"cache/cache.go:91","content":"[redis] del relation success","level":"info"}
+{"@timestamp":"2023-09-23T11:11:07.418+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:59711 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"46.1ms","level":"info","span":"b3e7ce064bfc1766","trace":"40e5d2f613ab3e564b635d367b27d2dd"}
+{"@timestamp":"2023-09-23T11:11:58.952+08:00","caller":"cache/cache.go:91","content":"[redis] del relation success","level":"info"}
+{"@timestamp":"2023-09-23T11:11:58.952+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:59711 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"22.9ms","level":"info","span":"a89da8e1578d4ff7","trace":"9a2be33adf875d67df8f4b0214dbc72d"}
+{"@timestamp":"2023-09-23T11:13:52.588+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:13:54.845+08:00","caller":"cache/cache.go:91","content":"[redis] del relation success","level":"info"}
+{"@timestamp":"2023-09-23T11:13:54.845+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:59822 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"11.0ms","level":"info","span":"c8b8b5fce8bddef8","trace":"cba546d443d19fceb90f7fa242c94173"}
+{"@timestamp":"2023-09-23T11:15:02.383+08:00","caller":"cache/cache.go:91","content":"[redis] del relation success","level":"info"}
+{"@timestamp":"2023-09-23T11:15:02.384+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:59822 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"10.1ms","level":"info","span":"fd672eac1d613c95","trace":"29c4b97b7ccd6ee8042b970952708e29"}
+{"@timestamp":"2023-09-23T11:18:53.653+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:20:32.514+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 0, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-23T11:20:32.557+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:60035 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"43.1ms","level":"info","span":"d4ce468311b9040b","trace":"f3bb4fabd0ca75578ef90bf7085307d5"}
+{"@timestamp":"2023-09-23T11:22:48.854+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 474935232055747459, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-23T11:22:48.861+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:60035 - /follow.Follow/Add - {\"user_id\":474935232055747459,\"to_user_id\":1}","duration":"6.8ms","level":"info","span":"e41ff9a1c8d544f9","trace":"93fd8d860c03e466fe6db0b43f09e04e"}
+{"@timestamp":"2023-09-23T11:23:30.183+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 474935232055747459, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-23T11:23:30.191+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:60035 - /follow.Follow/Add - {\"user_id\":474935232055747459,\"to_user_id\":1}","duration":"8.1ms","level":"info","span":"a54cd0e27d7a57ac","trace":"d62ee0b5e4849ae82ae458b8a0bc003a"}
+{"@timestamp":"2023-09-23T11:24:10.579+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:24:32.762+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 474935232055747459, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-23T11:24:32.765+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:60329 - /follow.Follow/Add - {\"user_id\":474935232055747459,\"to_user_id\":1}","duration":"3.3ms","level":"info","span":"0def43e8ac85998e","trace":"192da21e28120cb492ba6fc9b2436ae6"}
+{"@timestamp":"2023-09-23T11:27:01.498+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:27:19.409+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 474935232055747459, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-23T11:27:19.437+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:60459 - /follow.Follow/Add - {\"user_id\":474935232055747459,\"to_user_id\":1}","duration":"27.2ms","level":"info","span":"8811ac4da3afffb0","trace":"9355e6dde9ffecf086a93c2cb8aa5f54"}
+{"@timestamp":"2023-09-23T11:40:50.294+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-23T11:40:56.860+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 474935232055747459, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-23T11:40:56.903+08:00","caller":"cache/cache.go:91","content":"[redis] del relation success","level":"info"}
+{"@timestamp":"2023-09-23T11:40:56.903+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:61039 - /follow.Follow/Add - {\"user_id\":474935232055747459,\"to_user_id\":1}","duration":"43.2ms","level":"info","span":"cdc7e3f4038d8e77","trace":"b903a04d378a01b3cf4549a70d2bbe04"}

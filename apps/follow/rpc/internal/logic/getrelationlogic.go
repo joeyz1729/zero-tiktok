@@ -57,6 +57,6 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 		resp.IfFollowing = int32(1)
 	}
 
-	go l.svcCtx.FollowCache.AddRelation(l.ctx, in.UserId, in.ToUserId)
+	go l.svcCtx.FollowCache.AddRelation(l.ctx, in.UserId, in.ToUserId, false, 0, 0)
 	return resp, nil
 }

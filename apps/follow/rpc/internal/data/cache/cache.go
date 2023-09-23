@@ -71,11 +71,16 @@ func (fc *FollowCache) UpdateAll(ctx context.Context, uid, tid int64) (err error
 	return nil
 }
 
-func (fc *FollowCache) AddRelation(ctx context.Context, uid, tid int64) (err error) {
+func (fc *FollowCache) AddRelation(ctx context.Context, uid, tid int64, cnt bool, fedCount, ferCount int32) (err error) {
 	uidStr, tidStr := strconv.FormatInt(uid, 10), strconv.FormatInt(tid, 10)
 	pipeline := fc.Client.TxPipeline()
 	_, err = pipeline.SAdd(ctx, FollowedPrefix+uidStr, tid).Result()
 	_, err = pipeline.SAdd(ctx, FollowerPrefix+tidStr, uid).Result()
+	if cnt {
+		_, err = pipeline.HSet(ctx, CountPrefix+uidStr, FollowedPrefix, fedCount).Result()
+		_, err = pipeline.HSet(ctx, CountPrefix+tidStr, FollowerField, ferCount).Result()
+
+	}
 	_, err = pipeline.Exec(ctx)
 	if err != nil {
 		logx.Errorw("[redis] transaction pipeline failed",

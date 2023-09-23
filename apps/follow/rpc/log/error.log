@@ -1,0 +1,1 @@
+{"@timestamp":"2023-09-23T11:02:23.995+08:00","caller":"cache/cache.go:47","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
