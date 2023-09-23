@@ -7,8 +7,6 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/server"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
-	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
-
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -33,8 +31,6 @@ func main() {
 		}
 	})
 	defer s.Stop()
-
-	_ = consul.RegisterService(c.ListenOn, c.Consul)
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()

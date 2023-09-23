@@ -1,9 +1,8 @@
 package config
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/zrpc"
-	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 )
 
 type Config struct {
@@ -13,8 +12,6 @@ type Config struct {
 		DataSource string
 	}
 
-	CacheRedis cache.CacheConf
-
 	RedisDB struct {
 		Host     string
 		Port     int
@@ -23,5 +20,5 @@ type Config struct {
 		Password string
 	}
 
-	Consul consul.Conf
+	KafkaMq kq.KqConf
 }

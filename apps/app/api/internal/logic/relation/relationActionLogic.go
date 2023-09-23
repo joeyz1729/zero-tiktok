@@ -45,34 +45,34 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 		resp.StatusMsg = "can not follow oneself"
 		return resp, nil
 	}
-	var msg string
-	if req.ActionType == int32(1) {
-		res := new(follow.AddResponse)
-		res, err = l.svcCtx.FollowRpc.Add(l.ctx, &follow.AddRequest{
-			UserId:   userId,
-			ToUserId: req.ToUserId,
-		})
-		msg = res.Msg
-	} else {
-		res := new(follow.DelResponse)
-		res, err = l.svcCtx.FollowRpc.Del(l.ctx, &follow.DelRequest{
-			UserId:   userId,
-			ToUserId: req.ToUserId,
-		})
-		msg = res.Msg
-	}
-
+	//var msg string
+	//if req.ActionType == int32(1) {
+	//	res := new(follow.AddResponse)
+	//	res, err = l.svcCtx.FollowRpc.Add(l.ctx, &follow.AddRequest{
+	//		UserId:   userId,
+	//		ToUserId: req.ToUserId,
+	//	})
+	//	msg = res.Msg
+	//} else {
+	//	res := new(follow.DelResponse)
+	//	res, err = l.svcCtx.FollowRpc.Del(l.ctx, &follow.DelRequest{
+	//		UserId:   userId,
+	//		ToUserId: req.ToUserId,
+	//	})
+	//	msg = res.Msg
+	//}
+	var followRes = new(follow.ActionResponse)
+	followRes, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{UserId: userId, ToUserId: req.ToUserId, ActionType: req.ActionType})
 	if err != nil {
-		logx.Errorw("rpc follow add failed",
+		logx.Errorw("rpc follow action failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
 		resp.StatusMsg = "internal server error"
 		return resp, nil
 	}
-
 	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = msg
+	resp.StatusMsg = followRes.Msg
 	return resp, nil
 
 }

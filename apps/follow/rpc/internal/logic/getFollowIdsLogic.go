@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data/cache"
 	"strconv"
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
@@ -33,7 +33,7 @@ func (l *GetFollowIdsLogic) GetFollowIds(in *model.GetFollowIdsRequest) (*model.
 	page, size = 1, 10
 	start, end := (page-1)*size, page*size-1
 	// redis cache
-	res, err := l.svcCtx.FollowCache.ZRange(l.ctx, data.FollowingPrefix+mid, int64(start), int64(end)).Result()
+	res, err := l.svcCtx.FollowCache.ZRange(l.ctx, cache.FollowedPrefix+mid, int64(start), int64(end)).Result()
 	if err != nil {
 		logx.Errorw("[redis] get following list failed",
 			logx.Field("err", err),

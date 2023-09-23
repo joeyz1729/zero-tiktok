@@ -28,7 +28,7 @@ func (l *GetFollowerIdsLogic) GetFollowerIds(in *model.GetFollowerIdsRequest) (*
 	resp := new(model.GetFollowerIdsResponse)
 	var res []string
 	var err error
-	sqlStr := `select user_id from tiktok_follow.follow where follower_id = ? and id >= ? limit ?`
+	sqlStr := `select user_id from tiktok_follow.followed where followed_id = ? and id >= ? limit ?`
 	err = l.svcCtx.FollowDB.Select(&res, sqlStr, in.GetUserId(), in.GetCursor(), in.GetPageSize()+1)
 	if err != nil {
 		logx.Errorw("mysql query failed",

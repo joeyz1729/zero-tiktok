@@ -213,3 +213,30 @@
 {"@timestamp":"2023-09-20T17:31:30.847+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:50484 - /video.Video/GetListByUserId - {\"user_id\":479264886078055299}","duration":"92.9ms","level":"info","span":"d6a78082b1a3ec77","trace":"da09cf9743ea1292ed863a2518b2d4fa"}
 {"@timestamp":"2023-09-20T17:31:34.084+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:50484 - /video.Video/GetListByUserId - {\"user_id\":479264886078055299}","duration":"2.6ms","level":"info","span":"eb86382b98a0e8ee","trace":"5c5e562820c171fde4890abe3ccb0cf3"}
 {"@timestamp":"2023-09-20T17:31:36.722+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:50484 - /video.Video/GetListByUserId - {\"user_id\":479264886078055299}","duration":"14.3ms","level":"info","span":"4f989fb5c2d433eb","trace":"ecd69da4f2fedcd9a0739a8d10a99de8"}
+{"@timestamp":"2023-09-20T18:41:47.830+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9082","level":"info"}
+{"@timestamp":"2023-09-20T18:57:48.425+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9082","level":"info"}
+{"@timestamp":"2023-09-20T18:57:58.831+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51554 - /video.Video/GetWorkCount - {\"user_id\":479264886078055299}","duration":"1.0ms","level":"info","span":"df31bdf625286c26","trace":"a0c8592ec823f21bfd21e5d11ab035ab"}
+{"@timestamp":"2023-09-20T18:57:58.897+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51554 - /video.Video/GetListByUserId - {\"user_id\":479264886078055299}","duration":"64.5ms","level":"info","span":"812409fea9be679b","trace":"a0c8592ec823f21bfd21e5d11ab035ab"}
+{"@timestamp":"2023-09-20T18:59:04.431+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51644 - /video.Video/GetWorkCount - {\"user_id\":479264886078055299}","duration":"0.2ms","level":"info","span":"c6d562aa1f0c2181","trace":"86fcf139b94276b09af56b389b9d1bbb"}
+{"@timestamp":"2023-09-20T18:59:04.481+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51644 - /video.Video/GetListByUserId - {\"user_id\":479264886078055299}","duration":"50.3ms","level":"info","span":"e7e596d058f8e351","trace":"86fcf139b94276b09af56b389b9d1bbb"}
+{"@timestamp":"2023-09-20T19:04:56.369+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9082","level":"info"}
+{"@timestamp":"2023-09-20T19:05:00.079+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51822 - /video.Video/GetWorkCount - {\"user_id\":479264886078055299}","duration":"62.0ms","level":"info","span":"dbfc436130cd7d88","trace":"19ef899e0cf10ead915709c9a3d1d76e"}
+{"@timestamp":"2023-09-20T19:05:00.083+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51822 - /video.Video/GetListByUserId - {\"user_id\":479264886078055299}","duration":"65.3ms","level":"info","span":"a0a36358fef33a85","trace":"19ef899e0cf10ead915709c9a3d1d76e"}
+{"@timestamp":"2023-09-20T19:06:22.744+08:00","caller":"logic/feedLogic.go:38","content":"[redis] get video ids success","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.744+08:00","caller":"logic/feedLogic.go:45","content":"[mysql] get video info from database","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.744+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275662285218692","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.750+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275661177922436","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.751+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275660070626180","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.751+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275658929775492","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.751+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275657805702020","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.752+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275656580965252","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.752+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275655373005700","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.752+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275654030828420","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.753+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275652453770116","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.753+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275650742494084","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.753+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275649014440836","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.754+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275647219278724","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.754+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275563937178500","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.755+08:00","caller":"logic/feedLogic.go:72","content":"get video info, vid:479275561387041668","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.755+08:00","caller":"logic/feedLogic.go:104","content":"[redis] get next timestamp","level":"info"}
+{"@timestamp":"2023-09-20T19:06:22.756+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:51822 - /video.Video/Feed - {\"user_id\":479264886078055299,\"latest_time\":1693997975}","duration":"12.0ms","level":"info","span":"6dccca41512de26c","trace":"60ef1456babac3ea1557e99fe742127a"}

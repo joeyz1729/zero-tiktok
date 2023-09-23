@@ -3,6 +3,8 @@ package video
 import (
 	"context"
 	"errors"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
@@ -34,7 +36,7 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 	// todo: add your logic here and delete this line
 	resp = new(types.PublishListResponse)
 
-	_, err = jwtx.ParseToken(req.Token)
+	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
 		logx.Errorw("parse token failed",
 			logx.Field("err", err),
@@ -43,12 +45,13 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 		resp.StatusMsg = "internal server error"
 		return resp, nil
 	}
+	myId := claims.UserId
 	//loginUserId := claims.UserId
 
 	// 并行请求
 	var wg sync.WaitGroup
-	wg.Add(2)
-	errChan := make(chan error, 2)
+	wg.Add(5)
+	errChan := make(chan error, 5)
 	defer close(errChan)
 
 	// 1. 根据userid 查询 user 信息
@@ -61,19 +64,58 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 				logx.Field("err", err),
 			)
 			errChan <- err
-		}
-		author = types.User{
-			Id:              userInfo.GetId(),
-			Name:            userInfo.GetName(),
-			Avatar:          userInfo.GetAvatar(),
-			BackgroundImage: userInfo.GetBackgroundImage(),
+		} else {
+			author.Id = userInfo.Id
+			author.Name = userInfo.Name
+			author.Avatar = userInfo.Avatar
+			author.BackgroundImage = userInfo.BackgroundImage
 		}
 	}()
 
-	// 2. 从video模块获取video list
+	// 2. follow人数
 	go func() {
 		defer wg.Done()
-		res, err := l.svcCtx.VideoRpc.GetListByUserId(l.ctx, &video.GetListByUserIdRequest{
+		var followRes *follow.GetFollowCountResponse
+		followRes, err = l.svcCtx.FollowRpc.GetFollowCount(l.ctx, &follow.GetFollowCountRequest{UserId: myId, ToUserId: req.UserId})
+		if err != nil {
+			errChan <- err
+		} else {
+			author.FollowCount = followRes.FollowCount
+			author.FollowerCount = followRes.FollowerCount
+			author.IsFollow = followRes.IsFollowing
+		}
+	}()
+
+	// 3. 发布视频数
+	go func() {
+		defer wg.Done()
+		var videoRes *video.GetWorkCountResponse
+		videoRes, err = l.svcCtx.VideoRpc.GetWorkCount(l.ctx, &video.GetWorkCountRequest{UserId: req.UserId})
+		if err != nil {
+			errChan <- err
+		} else {
+			author.WorkCount = videoRes.WorkCount
+		}
+	}()
+
+	// 4.点赞总数
+	go func() {
+		defer wg.Done()
+		var likeRes *favorite.GetFavoriteCountResponse
+		likeRes, err = l.svcCtx.FavoriteRpc.GetFavoriteCount(l.ctx, &favorite.GetFavoriteCountRequest{UserId: req.UserId})
+		if err != nil {
+			errChan <- err
+		} else {
+			author.TotalFavorited = likeRes.TotalFavorited
+			author.FavoriteCount = likeRes.FavoriteCount
+		}
+	}()
+
+	// 5. 发布视频列表
+	var listRes = new(video.GetListByUserIdResponse)
+	go func() {
+		defer wg.Done()
+		listRes, err = l.svcCtx.VideoRpc.GetListByUserId(l.ctx, &video.GetListByUserIdRequest{
 			UserId: req.UserId,
 		})
 		if err != nil {
@@ -81,26 +123,34 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 				logx.Field("err", err),
 			)
 			errChan <- err
-		} else if len(res.GetVideoList()) == 0 {
+			return
+		} else if len(listRes.GetVideoList()) == 0 {
 			errChan <- errors.New("empty video list")
+			return
 		}
 
-		resp.VideoList = make([]types.Video, len(res.GetVideoList()))
-
-		for i, v := range res.GetVideoList() {
-			var videoInfo types.Video
-			videoInfo = types.Video{
-				Id:       v.GetVideoId(),
-				Author:   author,
-				PlayUrl:  v.GetPlayUrl(),
-				CoverUrl: v.GetCoverUrl(),
-				Title:    v.GetTitle(),
-			}
-			resp.VideoList[i] = videoInfo
-		}
 	}()
 	wg.Wait()
+	select {
+	case result := <-errChan:
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "internal server error"
+		logx.Error(result.Error())
+	default:
+	}
 
+	resp.VideoList = make([]types.Video, len(listRes.GetVideoList()))
+	for i, v := range listRes.GetVideoList() {
+		var videoInfo types.Video
+		videoInfo = types.Video{
+			Id:       v.GetVideoId(),
+			Author:   author,
+			PlayUrl:  v.GetPlayUrl(),
+			CoverUrl: v.GetCoverUrl(),
+			Title:    v.GetTitle(),
+		}
+		resp.VideoList[i] = videoInfo
+	}
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"
 	return resp, nil
