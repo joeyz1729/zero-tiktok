@@ -15,7 +15,6 @@ func NewFollowDB(db *sqlx.DB) *FollowDB {
 	return &FollowDB{
 		db,
 	}
-
 }
 
 func (fd *FollowDB) AddRelation(ctx context.Context, uid, tid int64) (followedCount, followerCount int32, err error) {

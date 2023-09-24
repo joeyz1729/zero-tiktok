@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data/cache"
+	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	"strconv"
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"

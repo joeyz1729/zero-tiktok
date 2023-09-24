@@ -1,0 +1,12 @@
+Name: kq
+Brokers:
+  - 127.0.0.1:9092
+Group: follow
+Topic: test-follow-rpc
+Consumers: 1
+
+Mysql:
+  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8
+
+CacheRedis:
+  - Host: 127.0.0.1:6379

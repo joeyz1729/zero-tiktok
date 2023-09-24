@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data/cache"
+	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -43,6 +43,10 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 		return resp, err
 	}
 	err = l.svcCtx.KqPusher.Push(string(actionData))
+	//err = l.svcCtx.KqWriter.WriteMessages(l.ctx,
+	//	kafka.Message{
+	//		Value: actionData,
+	//	})
 	if err == nil {
 		logx.Info("push kafka mq success")
 		resp.Msg = "push kafka mq success"

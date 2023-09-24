@@ -3,8 +3,8 @@ package svc
 import (
 	"context"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data/cache"
-	datadb "github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/data/db"
+	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
+	datadb "github.com/YiZou89/zero-tiktok/apps/follow/dao/db"
 	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/core/bloom"
 
@@ -22,6 +22,7 @@ type ServiceContext struct {
 	FollowCache *cache.FollowCache
 
 	KqPusher *kq.Pusher
+	//KqWriter *kafka.Writer
 
 	Filter *bloom.Filter
 }
@@ -55,9 +56,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
 		Config:      c,
-		FollowDB:    datadb.NewFollowDB(db),
+		FollowDB:    db.NewFollowDB(db),
 		FollowCache: cache.NewFollowCache(rdb),
 		Filter:      filter,
-		KqPusher:    pusher,
+		//KqWriter:    w,
+		KqPusher: pusher,
 	}
 }

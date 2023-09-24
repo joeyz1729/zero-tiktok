@@ -1,0 +1,82 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
+	"github.com/go-redis/redis/v8"
+	"github.com/jmoiron/sqlx"
+	"github.com/zeromicro/go-zero/core/logx"
+
+	"github.com/YiZou89/zero-tiktok/apps/follow/dao"
+	mysqldb "github.com/YiZou89/zero-tiktok/apps/follow/dao/db"
+	"github.com/zeromicro/go-queue/kq"
+	"github.com/zeromicro/go-zero/core/conf"
+)
+
+var mdb *mysqldb.FollowDB
+var rdb *cache.FollowCache
+
+func main() {
+
+	var c kq.KqConf
+	conf.MustLoad("config.yaml", &c)
+	var err error
+	d, err := sqlx.Connect("mysql",
+		"root:Zy_9908091729@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8")
+	if err != nil {
+		panic(err)
+	}
+	mdb = mysqldb.NewFollowDB(d)
+
+	redisAddr := "127.0.0.1:6379"
+	rd := redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+		//Password: c.RedisDB.Password,
+		//DB:       c.RedisDB.DB,
+		//PoolSize: c.RedisDB.PoolSize,
+	})
+	_, err = rd.Ping(context.Background()).Result()
+	if err != nil {
+		panic(err)
+	}
+	rdb = cache.NewFollowCache(rd)
+
+	q := kq.MustNewQueue(c, kq.WithHandle(func(k, v string) error {
+		err = biz(v)
+		if err != nil {
+			logx.Error(err)
+		}
+		return nil
+	}))
+	defer q.Stop()
+	q.Start()
+}
+
+func biz(v string) (err error) {
+	fmt.Printf("=> %s\n", v)
+	var relation dao.Action
+	err = json.Unmarshal([]byte(v), &relation)
+	if err != nil {
+		logx.Errorw("json unmarshal data from kafka mq failed",
+			logx.Field("err", err))
+		return err
+	}
+	logx.Info(relation)
+	if relation.ActionType == int32(1) {
+
+		followedCount, followerCount, err := mdb.AddRelation(context.Background(), relation.UserId, relation.ToUserId)
+		if err != nil {
+			return err
+		}
+		err = rdb.AddRelation(context.Background(), relation.UserId, relation.ToUserId, true, followedCount, followerCount)
+		if err != nil {
+			return err
+		}
+	} else {
+
+	}
+
+	return nil
+}

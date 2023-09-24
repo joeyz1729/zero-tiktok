@@ -1,5 +1,5 @@
 Name: video.rpc
-ListenOn: 0.0.0.0:9092
+ListenOn: 0.0.0.0:8992
 Log:
   ServiceName: video-rpc
   Mode: file
