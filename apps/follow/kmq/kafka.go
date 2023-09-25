@@ -28,6 +28,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer d.Close()
 	mdb = mysqldb.NewFollowDB(d)
 
 	redisAddr := "127.0.0.1:6379"
@@ -37,6 +38,7 @@ func main() {
 		//DB:       c.RedisDB.DB,
 		//PoolSize: c.RedisDB.PoolSize,
 	})
+	defer rd.Close()
 	_, err = rd.Ping(context.Background()).Result()
 	if err != nil {
 		panic(err)
@@ -65,18 +67,33 @@ func biz(v string) (err error) {
 	}
 	logx.Info(relation)
 	if relation.ActionType == int32(1) {
+		return addRelation(relation.UserId, relation.ToUserId)
 
-		followedCount, followerCount, err := mdb.AddRelation(context.Background(), relation.UserId, relation.ToUserId)
-		if err != nil {
-			return err
-		}
-		err = rdb.AddRelation(context.Background(), relation.UserId, relation.ToUserId, true, followedCount, followerCount)
-		if err != nil {
-			return err
-		}
 	} else {
-
+		return delRelation(relation.UserId, relation.ToUserId)
 	}
+}
 
+func addRelation(uid, tid int64) (err error) {
+	_, _, err = mdb.AddRelation(context.Background(), uid, tid)
+	if err != nil {
+		return err
+	}
+	err = rdb.DelRelation(context.Background(), uid, tid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func delRelation(uid, tid int64) (err error) {
+	_, _, err = mdb.DelRelation(context.Background(), uid, tid)
+	if err != nil {
+		return err
+	}
+	err = rdb.DelRelation(context.Background(), uid, tid)
+	if err != nil {
+		return err
+	}
 	return nil
 }

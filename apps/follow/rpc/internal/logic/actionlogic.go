@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao"
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
+	"github.com/YiZou89/zero-tiktok/apps/follow/model"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
 )

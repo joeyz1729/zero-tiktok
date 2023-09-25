@@ -5,30 +5,29 @@ package follow
 
 import (
 	"context"
-
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
+	model2 "github.com/YiZou89/zero-tiktok/apps/follow/model"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 
 type (
-	ActionRequest          = model.ActionRequest
-	ActionResponse         = model.ActionResponse
-	AddRequest             = model.AddRequest
-	AddResponse            = model.AddResponse
-	DelRequest             = model.DelRequest
-	DelResponse            = model.DelResponse
-	GetFollowCountRequest  = model.GetFollowCountRequest
-	GetFollowCountResponse = model.GetFollowCountResponse
-	GetFollowIdsRequest    = model.GetFollowIdsRequest
-	GetFollowIdsResponse   = model.GetFollowIdsResponse
-	GetFollowerIdsRequest  = model.GetFollowerIdsRequest
-	GetFollowerIdsResponse = model.GetFollowerIdsResponse
-	GetRelationRequest     = model.GetRelationRequest
-	GetRelationResponse    = model.GetRelationResponse
-	Request                = model.Request
-	Response               = model.Response
+	ActionRequest          = model2.ActionRequest
+	ActionResponse         = model2.ActionResponse
+	AddRequest             = model2.AddRequest
+	AddResponse            = model2.AddResponse
+	DelRequest             = model2.DelRequest
+	DelResponse            = model2.DelResponse
+	GetFollowCountRequest  = model2.GetFollowCountRequest
+	GetFollowCountResponse = model2.GetFollowCountResponse
+	GetFollowIdsRequest    = model2.GetFollowIdsRequest
+	GetFollowIdsResponse   = model2.GetFollowIdsResponse
+	GetFollowerIdsRequest  = model2.GetFollowerIdsRequest
+	GetFollowerIdsResponse = model2.GetFollowerIdsResponse
+	GetRelationRequest     = model2.GetRelationRequest
+	GetRelationResponse    = model2.GetRelationResponse
+	Request                = model2.Request
+	Response               = model2.Response
 
 	Follow interface {
 		Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
@@ -52,36 +51,36 @@ func NewFollow(cli zrpc.Client) Follow {
 }
 
 func (m *defaultFollow) Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.Action(ctx, in, opts...)
 }
 
 func (m *defaultFollow) GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.GetFollowIds(ctx, in, opts...)
 }
 
 func (m *defaultFollow) GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.GetFollowerIds(ctx, in, opts...)
 }
 
 func (m *defaultFollow) GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.GetRelation(ctx, in, opts...)
 }
 
 func (m *defaultFollow) Add(ctx context.Context, in *AddRequest, opts ...grpc.CallOption) (*AddResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.Add(ctx, in, opts...)
 }
 
 func (m *defaultFollow) Del(ctx context.Context, in *DelRequest, opts ...grpc.CallOption) (*DelResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.Del(ctx, in, opts...)
 }
 
 func (m *defaultFollow) GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
+	client := model2.NewFollowClient(m.cli.Conn())
 	return client.GetFollowCount(ctx, in, opts...)
 }
