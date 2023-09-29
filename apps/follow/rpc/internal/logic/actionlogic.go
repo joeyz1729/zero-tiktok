@@ -27,8 +27,29 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
-	resp := new(model.ActionResponse)
+	logx.Infof("user_id: %d, to_user_id: %d, action_type: %d", in.UserId, in.ToUserId, in.ActionType)
+
+	// 0. 先检查关系是否重复
 	var err error
+	var ll = &GetRelationLogic{
+		ctx:    l.ctx,
+		svcCtx: l.svcCtx,
+		Logger: l.Logger,
+	}
+	var checkRes = new(model.GetRelationResponse)
+	resp := new(model.ActionResponse)
+	checkRes, err = ll.GetRelation(&model.GetRelationRequest{
+		UserId:   in.UserId,
+		ToUserId: in.ToUserId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if checkRes.IfFollowing == int32(1) {
+		resp.Msg = "repeated add"
+		return resp, nil
+	}
+
 	// 1. 添加 mq 异步修改
 
 	actionData, err := json.Marshal(dao.Action{

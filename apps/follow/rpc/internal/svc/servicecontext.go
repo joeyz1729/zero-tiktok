@@ -56,7 +56,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
 		Config:      c,
-		FollowDB:    db.NewFollowDB(db),
+		FollowDB:    datadb.NewFollowDB(db),
 		FollowCache: cache.NewFollowCache(rdb),
 		Filter:      filter,
 		//KqWriter:    w,

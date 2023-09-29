@@ -37,6 +37,6 @@ KafkaMq:
   Brokers:
     - 127.0.0.1:9092
   Group: tiktok
-  Topic: follow
+  Topic: follow-rpc
   Offset: first
   Consumer: 1

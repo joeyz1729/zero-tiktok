@@ -11,6 +11,7 @@ import (
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao"
 	mysqldb "github.com/YiZou89/zero-tiktok/apps/follow/dao/db"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/core/conf"
 )
@@ -75,6 +76,16 @@ func biz(v string) (err error) {
 }
 
 func addRelation(uid, tid int64) (err error) {
+	// TODO
+	// 添加事务操作防止重复消费
+	ok, err := mdb.CheckRelation(context.Background(), uid, tid)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return nil
+	}
+
 	_, _, err = mdb.AddRelation(context.Background(), uid, tid)
 	if err != nil {
 		return err

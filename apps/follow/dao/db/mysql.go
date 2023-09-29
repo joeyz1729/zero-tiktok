@@ -153,5 +153,19 @@ func (fd *FollowDB) CheckRelation(ctx context.Context, uid, tid int64) (ok bool,
 		return false, err
 	}
 	return true, nil
+}
+
+func (fb *FollowDB) GetCount(ctx context.Context, uid int64) (followedCount, followerCount int32, err error) {
+	fedStr := `select followed from tiktok_follow.follow_count where user_id = ?`
+	err = fb.DB.Get(&followedCount, fedStr, uid)
+	if err != nil {
+		return
+	}
+	ferStr := `select follower from tiktok_follow.Follow_count where user_id = ?`
+	err = fb.DB.Get(&followerCount, ferStr, uid)
+	if err != nil {
+		return
+	}
+	return
 
 }

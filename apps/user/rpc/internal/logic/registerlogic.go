@@ -60,5 +60,5 @@ func (l *RegisterLogic) Register(in *model.RegisterRequest) (*model.RegisterResp
 		return resp, errors.New("insert user failed")
 	}
 
-	return &model.RegisterResponse{}, nil
+	return &model.RegisterResponse{UserId: int64(uid)}, nil
 }

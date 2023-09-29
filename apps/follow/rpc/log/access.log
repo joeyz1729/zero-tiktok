@@ -453,3 +453,111 @@
 {"@timestamp":"2023-09-23T11:40:56.860+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 474935232055747459, toUserId: 1","level":"info"}
 {"@timestamp":"2023-09-23T11:40:56.903+08:00","caller":"cache/cache.go:91","content":"[redis] del relation success","level":"info"}
 {"@timestamp":"2023-09-23T11:40:56.903+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:61039 - /follow.Follow/Add - {\"user_id\":474935232055747459,\"to_user_id\":1}","duration":"43.2ms","level":"info","span":"cdc7e3f4038d8e77","trace":"b903a04d378a01b3cf4549a70d2bbe04"}
+{"@timestamp":"2023-09-29T22:16:34.028+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-29T22:18:12.315+08:00","caller":"logic/addlogic.go:28","content":"Add Relation, userId: 0, toUserId: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:18:12.354+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:64458 - /follow.Follow/Add - {\"to_user_id\":1}","duration":"42.2ms","level":"info","span":"6d5ea77862d839b1","trace":"036f11369398a413b3b1a00e6e40450c"}
+{"@timestamp":"2023-09-29T22:27:38.636+08:00","caller":"logic/actionlogic.go:51","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:27:38.638+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65007 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"4.3ms","level":"info","span":"ada5de812a5b5517","trace":"a9aaf3ef4cd8b4cd8c2306a7cdc8cd13"}
+{"@timestamp":"2023-09-29T22:29:23.833+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-29T22:29:36.281+08:00","caller":"logic/actionlogic.go:51","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:29:36.281+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65150 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.6ms","level":"info","span":"655f6a0276895125","trace":"fbdcb32c45685f37f1c3579314a55198"}
+{"@timestamp":"2023-09-29T22:29:37.322+08:00","caller":"logic/actionlogic.go:51","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:29:37.322+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65150 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.1ms","level":"info","span":"cd159237d98752a0","trace":"f31d0dd571ea080eb25a9d9a9da4d4a1"}
+{"@timestamp":"2023-09-29T22:29:37.969+08:00","caller":"logic/actionlogic.go:51","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:29:37.969+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65150 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.2ms","level":"info","span":"903ebc97317d41d5","trace":"bb7bb64ab5db2e95c27d462ca880e419"}
+{"@timestamp":"2023-09-29T22:29:38.553+08:00","caller":"logic/actionlogic.go:51","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:29:38.554+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65150 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.1ms","level":"info","span":"0c31ed16e9a31d25","trace":"bce85f255e7aac22169dd3d8617124f0"}
+{"@timestamp":"2023-09-29T22:33:33.176+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-29T22:33:37.470+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 0, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:33:37.470+08:00","caller":"logic/actionlogic.go:52","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:33:37.470+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65294 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.7ms","level":"info","span":"53f86ca1c88121e8","trace":"52ee1cdbcd52ab3eae10c3c85d575ef2"}
+{"@timestamp":"2023-09-29T22:38:31.385+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 0, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:38:31.385+08:00","caller":"logic/actionlogic.go:52","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:38:31.387+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65294 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"4.1ms","level":"info","span":"3ea65f248dfb008c","trace":"11c8b0e958992ce234acbec7fcfe3dc2"}
+{"@timestamp":"2023-09-29T22:38:34.364+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 0, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:38:34.364+08:00","caller":"logic/actionlogic.go:52","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:38:34.364+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65294 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.1ms","level":"info","span":"82d8153507fa59a8","trace":"0e9f7ec1b8286a98783dc1c706e86ea5"}
+{"@timestamp":"2023-09-29T22:38:34.726+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 0, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:38:34.727+08:00","caller":"logic/actionlogic.go:52","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:38:34.727+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65294 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"1.1ms","level":"info","span":"46d6cd87a23e1483","trace":"a65980350981e2d9f8a7f0631908acac"}
+{"@timestamp":"2023-09-29T22:38:35.147+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 0, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:38:35.147+08:00","caller":"logic/actionlogic.go:52","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:38:35.147+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65294 - /follow.Follow/Action - {\"to_user_id\":1,\"action_type\":1}","duration":"0.1ms","level":"info","span":"b1e7b8a57f0cc217","trace":"34216c40685534bc7a65b0bdf73c5430"}
+{"@timestamp":"2023-09-29T22:39:45.633+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:39:45.634+08:00","caller":"logic/actionlogic.go:52","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:39:45.636+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:65294 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"4.0ms","level":"info","span":"f1af2e1d9e41d82a","trace":"3a56c08a8eb26f1b64551267dcb076b8"}
+{"@timestamp":"2023-09-29T22:51:19.121+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-29T22:51:26.450+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:51:26.450+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:51:26.451+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49393 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.1ms","level":"info","span":"2916e5e05e3f81b5","trace":"d3b90096564ad43ae0ea619b3fe23dfe"}
+{"@timestamp":"2023-09-29T22:52:33.661+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9083","level":"info"}
+{"@timestamp":"2023-09-29T22:52:36.593+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:52:36.593+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:52:36.615+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:52:36.616+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"23.3ms","level":"info","span":"ac172cd7ea0ab75d","trace":"c8cfe89ffd4249221596644bbbc94082"}
+{"@timestamp":"2023-09-29T22:52:38.764+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:52:38.764+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:52:38.777+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:52:38.777+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"12.8ms","level":"info","span":"fb6aa707a93f2066","trace":"4c2216d035811315bc679396a52ef87b"}
+{"@timestamp":"2023-09-29T22:52:40.346+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:52:40.346+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:52:40.347+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.4ms","level":"info","span":"0c20b5aad95e6581","trace":"3d601e2e763f4f1ebac68f3e89c01906"}
+{"@timestamp":"2023-09-29T22:52:40.854+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:52:40.854+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:52:40.855+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"0.7ms","level":"info","span":"57068c14f766da7e","trace":"c8c217fba77680ee3bf8c2ad8d1adadb"}
+{"@timestamp":"2023-09-29T22:55:30.163+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:30.163+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:30.169+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:30.169+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"6.2ms","level":"info","span":"50104de729ee592f","trace":"9c7f39e686e017c4852abaffd5a4c7a5"}
+{"@timestamp":"2023-09-29T22:55:31.525+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:31.525+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:31.547+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:31.547+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"21.6ms","level":"info","span":"3a9d70ea87df4dd4","trace":"3793fc8d94a481af3e70af6a888e4094"}
+{"@timestamp":"2023-09-29T22:55:32.203+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:32.203+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:32.204+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:32.204+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.1ms","level":"info","span":"5b1c6708be436e92","trace":"2eb58a80fd87ee8596b15240b2367d51"}
+{"@timestamp":"2023-09-29T22:55:34.474+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:34.474+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:34.475+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:34.475+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.2ms","level":"info","span":"27b153845c42c473","trace":"8bc52d8aa1c384ab15bda5a74f440217"}
+{"@timestamp":"2023-09-29T22:55:34.866+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:34.866+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:34.867+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:34.867+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.0ms","level":"info","span":"dbd8b68dde25ff8f","trace":"fa58bce3f30a791e1dc564b0e3a1708c"}
+{"@timestamp":"2023-09-29T22:55:35.447+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:35.448+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:35.449+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:35.449+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.5ms","level":"info","span":"4198951dd2f12121","trace":"760b6e063e538a74bd9498edae8c840a"}
+{"@timestamp":"2023-09-29T22:55:35.746+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:35.746+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:35.748+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:35.748+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"2.1ms","level":"info","span":"fd709bca9a7ac09d","trace":"91dd6ff4a104e456ed1710635ac0a39c"}
+{"@timestamp":"2023-09-29T22:55:36.956+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:36.956+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:36.957+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:36.957+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.2ms","level":"info","span":"4d674fc78a76fc85","trace":"008c9d15dbf752526ce0cebeeeae6f01"}
+{"@timestamp":"2023-09-29T22:55:37.509+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:55:37.509+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:55:37.510+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:55:37.510+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"0.7ms","level":"info","span":"fb8443f3f8f28a3d","trace":"d9793f4757a7e2acaa330eacc2dccc65"}
+{"@timestamp":"2023-09-29T22:56:21.843+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:56:21.843+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:56:21.845+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:56:21.845+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"2.0ms","level":"info","span":"34c7afe94a181ba9","trace":"9f0189baa491f77ea1fd70927e2aba57"}
+{"@timestamp":"2023-09-29T22:56:22.422+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:56:22.422+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:56:22.424+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:56:22.424+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"2.2ms","level":"info","span":"d58aaaa3a4dc400f","trace":"38b60c84f60c1e2027520581d47d6b96"}
+{"@timestamp":"2023-09-29T22:56:22.990+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:56:22.990+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:56:22.991+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:56:22.991+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"1.3ms","level":"info","span":"3616c56ee92cf248","trace":"eecb7d3c3b9c5b9364a96ef1f43187fc"}
+{"@timestamp":"2023-09-29T22:56:23.518+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:56:23.518+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:56:23.519+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:56:23.519+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"0.8ms","level":"info","span":"4dae33130653f452","trace":"42b24bcaa31e569ed60a2e0515acca0e"}
+{"@timestamp":"2023-09-29T22:56:23.805+08:00","caller":"logic/actionlogic.go:30","content":"user_id: 480614394649125763, to_user_id: 1, action_type: 1","level":"info"}
+{"@timestamp":"2023-09-29T22:56:23.805+08:00","caller":"logic/getrelationlogic.go:28","content":"begin get follow relation","level":"info"}
+{"@timestamp":"2023-09-29T22:56:23.805+08:00","caller":"logic/actionlogic.go:72","content":"push kafka mq success","level":"info"}
+{"@timestamp":"2023-09-29T22:56:23.805+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:49447 - /follow.Follow/Action - {\"user_id\":480614394649125763,\"to_user_id\":1,\"action_type\":1}","duration":"0.9ms","level":"info","span":"9ec554601e0e69d5","trace":"960e71ada92436a885425ab5cd262293"}

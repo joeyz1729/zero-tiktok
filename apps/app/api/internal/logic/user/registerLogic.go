@@ -46,7 +46,7 @@ func (l *RegisterLogic) Register(req *types.UserRegisterRequest) (resp *types.Us
 		return resp, nil
 	}
 
-	aToken, _, err := jwtx.GenToken(resp.UserId, req.Username) // TODO
+	aToken, _, err := jwtx.GenToken(res.GetUserId(), req.Username)
 	if err != nil {
 		logx.Errorw("jwt.GenToken failed",
 			logx.Field("err", err),
