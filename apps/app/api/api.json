@@ -1,0 +1,1563 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "zero-tiktok",
+    "version": "v1"
+  },
+  "host": "127.0.0.1:8888",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/douyin/comment/action": {
+      "post": {
+        "operationId": "ActionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CommentActionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CommentActionRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "comment"
+        ]
+      }
+    },
+    "/douyin/comment/list": {
+      "get": {
+        "operationId": "ListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CommentListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "video_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "comment"
+        ]
+      }
+    },
+    "/douyin/favorite/action": {
+      "post": {
+        "operationId": "FavoriteActionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FavoriteActionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FavoriteActionRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "favorite"
+        ]
+      }
+    },
+    "/douyin/favorite/list": {
+      "get": {
+        "operationId": "FavoriteListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FavoriteListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "favorite"
+        ]
+      }
+    },
+    "/douyin/feed": {
+      "get": {
+        "summary": "视频流",
+        "operationId": "FeedHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FeedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "latest_time",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "video"
+        ]
+      }
+    },
+    "/douyin/message/action": {
+      "post": {
+        "operationId": "MessageActionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MessageActionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MessageActionRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "message"
+        ]
+      }
+    },
+    "/douyin/message/chat": {
+      "get": {
+        "operationId": "MessageChatHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MessageChatResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "to_user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pre_msg_time",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "message"
+        ]
+      }
+    },
+    "/douyin/publish/action": {
+      "post": {
+        "operationId": "PublishActionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PublishActionResponse"
+            }
+          }
+        },
+        "requestBody": {},
+        "tags": [
+          "video"
+        ]
+      }
+    },
+    "/douyin/publish/list": {
+      "get": {
+        "operationId": "PublishListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PublishListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "video"
+        ]
+      }
+    },
+    "/douyin/relation/action": {
+      "post": {
+        "operationId": "RelationActionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RelationActionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RelationActionRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/douyin/relation/check": {
+      "get": {
+        "operationId": "RelationFollowCheckHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FollowCheckResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "to_user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/douyin/relation/follow/list": {
+      "get": {
+        "operationId": "RelationFollowListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FollowListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/douyin/relation/follower/list": {
+      "get": {
+        "operationId": "RelationFollowerListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FollowerListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page_token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/douyin/user/info": {
+      "get": {
+        "operationId": "InfoHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/douyin/user/login": {
+      "post": {
+        "summary": "用户登陆",
+        "operationId": "LoginHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserLoginResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLoginRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/douyin/user/mrinfo": {
+      "get": {
+        "operationId": "MrInfoHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserMrInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/douyin/user/register": {
+      "post": {
+        "summary": "用户注册",
+        "operationId": "RegisterHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserRegisterResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegisterRequest"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Author": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "用户ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "用户名"
+        },
+        "follow_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "follower_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "is_follow": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "background_image": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "total_favorited": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "work_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "favorite_count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "Author",
+      "required": [
+        "id",
+        "name",
+        "follow_count",
+        "follower_count",
+        "is_follow",
+        "avatar",
+        "background_image",
+        "signature",
+        "total_favorited",
+        "work_count",
+        "favorite_count"
+      ]
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "content": {
+          "type": "string"
+        },
+        "create_date": {
+          "type": "string"
+        }
+      },
+      "title": "Comment",
+      "required": [
+        "id",
+        "user",
+        "content",
+        "create_date"
+      ]
+    },
+    "CommentActionRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "video_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "action_type": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "comment_text": {
+          "type": "string"
+        },
+        "comment_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CommentActionRequest",
+      "required": [
+        "token",
+        "video_id",
+        "action_type",
+        "comment_text",
+        "comment_id"
+      ]
+    },
+    "CommentActionResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "CommentActionResponse",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "CommentListRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "video_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CommentListRequest",
+      "required": [
+        "token",
+        "video_id"
+      ]
+    },
+    "CommentListResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "comment_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        }
+      },
+      "title": "CommentListResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "comment_list"
+      ]
+    },
+    "FavoriteActionRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "video_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "action_type": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "FavoriteActionRequest",
+      "required": [
+        "token",
+        "video_id",
+        "action_type"
+      ]
+    },
+    "FavoriteActionResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "FavoriteActionResponse",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "FavoriteListRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "FavoriteListRequest",
+      "required": [
+        "user_id",
+        "token"
+      ]
+    },
+    "FavoriteListResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "video_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Video"
+          }
+        }
+      },
+      "title": "FavoriteListResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "video_list"
+      ]
+    },
+    "FeedRequest": {
+      "type": "object",
+      "properties": {
+        "latest_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "FeedRequest",
+      "required": [
+        "latest_time",
+        "token"
+      ]
+    },
+    "FeedResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "video_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Video"
+          }
+        },
+        "next_time": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "FeedResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "video_list",
+        "next_time"
+      ]
+    },
+    "FollowCheckRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "to_user_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "FollowCheckRequest",
+      "required": [
+        "user_id",
+        "to_user_id"
+      ]
+    },
+    "FollowCheckResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "if_following": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "if_follower": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "FollowCheckResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "if_following",
+        "if_follower"
+      ]
+    },
+    "FollowListRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "FollowListRequest",
+      "required": [
+        "user_id",
+        "token",
+        "page",
+        "size"
+      ]
+    },
+    "FollowListResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "user_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserInfo"
+          }
+        }
+      },
+      "title": "FollowListResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_list"
+      ]
+    },
+    "FollowerListRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        },
+        "page_token": {
+          "type": "string"
+        }
+      },
+      "title": "FollowerListRequest",
+      "required": [
+        "user_id",
+        "token",
+        "page_token"
+      ]
+    },
+    "FollowerListResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "next_token": {
+          "type": "string"
+        },
+        "user_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserInfo"
+          }
+        }
+      },
+      "title": "FollowerListResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "next_token",
+        "user_list"
+      ]
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "to_user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "from_user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "content": {
+          "type": "string"
+        },
+        "create_time": {
+          "type": "string"
+        }
+      },
+      "title": "Message",
+      "required": [
+        "id",
+        "to_user_id",
+        "from_user_id",
+        "content",
+        "create_time"
+      ]
+    },
+    "MessageActionRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "to_user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "action_type": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "title": "MessageActionRequest",
+      "required": [
+        "token",
+        "to_user_id",
+        "action_type",
+        "content"
+      ]
+    },
+    "MessageActionResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "MessageActionResponse",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "MessageChatRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "to_user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pre_msg_time": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "MessageChatRequest",
+      "required": [
+        "token",
+        "to_user_id",
+        "pre_msg_time"
+      ]
+    },
+    "MessageChatResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "message_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Message"
+          }
+        }
+      },
+      "title": "MessageChatResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "message_list"
+      ]
+    },
+    "PublishActionResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "PublishActionResponse",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "PublishListRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "PublishListRequest",
+      "required": [
+        "user_id",
+        "token"
+      ]
+    },
+    "PublishListResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "video_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Video"
+          }
+        }
+      },
+      "title": "PublishListResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "video_list"
+      ]
+    },
+    "RelationActionRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "to_user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "action_type": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "RelationActionRequest",
+      "required": [
+        "token",
+        "to_user_id",
+        "action_type"
+      ]
+    },
+    "RelationActionResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "RelationActionResponse",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "用户ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "用户名"
+        },
+        "follow_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "follower_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "is_follow": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "background_image": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "total_favorited": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "work_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "favorite_count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "User",
+      "required": [
+        "id",
+        "name",
+        "follow_count",
+        "follower_count",
+        "is_follow",
+        "avatar",
+        "background_image",
+        "signature",
+        "total_favorited",
+        "work_count",
+        "favorite_count"
+      ]
+    },
+    "UserInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "用户ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "用户名"
+        },
+        "follow_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "follower_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "is_follow": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "background_image": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "total_favorited": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "work_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "favorite_count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UserInfo",
+      "required": [
+        "id",
+        "name",
+        "follow_count",
+        "follower_count",
+        "is_follow",
+        "avatar",
+        "background_image",
+        "signature",
+        "total_favorited",
+        "work_count",
+        "favorite_count"
+      ]
+    },
+    "UserInfoRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "UserInfoRequest",
+      "required": [
+        "user_id",
+        "token"
+      ]
+    },
+    "UserInfoResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "title": "UserInfoResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user"
+      ]
+    },
+    "UserLoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "UserLoginRequest",
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "UserLoginResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "UserLoginResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_id",
+        "token"
+      ]
+    },
+    "UserMrInfoRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "UserMrInfoRequest",
+      "required": [
+        "user_id",
+        "token"
+      ]
+    },
+    "UserMrInfoResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "title": "UserMrInfoResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user"
+      ]
+    },
+    "UserRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "Password": {
+          "type": "string"
+        }
+      },
+      "title": "UserRegisterRequest",
+      "required": [
+        "username",
+        "Password"
+      ]
+    },
+    "UserRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "UserRegisterResponse",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_id",
+        "token"
+      ]
+    },
+    "Video": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/Author"
+        },
+        "play_url": {
+          "type": "string"
+        },
+        "cover_url": {
+          "type": "string"
+        },
+        "favorite_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "comment_count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "is_favorite": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "title": "Video",
+      "required": [
+        "id",
+        "user",
+        "play_url",
+        "cover_url",
+        "favorite_count",
+        "comment_count",
+        "is_favorite",
+        "title"
+      ]
+    },
+    "douyin_relation_friend_list_request": {
+      "type": "object",
+      "title": "douyin_relation_friend_list_request"
+    },
+    "douyin_relation_friend_list_response": {
+      "type": "object",
+      "title": "douyin_relation_friend_list_response"
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}

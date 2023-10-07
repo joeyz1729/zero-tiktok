@@ -4,22 +4,17 @@ Log:
   ServiceName: comment-rpc
   Mode: file
   Path: ./log
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: model.rpc
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: comment.rpc
 
 Mysql:
   DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_comment?parseTime=true&charset=utf8
 
 
 CacheRedis:
-  - Host: 127.0.0.1:6379
-
-Consul:
-  Host: 127.0.0.1:8500
-  Key: consul-comment.rpc
-
+  Addr: 127.0.0.1:6379
 
 Snowflake:
   StartTime: 2023-08-21
@@ -28,7 +23,7 @@ Snowflake:
 KafkaMq:
   Name: kq
   Brokers:
-    - 127.0.0.1:19092
+    - 127.0.0.1:9092
   Group: tiktok
   Topic: comment
   Offset: first

@@ -1,6 +1,5 @@
 syntax = "v1"
 
-
 type (
     UserRegisterRequest {
         Username string `json:"username"`
@@ -46,7 +45,6 @@ type (
         StatusMsg string `json:"status_msg"`
         UserInfo User `json:"user"`
     }
-
 )
 
 
@@ -63,5 +61,3 @@ type User {
     WorkCount int64 `json:"work_count"`
     FavoriteCount int64 `json:"favorite_count"`
 }
-
-

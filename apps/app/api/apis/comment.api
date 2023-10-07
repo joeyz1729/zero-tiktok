@@ -1,7 +1,5 @@
 syntax = "v1"
 
-import "user.api"
-
 type (
     CommentActionRequest {
         Token string `json:"token"`
@@ -15,8 +13,6 @@ type (
         StatusMsg   string `json:"status_msg"`
 
     }
-
-
 
     CommentListRequest {
         Token string `json:"token"`

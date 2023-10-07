@@ -14,7 +14,6 @@ import (
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
-	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -37,20 +36,20 @@ func main() {
 	})
 	defer s.Stop()
 
-	_ = consul.RegisterService(c.ListenOn, c.Consul)
-
 	if err := snowflake.Init(c.Snowflake.StartTime, c.Snowflake.MachineId); err != nil {
 		panic(err)
 	}
 
-	go func() {
-		q := kmq.NewMq(c.KafkaMq, ctx.CommentDB)
-		queue := kq.MustNewQueue(c.KafkaMq, kq.WithHandle(q.Consume))
-		defer queue.Stop()
-		fmt.Println("Starting kafka mq server at :19092")
-		queue.Start()
-	}()
+	go initMq(c, ctx)
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()
+}
+
+func initMq(c config.Config, ctx *svc.ServiceContext) {
+	q := kmq.NewMq(c.KafkaMq, ctx.CommentDB, ctx.CommentCache)
+	queue := kq.MustNewQueue(c.KafkaMq, kq.WithHandle(q.Consume))
+	defer queue.Stop()
+	fmt.Printf("Starting kafka mq server at %v", c.KafkaMq.Brokers)
+	queue.Start()
 }
