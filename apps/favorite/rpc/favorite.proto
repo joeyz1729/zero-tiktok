@@ -7,8 +7,11 @@ option go_package="./model";
 
 service Favorite {
   rpc Action(action_request) returns(action_response);
+  rpc AddAction(action_request) returns(action_response);
+  rpc DelAction(action_request) returns(action_response);
   rpc GetVideoIds(get_video_ids_request) returns (get_video_ids_response);
   rpc GetFavoriteCount(get_favorite_count_request) returns (get_favorite_count_response);
+  rpc GetFavorite(get_favorite_request) returns(get_favorite_response);
 
 }
 
@@ -43,3 +46,12 @@ message get_favorite_count_response{
   int64 total_favorited = 2;
 }
 
+
+message get_favorite_request {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message get_favorite_response {
+  int64 action_type = 1;
+}

@@ -13,17 +13,23 @@ import (
 )
 
 type (
-	GetIdByNameRequest  = model.GetIdByNameRequest
-	GetIdByNameResponse = model.GetIdByNameResponse
-	GetUserByIdRequest  = model.GetUserByIdRequest
-	GetUserByIdResponse = model.GetUserByIdResponse
-	LoginRequest        = model.LoginRequest
-	LoginResponse       = model.LoginResponse
-	RegisterRequest     = model.RegisterRequest
-	RegisterResponse    = model.RegisterResponse
-	UserInfo            = model.UserInfo
-	UserInfoRequest     = model.UserInfoRequest
-	UserInfoResponse    = model.UserInfoResponse
+	GetIdByNameRequest         = model.GetIdByNameRequest
+	GetIdByNameResponse        = model.GetIdByNameResponse
+	GetUserByIdRequest         = model.GetUserByIdRequest
+	GetUserByIdResponse        = model.GetUserByIdResponse
+	LoginRequest               = model.LoginRequest
+	LoginResponse              = model.LoginResponse
+	RegisterRequest            = model.RegisterRequest
+	RegisterResponse           = model.RegisterResponse
+	UpdateFavoriteInfoRequest  = model.UpdateFavoriteInfoRequest
+	UpdateFavoriteInfoResponse = model.UpdateFavoriteInfoResponse
+	UpdateFollowInfoRequest    = model.UpdateFollowInfoRequest
+	UpdateFollowInfoResponse   = model.UpdateFollowInfoResponse
+	UpdateWorkInfoRequest      = model.UpdateWorkInfoRequest
+	UpdateWorkInfoResponse     = model.UpdateWorkInfoResponse
+	UserInfo                   = model.UserInfo
+	UserInfoRequest            = model.UserInfoRequest
+	UserInfoResponse           = model.UserInfoResponse
 
 	User interface {
 		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
@@ -31,6 +37,9 @@ type (
 		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 		GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
+		UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
+		UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
+		UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
 	}
 
 	defaultUser struct {
@@ -67,4 +76,19 @@ func (m *defaultUser) GetIdByName(ctx context.Context, in *GetIdByNameRequest, o
 func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.GetUserById(ctx, in, opts...)
+}
+
+func (m *defaultUser) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.UpdateFollowInfo(ctx, in, opts...)
+}
+
+func (m *defaultUser) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.UpdateFavoriteInfo(ctx, in, opts...)
+}
+
+func (m *defaultUser) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.UpdateWorkInfo(ctx, in, opts...)
 }

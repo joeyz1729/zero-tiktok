@@ -17,13 +17,18 @@ type (
 	ActionResponse           = model.ActionResponse
 	GetFavoriteCountRequest  = model.GetFavoriteCountRequest
 	GetFavoriteCountResponse = model.GetFavoriteCountResponse
+	GetFavoriteRequest       = model.GetFavoriteRequest
+	GetFavoriteResponse      = model.GetFavoriteResponse
 	GetVideoIdsRequest       = model.GetVideoIdsRequest
 	GetVideoIdsResponse      = model.GetVideoIdsResponse
 
 	Favorite interface {
 		Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
+		AddAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
+		DelAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
 		GetVideoIds(ctx context.Context, in *GetVideoIdsRequest, opts ...grpc.CallOption) (*GetVideoIdsResponse, error)
 		GetFavoriteCount(ctx context.Context, in *GetFavoriteCountRequest, opts ...grpc.CallOption) (*GetFavoriteCountResponse, error)
+		GetFavorite(ctx context.Context, in *GetFavoriteRequest, opts ...grpc.CallOption) (*GetFavoriteResponse, error)
 	}
 
 	defaultFavorite struct {
@@ -42,6 +47,16 @@ func (m *defaultFavorite) Action(ctx context.Context, in *ActionRequest, opts ..
 	return client.Action(ctx, in, opts...)
 }
 
+func (m *defaultFavorite) AddAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
+	client := model.NewFavoriteClient(m.cli.Conn())
+	return client.AddAction(ctx, in, opts...)
+}
+
+func (m *defaultFavorite) DelAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
+	client := model.NewFavoriteClient(m.cli.Conn())
+	return client.DelAction(ctx, in, opts...)
+}
+
 func (m *defaultFavorite) GetVideoIds(ctx context.Context, in *GetVideoIdsRequest, opts ...grpc.CallOption) (*GetVideoIdsResponse, error) {
 	client := model.NewFavoriteClient(m.cli.Conn())
 	return client.GetVideoIds(ctx, in, opts...)
@@ -50,4 +65,9 @@ func (m *defaultFavorite) GetVideoIds(ctx context.Context, in *GetVideoIdsReques
 func (m *defaultFavorite) GetFavoriteCount(ctx context.Context, in *GetFavoriteCountRequest, opts ...grpc.CallOption) (*GetFavoriteCountResponse, error) {
 	client := model.NewFavoriteClient(m.cli.Conn())
 	return client.GetFavoriteCount(ctx, in, opts...)
+}
+
+func (m *defaultFavorite) GetFavorite(ctx context.Context, in *GetFavoriteRequest, opts ...grpc.CallOption) (*GetFavoriteResponse, error) {
+	client := model.NewFavoriteClient(m.cli.Conn())
+	return client.GetFavorite(ctx, in, opts...)
 }

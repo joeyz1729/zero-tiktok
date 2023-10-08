@@ -31,7 +31,7 @@ func (l *GetVideoByIdLogic) GetVideoById(in *model.GetVideoByIdRequest) (*model.
 		logx.Errorw("mysql query failed",
 			logx.Field("err", err),
 		)
-		return resp, nil
+		return resp, err
 	}
 
 	resp.VideoInfo = &model.VideoInfo{

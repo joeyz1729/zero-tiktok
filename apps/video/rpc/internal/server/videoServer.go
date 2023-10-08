@@ -47,3 +47,8 @@ func (s *VideoServer) GetWorkCount(ctx context.Context, in *model.GetWorkCountRe
 	l := logic.NewGetWorkCountLogic(ctx, s.svcCtx)
 	return l.GetWorkCount(in)
 }
+
+func (s *VideoServer) UpdateFavoriteCount(ctx context.Context, in *model.UpdateFavoriteCountRequest) (*model.UpdateFavoriteCountResponse, error) {
+	l := logic.NewUpdateFavoriteCountLogic(ctx, s.svcCtx)
+	return l.UpdateFavoriteCount(in)
+}

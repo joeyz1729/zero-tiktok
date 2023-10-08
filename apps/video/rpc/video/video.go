@@ -13,17 +13,19 @@ import (
 )
 
 type (
-	FeedRequest             = model.FeedRequest
-	FeedResponse            = model.FeedResponse
-	GetListByUserIdRequest  = model.GetListByUserIdRequest
-	GetListByUserIdResponse = model.GetListByUserIdResponse
-	GetVideoByIdRequest     = model.GetVideoByIdRequest
-	GetVideoByIdResponse    = model.GetVideoByIdResponse
-	GetWorkCountRequest     = model.GetWorkCountRequest
-	GetWorkCountResponse    = model.GetWorkCountResponse
-	PublishActionRequest    = model.PublishActionRequest
-	PublishActionResponse   = model.PublishActionResponse
-	VideoInfo               = model.VideoInfo
+	FeedRequest                 = model.FeedRequest
+	FeedResponse                = model.FeedResponse
+	GetListByUserIdRequest      = model.GetListByUserIdRequest
+	GetListByUserIdResponse     = model.GetListByUserIdResponse
+	GetVideoByIdRequest         = model.GetVideoByIdRequest
+	GetVideoByIdResponse        = model.GetVideoByIdResponse
+	GetWorkCountRequest         = model.GetWorkCountRequest
+	GetWorkCountResponse        = model.GetWorkCountResponse
+	PublishActionRequest        = model.PublishActionRequest
+	PublishActionResponse       = model.PublishActionResponse
+	UpdateFavoriteCountRequest  = model.UpdateFavoriteCountRequest
+	UpdateFavoriteCountResponse = model.UpdateFavoriteCountResponse
+	VideoInfo                   = model.VideoInfo
 
 	Video interface {
 		// rpc Feed(feed_request) returns(feed_response);
@@ -32,6 +34,7 @@ type (
 		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 		GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
+		UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
 	}
 
 	defaultVideo struct {
@@ -69,4 +72,9 @@ func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.C
 func (m *defaultVideo) GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetWorkCount(ctx, in, opts...)
+}
+
+func (m *defaultVideo) UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.UpdateFavoriteCount(ctx, in, opts...)
 }

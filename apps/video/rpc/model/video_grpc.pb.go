@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Video_PublishAction_FullMethodName   = "/video.Video/PublishAction"
-	Video_GetListByUserId_FullMethodName = "/video.Video/GetListByUserId"
-	Video_GetVideoById_FullMethodName    = "/video.Video/GetVideoById"
-	Video_Feed_FullMethodName            = "/video.Video/Feed"
-	Video_GetWorkCount_FullMethodName    = "/video.Video/GetWorkCount"
+	Video_PublishAction_FullMethodName       = "/video.Video/PublishAction"
+	Video_GetListByUserId_FullMethodName     = "/video.Video/GetListByUserId"
+	Video_GetVideoById_FullMethodName        = "/video.Video/GetVideoById"
+	Video_Feed_FullMethodName                = "/video.Video/Feed"
+	Video_GetWorkCount_FullMethodName        = "/video.Video/GetWorkCount"
+	Video_UpdateFavoriteCount_FullMethodName = "/video.Video/UpdateFavoriteCount"
 )
 
 // VideoClient is the client API for Video service.
@@ -36,6 +37,7 @@ type VideoClient interface {
 	GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 	GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
+	UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
 }
 
 type videoClient struct {
@@ -91,6 +93,15 @@ func (c *videoClient) GetWorkCount(ctx context.Context, in *GetWorkCountRequest,
 	return out, nil
 }
 
+func (c *videoClient) UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error) {
+	out := new(UpdateFavoriteCountResponse)
+	err := c.cc.Invoke(ctx, Video_UpdateFavoriteCount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VideoServer is the server API for Video service.
 // All implementations must embed UnimplementedVideoServer
 // for forward compatibility
@@ -101,6 +112,7 @@ type VideoServer interface {
 	GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error)
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
 	GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error)
+	UpdateFavoriteCount(context.Context, *UpdateFavoriteCountRequest) (*UpdateFavoriteCountResponse, error)
 	mustEmbedUnimplementedVideoServer()
 }
 
@@ -122,6 +134,9 @@ func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedRespon
 }
 func (UnimplementedVideoServer) GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkCount not implemented")
+}
+func (UnimplementedVideoServer) UpdateFavoriteCount(context.Context, *UpdateFavoriteCountRequest) (*UpdateFavoriteCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavoriteCount not implemented")
 }
 func (UnimplementedVideoServer) mustEmbedUnimplementedVideoServer() {}
 
@@ -226,6 +241,24 @@ func _Video_GetWorkCount_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_UpdateFavoriteCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFavoriteCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).UpdateFavoriteCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_UpdateFavoriteCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).UpdateFavoriteCount(ctx, req.(*UpdateFavoriteCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Video_ServiceDesc is the grpc.ServiceDesc for Video service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -252,6 +285,10 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWorkCount",
 			Handler:    _Video_GetWorkCount_Handler,
+		},
+		{
+			MethodName: "UpdateFavoriteCount",
+			Handler:    _Video_UpdateFavoriteCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

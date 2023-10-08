@@ -13,18 +13,15 @@ Prometheus:
   Host: 127.0.0.1
   Port: 9084
   Path: /metrics
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: rpc.rpc
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: favorite.rpc
 
 Mysql:
   DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8
 
 CacheRedis:
-  - Host: 127.0.0.1:6379
+  Addr: 127.0.0.1:6379
 
-Consul:
-  Host: 127.0.0.1:8500
-  Key: consul-favorite.rpc
 

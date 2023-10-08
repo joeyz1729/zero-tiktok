@@ -19,11 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	User_UserInfo_FullMethodName    = "/user.User/UserInfo"
-	User_Register_FullMethodName    = "/user.User/Register"
-	User_Login_FullMethodName       = "/user.User/Login"
-	User_GetIdByName_FullMethodName = "/user.User/GetIdByName"
-	User_GetUserById_FullMethodName = "/user.User/GetUserById"
+	User_UserInfo_FullMethodName           = "/user.User/UserInfo"
+	User_Register_FullMethodName           = "/user.User/Register"
+	User_Login_FullMethodName              = "/user.User/Login"
+	User_GetIdByName_FullMethodName        = "/user.User/GetIdByName"
+	User_GetUserById_FullMethodName        = "/user.User/GetUserById"
+	User_UpdateFollowInfo_FullMethodName   = "/user.User/UpdateFollowInfo"
+	User_UpdateFavoriteInfo_FullMethodName = "/user.User/UpdateFavoriteInfo"
+	User_UpdateWorkInfo_FullMethodName     = "/user.User/UpdateWorkInfo"
 )
 
 // UserClient is the client API for User service.
@@ -35,6 +38,9 @@ type UserClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
+	UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
+	UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
+	UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
 }
 
 type userClient struct {
@@ -90,6 +96,33 @@ func (c *userClient) GetUserById(ctx context.Context, in *GetUserByIdRequest, op
 	return out, nil
 }
 
+func (c *userClient) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {
+	out := new(UpdateFollowInfoResponse)
+	err := c.cc.Invoke(ctx, User_UpdateFollowInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error) {
+	out := new(UpdateFavoriteInfoResponse)
+	err := c.cc.Invoke(ctx, User_UpdateFavoriteInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error) {
+	out := new(UpdateWorkInfoResponse)
+	err := c.cc.Invoke(ctx, User_UpdateWorkInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -99,6 +132,9 @@ type UserServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error)
 	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error)
+	UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error)
+	UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error)
+	UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -120,6 +156,15 @@ func (UnimplementedUserServer) GetIdByName(context.Context, *GetIdByNameRequest)
 }
 func (UnimplementedUserServer) GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
+}
+func (UnimplementedUserServer) UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollowInfo not implemented")
+}
+func (UnimplementedUserServer) UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavoriteInfo not implemented")
+}
+func (UnimplementedUserServer) UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateWorkInfo not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -224,6 +269,60 @@ func _User_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_UpdateFollowInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFollowInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdateFollowInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UpdateFollowInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdateFollowInfo(ctx, req.(*UpdateFollowInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_UpdateFavoriteInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFavoriteInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdateFavoriteInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UpdateFavoriteInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdateFavoriteInfo(ctx, req.(*UpdateFavoriteInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_UpdateWorkInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateWorkInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdateWorkInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UpdateWorkInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdateWorkInfo(ctx, req.(*UpdateWorkInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +349,18 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserById",
 			Handler:    _User_GetUserById_Handler,
+		},
+		{
+			MethodName: "UpdateFollowInfo",
+			Handler:    _User_UpdateFollowInfo_Handler,
+		},
+		{
+			MethodName: "UpdateFavoriteInfo",
+			Handler:    _User_UpdateFavoriteInfo_Handler,
+		},
+		{
+			MethodName: "UpdateWorkInfo",
+			Handler:    _User_UpdateWorkInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

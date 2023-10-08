@@ -46,3 +46,18 @@ func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdReque
 	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
 	return l.GetUserById(in)
 }
+
+func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
+	l := logic.NewUpdateFollowInfoLogic(ctx, s.svcCtx)
+	return l.UpdateFollowInfo(in)
+}
+
+func (s *UserServer) UpdateFavoriteInfo(ctx context.Context, in *model.UpdateFavoriteInfoRequest) (*model.UpdateFavoriteInfoResponse, error) {
+	l := logic.NewUpdateFavoriteInfoLogic(ctx, s.svcCtx)
+	return l.UpdateFavoriteInfo(in)
+}
+
+func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model.UpdateWorkInfoRequest) (*model.UpdateWorkInfoResponse, error) {
+	l := logic.NewUpdateWorkInfoLogic(ctx, s.svcCtx)
+	return l.UpdateWorkInfo(in)
+}

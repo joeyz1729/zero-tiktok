@@ -2,28 +2,19 @@ package svc
 
 import (
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
-	"github.com/jmoiron/sqlx"
-	sqlz "github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/dao"
 )
 
 type ServiceContext struct {
 	Config config.Config
 
-	FavoriteModel model.FavoriteModel
-
-	FavoriteDB *sqlx.DB
+	FavoriteRepository *dao.Repo
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	sqlConn := sqlz.NewMysql(c.Mysql.DataSource)
-	db, err := sqlx.Connect("mysql", c.Mysql.DataSource)
-	if err != nil {
-		panic(err)
-	}
+
 	return &ServiceContext{
-		Config:        c,
-		FavoriteModel: model.NewFavoriteModel(sqlConn),
-		FavoriteDB:    db,
+		Config:             c,
+		FavoriteRepository: dao.NewRepo(c),
 	}
 }

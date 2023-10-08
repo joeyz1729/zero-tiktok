@@ -27,6 +27,16 @@ func (s *FavoriteServer) Action(ctx context.Context, in *model.ActionRequest) (*
 	return l.Action(in)
 }
 
+func (s *FavoriteServer) AddAction(ctx context.Context, in *model.ActionRequest) (*model.ActionResponse, error) {
+	l := logic.NewAddActionLogic(ctx, s.svcCtx)
+	return l.AddAction(in)
+}
+
+func (s *FavoriteServer) DelAction(ctx context.Context, in *model.ActionRequest) (*model.ActionResponse, error) {
+	l := logic.NewDelActionLogic(ctx, s.svcCtx)
+	return l.DelAction(in)
+}
+
 func (s *FavoriteServer) GetVideoIds(ctx context.Context, in *model.GetVideoIdsRequest) (*model.GetVideoIdsResponse, error) {
 	l := logic.NewGetVideoIdsLogic(ctx, s.svcCtx)
 	return l.GetVideoIds(in)
@@ -35,4 +45,9 @@ func (s *FavoriteServer) GetVideoIds(ctx context.Context, in *model.GetVideoIdsR
 func (s *FavoriteServer) GetFavoriteCount(ctx context.Context, in *model.GetFavoriteCountRequest) (*model.GetFavoriteCountResponse, error) {
 	l := logic.NewGetFavoriteCountLogic(ctx, s.svcCtx)
 	return l.GetFavoriteCount(in)
+}
+
+func (s *FavoriteServer) GetFavorite(ctx context.Context, in *model.GetFavoriteRequest) (*model.GetFavoriteResponse, error) {
+	l := logic.NewGetFavoriteLogic(ctx, s.svcCtx)
+	return l.GetFavorite(in)
 }

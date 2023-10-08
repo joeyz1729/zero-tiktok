@@ -29,7 +29,7 @@ func (l *GetVideoIdsLogic) GetVideoIds(in *model.GetVideoIdsRequest) (*model.Get
 	var videoIds []int64
 
 	sqlStr := `select video_id from tiktok_favorite.favorite where user_id = ?`
-	err := l.svcCtx.FavoriteDB.Select(&videoIds, sqlStr, in.UserId)
+	err := l.svcCtx.FavoriteRepository.FavoriteDB.Select(&videoIds, sqlStr, in.UserId)
 	if err != nil {
 		logx.Errorw("select video ids failed",
 			logx.Field("err", err),
