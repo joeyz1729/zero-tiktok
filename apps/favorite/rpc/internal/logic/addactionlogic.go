@@ -34,7 +34,7 @@ func (l *AddActionLogic) AddAction(in *model.ActionRequest) (*model.ActionRespon
 	// 1. query record
 	vidStr := strconv.Itoa(int(in.VideoId))
 	uidStr := strconv.Itoa(int(in.UserId))
-	exist, err := l.svcCtx.FavoriteRepository.FavoriteCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
+	exist, err := l.svcCtx.FavorRepo.FavoriteCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
 	if err != nil {
 		logx.Errorw("redis check failed",
 			logx.Field("err", err))
@@ -46,13 +46,13 @@ func (l *AddActionLogic) AddAction(in *model.ActionRequest) (*model.ActionRespon
 		return resp, nil
 	}
 	// 不存在，添加
-	_, err = l.svcCtx.FavoriteRepository.FavoriteCache.SAdd(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
+	_, err = l.svcCtx.FavorRepo.FavoriteCache.SAdd(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
 	if err != nil {
 		resp.Code = int32(0)
 		resp.Msg = "[redis] add favorite failed"
 		return resp, err
 	}
-	l.svcCtx.FavoriteRepository.AddFavorite(uidStr, vidStr)
+	l.svcCtx.FavorRepo.AddFavorite(uidStr, vidStr)
 
 	resp.Code = int32(01)
 	resp.Msg = "add follow relation success"
@@ -67,7 +67,7 @@ func (l *AddActionLogic) SyncAddAction(in *model.ActionRequest) (*model.ActionRe
 	// 1. query record
 	vidStr := strconv.Itoa(int(in.VideoId))
 	uidStr := strconv.Itoa(int(in.UserId))
-	exist, err := l.svcCtx.FavoriteRepository.FavoriteCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, "0"+uidStr).Result()
+	exist, err := l.svcCtx.FavorRepo.FavoriteCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, "0"+uidStr).Result()
 	if err != nil {
 		logx.Errorw("redis check failed",
 			logx.Field("err", err))
@@ -81,7 +81,7 @@ func (l *AddActionLogic) SyncAddAction(in *model.ActionRequest) (*model.ActionRe
 
 	var ifCancel bool
 	sqlStr := fmt.Sprintf(`select cancel from tiktok_favorite.favorite where user_id = ? and video_id = ? limit 1`)
-	err = l.svcCtx.FavoriteRepository.FavoriteDB.Get(&ifCancel, sqlStr, in.UserId, in.VideoId)
+	err = l.svcCtx.FavorRepo.FavoriteDB.Get(&ifCancel, sqlStr, in.UserId, in.VideoId)
 	if err != nil && err != sqlc.ErrNotFound {
 		logx.Errorw("find relation failed",
 			logx.Field("err", err))
@@ -96,7 +96,7 @@ func (l *AddActionLogic) SyncAddAction(in *model.ActionRequest) (*model.ActionRe
 		return resp, nil
 	}
 	// err == ErrNotFound
-	_, err = l.svcCtx.FavoriteRepository.FavoriteModel.Insert(l.ctx, &model.Favorite{
+	_, err = l.svcCtx.FavorRepo.FavoriteModel.Insert(l.ctx, &model.Favorite{
 		UserId:  in.UserId,
 		VideoId: in.VideoId,
 	})

@@ -89,17 +89,6 @@ type PublishListResponse struct {
 	VideoList  []Video `json:"video_list"`
 }
 
-type Video struct {
-	Id            int64  `json:"id"`
-	Author        User   `json:"user"`
-	PlayUrl       string `json:"play_url"`
-	CoverUrl      string `json:"cover_url"`
-	FavoriteCount int64  `json:"favorite_count"`
-	CommentCount  int64  `json:"comment_count"`
-	IsFavorite    bool   `json:"is_favorite"`
-	Title         string `json:"title"`
-}
-
 type FavoriteActionRequest struct {
 	Token      string `json:"token"`
 	VideoId    int64  `json:"video_id"`
@@ -120,6 +109,31 @@ type FavoriteListResponse struct {
 	StatusCode int32   `json:"status_code"`
 	StatusMsg  string  `json:"status_msg"`
 	VideoList  []Video `json:"video_list"`
+}
+
+type Video struct {
+	Id            int64  `json:"id"`
+	Author        Author `json:"user"`
+	PlayUrl       string `json:"play_url"`
+	CoverUrl      string `json:"cover_url"`
+	FavoriteCount int64  `json:"favorite_count"`
+	CommentCount  int64  `json:"comment_count"`
+	IsFavorite    bool   `json:"is_favorite"`
+	Title         string `json:"title"`
+}
+
+type Author struct {
+	Id              int64  `json:"id"`   //用户ID
+	Name            string `json:"name"` //用户名
+	FollowCount     int64  `json:"follow_count"`
+	FollowerCount   int64  `json:"follower_count"`
+	IsFollow        bool   `json:"is_follow"`
+	Avatar          string `json:"avatar"`
+	BackgroundImage string `json:"background_image"`
+	Signature       string `json:"signature"`
+	TotalFavorited  int64  `json:"total_favorited"`
+	WorkCount       int64  `json:"work_count"`
+	FavoriteCount   int64  `json:"favorite_count"`
 }
 
 type CommentActionRequest struct {
@@ -172,9 +186,9 @@ type FollowListRequest struct {
 }
 
 type FollowListResponse struct {
-	StatusCode int32  `json:"status_code"`
-	StatusMsg  string `json:"status_msg"`
-	UserList   []User `json:"user_list"`
+	StatusCode int32      `json:"status_code"`
+	StatusMsg  string     `json:"status_msg"`
+	UserList   []UserInfo `json:"user_list"`
 }
 
 type FollowerListRequest struct {
@@ -184,10 +198,10 @@ type FollowerListRequest struct {
 }
 
 type FollowerListResponse struct {
-	StatusCode int32  `json:"status_code"`
-	StatusMsg  string `json:"status_msg"`
-	NextToken  string `json:"next_token"`
-	UserList   []User `json:"user_list"`
+	StatusCode int32      `json:"status_code"`
+	StatusMsg  string     `json:"status_msg"`
+	NextToken  string     `json:"next_token"`
+	UserList   []UserInfo `json:"user_list"`
 }
 
 type FollowCheckRequest struct {
@@ -206,6 +220,20 @@ type Douyin_relation_friend_list_request struct {
 }
 
 type Douyin_relation_friend_list_response struct {
+}
+
+type UserInfo struct {
+	Id              int64  `json:"id"`   //用户ID
+	Name            string `json:"name"` //用户名
+	FollowCount     int64  `json:"follow_count"`
+	FollowerCount   int64  `json:"follower_count"`
+	IsFollow        bool   `json:"is_follow"`
+	Avatar          string `json:"avatar"`
+	BackgroundImage string `json:"background_image"`
+	Signature       string `json:"signature"`
+	TotalFavorited  int64  `json:"total_favorited"`
+	WorkCount       int64  `json:"work_count"`
+	FavoriteCount   int64  `json:"favorite_count"`
 }
 
 type MessageActionRequest struct {

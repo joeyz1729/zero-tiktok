@@ -26,23 +26,15 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(req *types.UserRegisterRequest) (resp *types.UserRegisterResponse, err error) {
-	// todo: add your logic here and delete this line
-	// 拿到username，password
-	// 调用user模块的rpc服务
-
-	// 检查username是否存在
-	// password加密后存入
 	logx.Debugf("register req: %v\n", req)
 	resp = new(types.UserRegisterResponse)
 	res, err := l.svcCtx.UserRpc.Register(l.ctx, &user.RegisterRequest{Username: req.Username, Password: req.Password})
 	if err != nil {
-		// 判断错误类型，例如username已存在，两次password不一致，mysql插入失败等
-
 		logx.Errorw("user.Register failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "username already exists"
+		resp.StatusMsg = "internal server error"
 		return resp, nil
 	}
 

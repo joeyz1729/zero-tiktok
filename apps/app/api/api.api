@@ -16,7 +16,6 @@ import (
 	"apis/message.api"
 )
 
-
 // video模块
 @server(
 
@@ -74,6 +73,9 @@ service api-api {
 
 	@handler MrInfoHandler
 	get /mrinfo (UserMrInfoRequest) returns (UserMrInfoResponse)
+
+	@handler CacheInfoHandler
+	get /cacheinfo (UserInfoRequest) returns (UserInfoResponse)
 }
 
 // favorite模块

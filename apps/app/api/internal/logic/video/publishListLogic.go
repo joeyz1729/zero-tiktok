@@ -144,7 +144,7 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 		var videoInfo types.Video
 		videoInfo = types.Video{
 			Id:       v.GetVideoId(),
-			Author:   author,
+			Author:   types.Author(author),
 			PlayUrl:  v.GetPlayUrl(),
 			CoverUrl: v.GetCoverUrl(),
 			Title:    v.GetTitle(),

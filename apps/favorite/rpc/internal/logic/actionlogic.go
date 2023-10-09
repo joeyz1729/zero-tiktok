@@ -34,7 +34,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 
 	// 1. query record
 	sqlStr := fmt.Sprintf(`select cancel from tiktok_favorite.favorite where user_id = ? and video_id = ? limit 1`)
-	err := l.svcCtx.FavoriteRepository.FavoriteDB.Get(&ifCancel, sqlStr, in.UserId, in.VideoId)
+	err := l.svcCtx.FavorRepo.FavoriteDB.Get(&ifCancel, sqlStr, in.UserId, in.VideoId)
 	if err != nil {
 		if err != sqlc.ErrNotFound {
 			logx.Errorw("find relation failed",
@@ -65,7 +65,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 			return resp, nil
 		}
 		// add follow relation
-		_, err = l.svcCtx.FavoriteRepository.FavoriteModel.Insert(l.ctx, &model.Favorite{
+		_, err = l.svcCtx.FavorRepo.FavoriteModel.Insert(l.ctx, &model.Favorite{
 			UserId:  in.UserId,
 			VideoId: in.VideoId,
 			Cancel:  false,
@@ -94,7 +94,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 		cancel = true
 	}
 	sqlStr = `update tiktok_favorite.favorite set cancel = ? where user_id = ? and video_id = ?`
-	_, err = l.svcCtx.FavoriteRepository.FavoriteDB.Exec(sqlStr, cancel, in.UserId, in.VideoId)
+	_, err = l.svcCtx.FavorRepo.FavoriteDB.Exec(sqlStr, cancel, in.UserId, in.VideoId)
 	if err != nil {
 		logx.Errorw("update relation failed",
 			logx.Field("err", err),

@@ -8,13 +8,13 @@ import (
 type ServiceContext struct {
 	Config config.Config
 
-	FavoriteRepository *dao.Repo
+	FavorRepo *dao.Repo
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
-		Config:             c,
-		FavoriteRepository: dao.NewRepo(c),
+		Config:    c,
+		FavorRepo: dao.NewRepo(c),
 	}
 }

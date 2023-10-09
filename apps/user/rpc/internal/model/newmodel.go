@@ -1,0 +1,156 @@
+package model
+
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"github.com/go-redis/redis/v8"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	"strconv"
+	"time"
+)
+
+const (
+	UserInfoPrefix  = "tiktok:user:info:"  // hash
+	UserCountPrefix = "tiktok:user:count:" // hash
+)
+
+const (
+	FieldUsername       = "username"
+	FieldFollowedCount  = "followedcount"
+	FieldFollowerCount  = "followercount"
+	FieldTotalFavorited = "totalfavorited"
+	FieldWorkCount      = "workcount"
+	FieldFavoriteCount  = "favoritecount"
+)
+
+var (
+	countMap = map[string]interface{}{
+		FieldFollowedCount:  0,
+		FieldFollowerCount:  0,
+		FieldTotalFavorited: 0,
+		FieldWorkCount:      0,
+		FieldFavoriteCount:  0,
+	}
+)
+
+type Repo struct {
+	db  *sqlx.DB
+	rdb *redis.Client
+}
+
+var repo *Repo
+
+func NewRepo(datasource, redisAddr string) *Repo {
+	db, err := sqlx.Connect("mysql", datasource)
+	rdb := redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+	rdb.Ping(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	repo = &Repo{
+		db:  db,
+		rdb: rdb,
+	}
+	return repo
+}
+
+func (r *Repo) Register(userId int64, username, password string) error {
+	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	sqlStr := `insert into tiktok_user.user(user_id, username, password) value(?, ?, ?)`
+	_, err = tx.Exec(sqlStr, userId, username, password)
+	if err != nil {
+		return err
+	}
+	sqlStr = `insert into tiktok_user.user_count(user_id) value(?)`
+	_, err = tx.Exec(sqlStr, userId)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	uidStr := strconv.FormatInt(userId, 10)
+	_, err = r.rdb.HSet(context.Background(), UserInfoPrefix+uidStr, FieldUsername, username).Result()
+	if err != nil {
+		return err
+	}
+	_, err = r.rdb.Expire(context.Background(), UserInfoPrefix+uidStr, time.Hour*168).Result()
+
+	_, err = r.rdb.HSet(context.Background(), UserCountPrefix+uidStr, countMap).Result()
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+type UserDetail struct {
+	UserId   int64  `db:"user_id"`
+	Username string `db:"username"`
+
+	FollowedCount int64 `db:"followed_count" json:"followedcount,string"` // 关注总数
+	FollowerCount int64 `db:"follower_count" json:"followercount,string"` // 粉丝总数
+
+	TotalFavorited int64 `db:"total_favorited" json:"totalfavorited,string"` //获赞数量
+	WorkCount      int64 `db:"work_count" json:"workcount,string"`           //作品数量
+	FavoriteCount  int64 `db:"favorite_count" json:"favoritecount,string"`   //点赞数量
+}
+
+func (r *Repo) GetUserInfo(userId int64) (user *UserDetail, err error) {
+	user = new(UserDetail)
+	user.UserId = userId
+	username, err := r.GetUsername(userId)
+	if err != nil {
+		return nil, err
+	}
+	user.Username = username
+
+	err = r.GetCount(userId, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *Repo) GetUsername(userId int64) (username string, err error) {
+	uidStr := strconv.FormatInt(userId, 10)
+	username, err = r.rdb.HGet(context.Background(), UserInfoPrefix+uidStr, FieldUsername).Result()
+	if err == nil {
+		_, err = r.rdb.Expire(context.Background(), UserInfoPrefix+uidStr, time.Hour*168).Result()
+		return username, nil
+	}
+
+	sqlStr := `select (username) from tiktok_user.user where user_id = ?`
+	err = r.db.Get(&username, sqlStr, userId)
+	if err != nil {
+		return "", err
+	}
+	return username, nil
+}
+
+func (r *Repo) GetCount(userId int64, user *UserDetail) (err error) {
+	uidStr := strconv.FormatInt(userId, 10)
+	cm, err := r.rdb.HGetAll(context.Background(), UserCountPrefix+uidStr).Result()
+	if err == nil {
+		b, err := json.Marshal(cm)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(b, user)
+		return err
+	}
+
+	sqlStr := `select (followed_count, follower_count, total_favorited, work_count, favorite_count) from tiktok_user.user_count where user_id = ?`
+	err = r.db.Get(user, sqlStr, userId)
+	return err
+}

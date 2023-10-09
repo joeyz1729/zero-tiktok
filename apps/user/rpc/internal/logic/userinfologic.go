@@ -2,13 +2,10 @@ package logic
 
 import (
 	"context"
-	"errors"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
-
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
 )
 
 type UserInfoLogic struct {
@@ -28,27 +25,24 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 func (l *UserInfoLogic) UserInfo(in *model.UserInfoRequest) (*model.UserInfoResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.UserInfoResponse)
-	user, err := l.svcCtx.UserModel.FindOneByUserId(l.ctx, in.UserId)
+	resp.User = new(model.UserInfo)
+	user, err := l.svcCtx.UserRepo.GetUserInfo(in.UserId)
 	if err != nil {
-		if err == sqlc.ErrNotFound {
-			return resp, errors.New("user id does not exist")
-		}
-		return resp, errors.New("mysql query error")
+		logx.Errorw("get user info failed",
+			logx.Field("err", err))
+		return resp, err
 	}
-
+	resp.User.Id = in.UserId
 	resp.User.Name = user.Username
-	resp.User.Id = user.UserId
 	resp.User.Avatar = "no avatar"
 	resp.User.BackgroundImage = "no background image"
 	resp.User.Signature = "no signature"
 
-	// get follow count
+	resp.User.FollowCount = user.FollowedCount
+	resp.User.FollowerCount = user.FollowerCount
 
-	// get favorite count
-
-	// get work count
-
+	resp.User.TotalFavorited = user.TotalFavorited
+	resp.User.WorkCount = user.WorkCount
+	resp.User.FavoriteCount = user.FavoriteCount
 	return resp, nil
-
-	return &model.UserInfoResponse{}, nil
 }

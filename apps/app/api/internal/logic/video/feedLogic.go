@@ -65,9 +65,9 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 		for i, v := range feedRes.VideoList {
 			vi := types.Video{
 				Id: v.VideoId,
-				Author: types.User{
+				Author: types.Author(types.User{
 					Id: v.AuthorId,
-				},
+				}),
 				PlayUrl:  v.PlayUrl,
 				CoverUrl: v.CoverUrl,
 				Title:    v.Title,

@@ -5,31 +5,30 @@ package user
 
 import (
 	"context"
-
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
+	model2 "github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 
 type (
-	GetIdByNameRequest         = model.GetIdByNameRequest
-	GetIdByNameResponse        = model.GetIdByNameResponse
-	GetUserByIdRequest         = model.GetUserByIdRequest
-	GetUserByIdResponse        = model.GetUserByIdResponse
-	LoginRequest               = model.LoginRequest
-	LoginResponse              = model.LoginResponse
-	RegisterRequest            = model.RegisterRequest
-	RegisterResponse           = model.RegisterResponse
-	UpdateFavoriteInfoRequest  = model.UpdateFavoriteInfoRequest
-	UpdateFavoriteInfoResponse = model.UpdateFavoriteInfoResponse
-	UpdateFollowInfoRequest    = model.UpdateFollowInfoRequest
-	UpdateFollowInfoResponse   = model.UpdateFollowInfoResponse
-	UpdateWorkInfoRequest      = model.UpdateWorkInfoRequest
-	UpdateWorkInfoResponse     = model.UpdateWorkInfoResponse
-	UserInfo                   = model.UserInfo
-	UserInfoRequest            = model.UserInfoRequest
-	UserInfoResponse           = model.UserInfoResponse
+	GetIdByNameRequest         = model2.GetIdByNameRequest
+	GetIdByNameResponse        = model2.GetIdByNameResponse
+	GetUserByIdRequest         = model2.GetUserByIdRequest
+	GetUserByIdResponse        = model2.GetUserByIdResponse
+	LoginRequest               = model2.LoginRequest
+	LoginResponse              = model2.LoginResponse
+	RegisterRequest            = model2.RegisterRequest
+	RegisterResponse           = model2.RegisterResponse
+	UpdateFavoriteInfoRequest  = model2.UpdateFavoriteInfoRequest
+	UpdateFavoriteInfoResponse = model2.UpdateFavoriteInfoResponse
+	UpdateFollowInfoRequest    = model2.UpdateFollowInfoRequest
+	UpdateFollowInfoResponse   = model2.UpdateFollowInfoResponse
+	UpdateWorkInfoRequest      = model2.UpdateWorkInfoRequest
+	UpdateWorkInfoResponse     = model2.UpdateWorkInfoResponse
+	UserInfo                   = model2.UserInfo
+	UserInfoRequest            = model2.UserInfoRequest
+	UserInfoResponse           = model2.UserInfoResponse
 
 	User interface {
 		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
@@ -54,41 +53,41 @@ func NewUser(cli zrpc.Client) User {
 }
 
 func (m *defaultUser) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.UserInfo(ctx, in, opts...)
 }
 
 func (m *defaultUser) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.Register(ctx, in, opts...)
 }
 
 func (m *defaultUser) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.Login(ctx, in, opts...)
 }
 
 func (m *defaultUser) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.GetIdByName(ctx, in, opts...)
 }
 
 func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.GetUserById(ctx, in, opts...)
 }
 
 func (m *defaultUser) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.UpdateFollowInfo(ctx, in, opts...)
 }
 
 func (m *defaultUser) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.UpdateFavoriteInfo(ctx, in, opts...)
 }
 
 func (m *defaultUser) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
+	client := model2.NewUserClient(m.cli.Conn())
 	return client.UpdateWorkInfo(ctx, in, opts...)
 }

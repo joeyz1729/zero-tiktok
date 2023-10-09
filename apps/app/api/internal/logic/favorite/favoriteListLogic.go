@@ -86,13 +86,13 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 
 		resp.VideoList[i] = types.Video{
 			Id: vid,
-			Author: types.User{
+			Author: types.Author(types.User{
 				Id:              videoRes.VideoInfo.AuthorId,
 				Name:            userRes.Name,
 				Avatar:          userRes.Avatar,
 				BackgroundImage: userRes.BackgroundImage,
 				Signature:       userRes.Signature,
-			},
+			}),
 			PlayUrl:  videoRes.VideoInfo.PlayUrl,
 			CoverUrl: videoRes.VideoInfo.CoverUrl,
 			Title:    videoRes.VideoInfo.Title,

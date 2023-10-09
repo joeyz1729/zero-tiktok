@@ -98,7 +98,7 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.FollowerList
 	}
 	resp.NextToken = string(nextPage.Encode())
 
-	resp.UserList = userList
+	//resp.UserList = userList
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"
 	return resp, nil

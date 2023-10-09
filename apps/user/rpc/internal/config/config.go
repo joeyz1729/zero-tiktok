@@ -8,17 +8,12 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 
-	Mysql struct {
+	Repo struct {
 		DataSource string
+		RedisAddr  string
 	}
 
 	CacheRedis cache.CacheConf
-
-	//Consul consul.Conf
-	//Auth struct { // JWT 认证需要的密钥和过期时间配置
-	//	AccessSecret string
-	//	AccessExpire int64
-	//}
 
 	Snowflake struct {
 		StartTime string

@@ -3,13 +3,13 @@ package logic
 import (
 	"context"
 	"errors"
+	model2 "github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/pkg/tool"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
 )
 
@@ -27,9 +27,9 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 	}
 }
 
-func (l *RegisterLogic) Register(in *model.RegisterRequest) (*model.RegisterResponse, error) {
+func (l *RegisterLogic) Register(in *model2.RegisterRequest) (*model2.RegisterResponse, error) {
 	// todo: add your logic here and delete this line
-	resp := new(model.RegisterResponse)
+	resp := new(model2.RegisterResponse)
 	user, err := l.svcCtx.UserModel.FindOneByUsername(l.ctx, in.Username)
 
 	if err == nil {
@@ -50,15 +50,16 @@ func (l *RegisterLogic) Register(in *model.RegisterRequest) (*model.RegisterResp
 	}
 	// encrypt password
 	// insert into mysql
-	_, err = l.svcCtx.UserModel.Insert(l.ctx, &model.User{
-		UserId:   int64(uid),
-		Username: in.GetUsername(),
-		Password: tool.Encrypt(in.GetPassword()),
-	})
+	//_, err = l.svcCtx.UserModel.Insert(l.ctx, &model2.User{
+	//	UserId:   int64(uid),
+	//	Username: in.GetUsername(),
+	//	Password: tool.Encrypt(in.GetPassword()),
+	//})
+	err = l.svcCtx.UserRepo.Register(int64(uid), in.GetUsername(), tool.Encrypt(in.GetPassword()))
 
 	if err != nil {
-		return resp, errors.New("insert user failed")
+		return resp, err
 	}
 
-	return &model.RegisterResponse{UserId: int64(uid)}, nil
+	return &model2.RegisterResponse{UserId: int64(uid)}, nil
 }

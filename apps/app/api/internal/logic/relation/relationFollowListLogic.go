@@ -69,7 +69,7 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 		userList[i] = userInfo
 	}
 	//fmt.Println(userList)
-	resp.UserList = userList
+	//resp.UserList = userList
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"
 	return resp, nil

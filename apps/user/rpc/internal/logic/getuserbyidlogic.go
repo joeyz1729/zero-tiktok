@@ -3,10 +3,9 @@ package logic
 import (
 	"context"
 	"errors"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
-
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 )

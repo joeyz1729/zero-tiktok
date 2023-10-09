@@ -50,6 +50,7 @@ func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (
 		return resp, err
 	}
 
+	// TODO
 	uid := claims.UserId
 	// 1 add favorite
 	var actionRes = new(favorite.ActionResponse)
@@ -77,14 +78,14 @@ func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (
 		return
 	}
 
-	// 3. update video info
+	//// 3. update video info
 	_, err = l.svcCtx.VideoRpc.UpdateFavoriteCount(l.ctx, &video.UpdateFavoriteCountRequest{
 		ActionType: true,
 	})
 	if err != nil {
 		return
 	}
-	//
+
 	//if err != nil {
 	//	resp.StatusCode = http.StatusOK
 	//	resp.StatusMsg = "failed"
