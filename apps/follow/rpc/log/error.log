@@ -44,3 +44,7 @@
 {"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:130","content":"ERR wrong number of arguments for 'hdel' command","level":"error"}
 {"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:136","content":"delete redis failed","err":"ERR wrong number of arguments for 'hdel' command","level":"error"}
 {"@timestamp":"2023-10-10T20:04:49.363+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}
+{"@timestamp":"2023-10-10T22:53:40.506+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
+{"@timestamp":"2023-10-10T22:54:00.849+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
+{"@timestamp":"2023-10-10T22:54:22.369+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
+{"@timestamp":"2023-10-10T22:54:29.061+08:00","caller":"cache/cache.go:216","content":"redis pipeline failedredis: can't marshal []int64 (implement encoding.BinaryMarshaler)","level":"error"}

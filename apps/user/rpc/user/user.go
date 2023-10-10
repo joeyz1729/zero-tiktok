@@ -17,6 +17,8 @@ type (
 	GetIdByNameResponse        = model.GetIdByNameResponse
 	GetUserByIdRequest         = model.GetUserByIdRequest
 	GetUserByIdResponse        = model.GetUserByIdResponse
+	GetUsersRequest            = model.GetUsersRequest
+	GetUsersResponse           = model.GetUsersResponse
 	LoginRequest               = model.LoginRequest
 	LoginResponse              = model.LoginResponse
 	RegisterRequest            = model.RegisterRequest
@@ -37,6 +39,7 @@ type (
 		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 		GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
+		GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 		UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
 		UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
 		UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
@@ -76,6 +79,11 @@ func (m *defaultUser) GetIdByName(ctx context.Context, in *GetIdByNameRequest, o
 func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.GetUserById(ctx, in, opts...)
+}
+
+func (m *defaultUser) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.GetUsers(ctx, in, opts...)
 }
 
 func (m *defaultUser) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {

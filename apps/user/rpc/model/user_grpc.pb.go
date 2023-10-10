@@ -24,6 +24,7 @@ const (
 	User_Login_FullMethodName              = "/user.User/Login"
 	User_GetIdByName_FullMethodName        = "/user.User/GetIdByName"
 	User_GetUserById_FullMethodName        = "/user.User/GetUserById"
+	User_GetUsers_FullMethodName           = "/user.User/GetUsers"
 	User_UpdateFollowInfo_FullMethodName   = "/user.User/UpdateFollowInfo"
 	User_UpdateFavoriteInfo_FullMethodName = "/user.User/UpdateFavoriteInfo"
 	User_UpdateWorkInfo_FullMethodName     = "/user.User/UpdateWorkInfo"
@@ -38,6 +39,7 @@ type UserClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
+	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
 	UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
 	UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
@@ -96,6 +98,15 @@ func (c *userClient) GetUserById(ctx context.Context, in *GetUserByIdRequest, op
 	return out, nil
 }
 
+func (c *userClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+	out := new(GetUsersResponse)
+	err := c.cc.Invoke(ctx, User_GetUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {
 	out := new(UpdateFollowInfoResponse)
 	err := c.cc.Invoke(ctx, User_UpdateFollowInfo_FullMethodName, in, out, opts...)
@@ -132,6 +143,7 @@ type UserServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error)
 	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error)
+	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error)
 	UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error)
 	UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error)
@@ -156,6 +168,9 @@ func (UnimplementedUserServer) GetIdByName(context.Context, *GetIdByNameRequest)
 }
 func (UnimplementedUserServer) GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
+}
+func (UnimplementedUserServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
 func (UnimplementedUserServer) UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollowInfo not implemented")
@@ -269,6 +284,24 @@ func _User_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_GetUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetUsers(ctx, req.(*GetUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_UpdateFollowInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateFollowInfoRequest)
 	if err := dec(in); err != nil {
@@ -349,6 +382,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserById",
 			Handler:    _User_GetUserById_Handler,
+		},
+		{
+			MethodName: "GetUsers",
+			Handler:    _User_GetUsers_Handler,
 		},
 		{
 			MethodName: "UpdateFollowInfo",

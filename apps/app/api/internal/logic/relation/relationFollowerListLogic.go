@@ -32,6 +32,81 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.FollowerList
 	// todo: add your logic here and delete this line
 	resp = new(types.FollowerListResponse)
 
+	followerRes, err := l.svcCtx.FollowRpc.GetFollowerIds(l.ctx, &follow.GetFollowerIdsRequest{
+		UserId: req.UserId,
+	})
+	if err != nil {
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = err.Error()
+		return resp, nil
+	}
+
+	logx.Infof("follow ids: %v\n", followerRes.FollowerIds)
+
+	usersRes := new(user.GetUsersResponse)
+	usersRes, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &user.GetUsersRequest{
+		UserIds: followerRes.FollowerIds,
+	})
+	if err != nil {
+		return nil, err
+	}
+	userList := make([]types.UserInfo, len(followerRes.FollowerIds))
+	for i, userInfo := range usersRes.UserList {
+		userList[i] = types.UserInfo{
+			Id:              userInfo.Id,
+			Name:            userInfo.Name,
+			Avatar:          userInfo.Avatar,
+			BackgroundImage: userInfo.BackgroundImage,
+			Signature:       userInfo.Signature,
+
+			FollowCount:   userInfo.FollowCount,
+			FollowerCount: userInfo.FollowerCount,
+
+			TotalFavorited: userInfo.TotalFavorited,
+			FavoriteCount:  userInfo.FavoriteCount,
+			WorkCount:      userInfo.WorkCount,
+		}
+	}
+	//for i, id := range followerRes.FollowerIds {
+	//	userRes := new(user.GetUserByIdResponse)
+	//	userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
+	//		UserId: id,
+	//	})
+	//	if err != nil {
+	//		logx.Errorw("user rpc failed",
+	//			logx.Field("err", err),
+	//		)
+	//		resp.StatusCode = http.StatusInternalServerError
+	//		resp.StatusMsg = "user rpc failed"
+	//		return resp, nil
+	//	}
+	//	userList[i] = types.UserInfo{
+	//		Id:              userRes.Id,
+	//		Name:            userRes.Name,
+	//		Avatar:          userRes.Avatar,
+	//		BackgroundImage: userRes.BackgroundImage,
+	//		Signature:       userRes.Signature,
+	//	}
+	//	//TODO, comprehensive user info
+	//}
+
+	//fmt.Println(userList)
+
+	//logx.Info("generate next page token")
+	//nextPage := pagination.Page{
+	//	NextId: uint64(followerRes.NextCursor),
+	//}
+	//resp.NextToken = string(nextPage.Encode())
+	resp.UserList = userList
+	resp.StatusCode = http.StatusOK
+	resp.StatusMsg = "success"
+	return resp, nil
+}
+
+func (l *RelationFollowerListLogic) RelationFollowerListByPage(req *types.FollowerListRequest) (resp *types.FollowerListResponse, err error) {
+	// todo: add your logic here and delete this line
+	resp = new(types.FollowerListResponse)
+
 	var page = pagination.PageToken(req.PageToken).Decode()
 	var cursor uint64 = 0
 	var size int64 = 2

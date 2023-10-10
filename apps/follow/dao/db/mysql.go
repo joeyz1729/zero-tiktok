@@ -3,10 +3,16 @@ package db
 import (
 	"context"
 	"database/sql"
+	"errors"
+
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/zeromicro/go-zero/core/logx"
 )
-import "github.com/jmoiron/sqlx"
+
+var (
+	ErrEmptySet = errors.New("empty set")
+)
 
 type FollowDB struct {
 	*sqlx.DB
@@ -168,4 +174,34 @@ func (fb *FollowDB) GetCount(ctx context.Context, uid int64) (followedCount, fol
 	}
 	return
 
+}
+
+func (fb *FollowDB) GetFollowerIds(ctx context.Context, uid int64) (ids []int64, err error) {
+	sqlStr := `select user_id from tiktok_follow.followed where followed_id = ? `
+	err = fb.Select(&ids, sqlStr, uid)
+	if err != nil {
+		logx.Errorw("mysql query failed",
+			logx.Field("err", err),
+		)
+		return nil, err
+	}
+	if len(ids) == 0 {
+		return nil, ErrEmptySet
+	}
+	return ids, nil
+}
+
+func (fb *FollowDB) GetFollowedIds(ctx context.Context, uid int64) (ids []int64, err error) {
+	sqlStr := `select followed_id from tiktok_follow.followed where user_id = ? `
+	err = fb.Select(&ids, sqlStr, uid)
+	if err != nil {
+		logx.Errorw("mysql query failed",
+			logx.Field("err", err),
+		)
+		return nil, err
+	}
+	if len(ids) == 0 {
+		return nil, ErrEmptySet
+	}
+	return ids, nil
 }

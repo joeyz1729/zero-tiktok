@@ -2,10 +2,7 @@ package logic
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	"github.com/YiZou89/zero-tiktok/apps/follow/model"
-	"strconv"
-
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,43 +22,29 @@ func NewGetFollowIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetF
 }
 
 func (l *GetFollowIdsLogic) GetFollowIds(in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
-	// todo: add your logic here and delete this line
 	resp := new(model.GetFollowIdsResponse)
-	mid := strconv.Itoa(int(in.UserId))
-	page, size := int(in.Page), int(in.Size)
-	page, size = 1, 10
-	start, end := (page-1)*size, page*size-1
-	// redis cache
-	res, err := l.svcCtx.FollowCache.ZRange(l.ctx, cache.FollowedPrefix+mid, int64(start), int64(end)).Result()
+	var err error
+	var ids []int64
+	// redis hit
+	ids, err = l.svcCtx.FollowCache.GetFollowedIds(l.ctx, in.UserId)
+	if err == nil {
+		logx.Info("get follower ids from redis success")
+		resp.FollowIds = ids
+		return resp, nil
+	}
+	// mysql
+	ids, err = l.svcCtx.FollowDB.GetFollowedIds(l.ctx, in.UserId)
 	if err != nil {
-		logx.Errorw("[redis] get following list failed",
-			logx.Field("err", err),
-		)
-		return resp, err
+		logx.Error("get follower ids from mysql failed", err)
+		return nil, err
 	}
 
-	resp.FollowIds = make([]int64, len(res))
-	for i := range res {
-		id, err := strconv.Atoi(res[i])
-		if err != nil {
-			resp.FollowIds = []int64{}
-			return resp, err
-		}
-		resp.FollowIds[i] = int64(id)
+	// add ids to redis
+	err = l.svcCtx.FollowCache.AddFollowed(l.ctx, in.UserId, ids)
+	if err != nil {
+		return nil, err
 	}
+
+	resp.FollowIds = ids
 	return resp, nil
-
-	// use mysql database
-	//var followIds []int64
-	//sqlStr := `select follower_id from tiktok_follow.follow where user_id = ?`
-	//err := l.svcCtx.FollowDB.Select(&followIds, sqlStr, in.GetUserId())
-	//if err != nil {
-	//	logx.Errorw("mysql query failed",
-	//		logx.Field("err", err),
-	//	)
-	//	resp.FollowIds = []int64{}
-	//	return resp, err
-	//}
-	//resp.FollowIds = followIds
-	//return resp, nil
 }

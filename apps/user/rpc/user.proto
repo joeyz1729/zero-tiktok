@@ -9,6 +9,7 @@ service User {
   rpc Login(login_request) returns(login_response);
   rpc GetIdByName(get_id_by_name_request) returns(get_id_by_name_response);
   rpc GetUserById(get_user_by_id_request) returns(get_user_by_id_response);
+  rpc GetUsers(get_users_request) returns(get_users_response);
   rpc UpdateFollowInfo(update_follow_info_request) returns(update_follow_info_response);
   rpc UpdateFavoriteInfo(update_favorite_info_request) returns(update_favorite_info_response);
   rpc UpdateWorkInfo(update_work_info_request) returns(update_work_info_response);
@@ -68,7 +69,6 @@ message UserInfo {
   int64 favorite_count = 11; //点赞数量
 }
 
-
 message get_user_by_id_request {
   int64 user_id = 1;
 }
@@ -92,8 +92,6 @@ message update_follow_info_response {
   string status_msg = 2;
 }
 
-
-
 message update_favorite_info_request {
   int64 user_id = 1;
   int64 video_id = 2;
@@ -116,3 +114,11 @@ message update_work_info_response {
   string status_msg = 2;
 }
 
+
+message get_users_request {
+  repeated int64 user_ids = 1;
+}
+
+message get_users_response {
+  repeated UserInfo user_list = 1;
+}

@@ -47,6 +47,11 @@ func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdReque
 	return l.GetUserById(in)
 }
 
+func (s *UserServer) GetUsers(ctx context.Context, in *model.GetUsersRequest) (*model.GetUsersResponse, error) {
+	l := logic.NewGetUsersLogic(ctx, s.svcCtx)
+	return l.GetUsers(in)
+}
+
 func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
 	l := logic.NewUpdateFollowInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFollowInfo(in)

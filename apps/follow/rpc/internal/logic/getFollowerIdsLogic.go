@@ -4,8 +4,6 @@ import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/follow/model"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
-	"strconv"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -26,41 +24,29 @@ func NewGetFollowerIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 func (l *GetFollowerIdsLogic) GetFollowerIds(in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.GetFollowerIdsResponse)
-	var res []string
 	var err error
-	sqlStr := `select user_id from tiktok_follow.followed where followed_id = ? and id >= ? limit ?`
-	err = l.svcCtx.FollowDB.Select(&res, sqlStr, in.GetUserId(), in.GetCursor(), in.GetPageSize()+1)
+	var ids []int64
+	// redis hit
+	ids, err = l.svcCtx.FollowCache.GetFollowerIds(l.ctx, in.UserId)
+	if err == nil {
+		logx.Info("get follower ids from redis success")
+		resp.FollowerIds = ids
+		return resp, nil
+	}
+	// mysql
+	ids, err = l.svcCtx.FollowDB.GetFollowerIds(l.ctx, in.UserId)
 	if err != nil {
-		logx.Errorw("mysql query failed",
-			logx.Field("err", err),
-		)
-		resp.FollowerIds = []int64{}
-		return resp, err
+		logx.Error("get follower ids from mysql failed", err)
+		return nil, err
 	}
-	logx.Infof("get follower list success, %v", res)
-	resp.FollowerIds = make([]int64, min(len(res), int(in.GetPageSize())))
-	for i := range res {
-		id, err := strconv.Atoi(res[i])
-		if err != nil {
-			resp.FollowerIds = []int64{}
-			return resp, err
-		}
-		resp.FollowerIds[i] = int64(id)
+
+	// add ids to redis
+	err = l.svcCtx.FollowCache.AddFollower(l.ctx, in.UserId, ids)
+	if err != nil {
+		return nil, err
 	}
-	logx.Info("get next cursor from mysql")
-	if len(res) > int(in.GetPageSize()) {
-		// 有下一页
-		next, err := strconv.Atoi(res[len(res)-1])
-		if err != nil {
-			logx.Errorw("get next cursor failed",
-				logx.Field("err", err),
-			)
-			resp.NextCursor = 0
-			return resp, err
-		}
-		logx.Info("get next cursor success")
-		resp.NextCursor = int64(next)
-	}
+
+	resp.FollowerIds = ids
 	return resp, nil
 }
 
