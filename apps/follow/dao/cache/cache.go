@@ -11,9 +11,9 @@ import (
 var (
 	RelationPrefix = "tiktok:relation:"
 	BloomPrefix    = RelationPrefix + "bloom:"
-	FollowedPrefix = RelationPrefix + "followed:"
-	FollowerPrefix = RelationPrefix + "follower:"
-	CountPrefix    = "tiktok:relation:cnt:"
+	FollowedPrefix = RelationPrefix + "followed:" // + uid, (tid) set
+	FollowerPrefix = RelationPrefix + "follower:" // + uid, (tid) set
+	CountPrefix    = "tiktok:relation:cnt:"       // + uid, (follower, followed) hash
 	FollowerField  = "follower"
 	FollowedField  = "followed"
 )
@@ -39,8 +39,8 @@ func (fc *FollowCache) RemRelation(ctx context.Context, uid, tid int64) (err err
 	pipeline := fc.Client.TxPipeline()
 	_, err = pipeline.SRem(ctx, FollowedPrefix+uidStr, tid).Result()
 	_, err = pipeline.SRem(ctx, FollowerPrefix+tidStr, uid).Result()
-	_, err = pipeline.HDel(ctx, CountPrefix+uidStr).Result()
-	_, err = pipeline.HDel(ctx, CountPrefix+tidStr).Result()
+	_, err = pipeline.HDel(ctx, CountPrefix+uidStr, "*").Result()
+	_, err = pipeline.HDel(ctx, CountPrefix+tidStr, "*").Result()
 	_, err = pipeline.Exec(ctx)
 	if err != nil {
 		logx.Errorw("[redis] transaction pipeline failed",
@@ -112,6 +112,7 @@ func (fc *FollowCache) UpdateCount(ctx context.Context, uid, tid int64) (err err
 }
 
 func (fc *FollowCache) GetRelation(ctx context.Context, uid, tid int64) (ok bool, err error) {
+	ctx = context.Background()
 	uidStr := strconv.FormatInt(uid, 10)
 	redisKey := FollowedPrefix + uidStr
 	ok, err = fc.SIsMember(ctx, redisKey, tid).Result()
@@ -125,6 +126,7 @@ func (fc *FollowCache) GetRelation(ctx context.Context, uid, tid int64) (ok bool
 }
 
 func (fc *FollowCache) GetCount(ctx context.Context, uid int64) (follower, followed int32, err error) {
+	ctx = context.Background()
 	uidStr := strconv.FormatInt(uid, 10)
 	key := CountPrefix + uidStr
 	result, err := fc.HMGet(ctx, key, FollowedField, FollowerField).Result()
@@ -138,6 +140,7 @@ func (fc *FollowCache) GetCount(ctx context.Context, uid int64) (follower, follo
 }
 
 func (fc *FollowCache) DelRelation(ctx context.Context, uid, tid int64) (err error) {
+	ctx = context.Background()
 	uidStr, tidStr := strconv.FormatInt(uid, 10), strconv.FormatInt(tid, 10)
 	pipeline := fc.Client.TxPipeline()
 	_, err = pipeline.Del(ctx, FollowedPrefix+uidStr, FollowerPrefix+tidStr).Result()

@@ -43,3 +43,4 @@
 {"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:127","content":"ERR wrong number of arguments for 'hdel' command","level":"error"}
 {"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:130","content":"ERR wrong number of arguments for 'hdel' command","level":"error"}
 {"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:136","content":"delete redis failed","err":"ERR wrong number of arguments for 'hdel' command","level":"error"}
+{"@timestamp":"2023-10-10T20:04:49.363+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}

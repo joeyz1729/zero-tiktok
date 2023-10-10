@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/pkg/tool"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -24,7 +25,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 func (l *LoginLogic) Login(in *model.LoginRequest) (*model.LoginResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.LoginResponse)
-	userId, err := l.svcCtx.UserRepo.CheckLogin(in.Username, in.Password)
+	userId, err := l.svcCtx.UserRepo.CheckLogin(in.Username, tool.Encrypt(in.Password))
 	if err != nil {
 		return resp, err
 	}

@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/YiZou89/zero-tiktok/pkg/tool"
-
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -148,7 +146,7 @@ func (r *Repo) GetUsername(userId int64) (username string, err error) {
 		return username, nil
 	}
 
-	sqlStr := `select (username) from tiktok_user.user where user_id = ?`
+	sqlStr := `select (username) from tiktok_user.user where user_id = ? limit 1`
 	err = r.db.Get(&username, sqlStr, userId)
 	if err != nil {
 		return "", err
@@ -193,7 +191,7 @@ func (r *Repo) CheckLogin(username, password string) (userId int64, err error) {
 	if err == sqlc.ErrNotFound {
 		return 0, ErrUserNotExist
 	}
-	if tool.Encrypt(password) != user.Password {
+	if password != user.Password {
 		return 0, ErrInvalidPassword
 	}
 	return user.UserId, nil

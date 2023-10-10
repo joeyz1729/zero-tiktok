@@ -3,17 +3,20 @@ package logic
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao"
-	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	"github.com/YiZou89/zero-tiktok/apps/follow/model"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/zeromicro/go-zero/core/logx"
-	"strconv"
 )
 
 const (
 	IfPushMq = false
+)
+
+var (
+	ErrRepeatedOperation = errors.New("repeated operation")
 )
 
 type ActionLogic struct {
@@ -33,26 +36,23 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
 	logx.Infof("user_id: %d, to_user_id: %d, action_type: %d", in.UserId, in.ToUserId, in.ActionType)
-
+	var resp = new(model.ActionResponse)
 	// 0. 先检查关系是否重复
-	var err error
-	var ll = &GetRelationLogic{
-		ctx:    l.ctx,
-		svcCtx: l.svcCtx,
-		Logger: l.Logger,
+	ok, err := l.svcCtx.FollowCache.GetRelation(l.ctx, in.UserId, in.ToUserId)
+	if err == nil && ok {
+		// 查询成功，存在关系
+		if in.ActionType == int32(1) {
+			return nil, ErrRepeatedOperation
+		}
 	}
-	var checkRes = new(model.GetRelationResponse)
-	resp := new(model.ActionResponse)
-	checkRes, err = ll.GetRelation(&model.GetRelationRequest{
-		UserId:   in.UserId,
-		ToUserId: in.ToUserId,
-	})
+	// redis没查到或出错，走数据库
+	ok, err = l.svcCtx.FollowDB.CheckRelation(l.ctx, in.UserId, in.ToUserId)
 	if err != nil {
+		logx.Error(err)
 		return nil, err
 	}
-	if checkRes.IfFollowing == in.ActionType {
-		resp.Msg = "repeated operation"
-		return resp, nil
+	if ok && in.ActionType == int32(1) || !ok && in.ActionType == int32(2) {
+		return nil, ErrRepeatedOperation
 	}
 
 	// 1. 添加 mq 异步修改
@@ -63,10 +63,9 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 			ActionType: in.ActionType,
 		})
 		if err != nil {
-			resp.Msg = "json marshal failed"
 			logx.Errorw("json marshal failed",
 				logx.Field("err", err))
-			return resp, err
+			return nil, err
 		}
 		err = l.svcCtx.KqPusher.Push(string(actionData))
 		//err = l.svcCtx.KqWriter.WriteMessages(l.ctx,
@@ -91,21 +90,25 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	}
 
 	// 添加数据库两张表，并修改计数
-	sqlStr := `insert into tiktok_follow.followed(user_id, followed_id) value(?, ?)`
-	_, err = l.svcCtx.FollowDB.Exec(sqlStr, in.UserId, in.ToUserId)
-	if err != nil {
-		logx.Errorw("[mysql] add followed failed",
-			logx.Field("err", err),
-		)
-	}
-	sqlStr = `insert into tiktok_follow.follower(user_id, follower_id) value(?, ?)`
-	_, err = l.svcCtx.FollowDB.Exec(sqlStr, in.ToUserId, in.UserId)
-	if err != nil {
-		logx.Errorw("[mysql] add follower failed",
-			logx.Field("err", err))
-		// rollback followed
+	if in.ActionType == int32(1) {
+		sqlStr := `insert into tiktok_follow.followed(user_id, followed_id) value(?, ?)`
+		_, err = l.svcCtx.FollowDB.Exec(sqlStr, in.UserId, in.ToUserId)
+		if err != nil {
+			logx.Errorw("[mysql] add followed failed",
+				logx.Field("err", err),
+			)
+		}
+	} else {
+		sqlStr := `delete from tiktok_follow.followed where user_id = ? and followed_id = ? limit 1`
+		_, err = l.svcCtx.FollowDB.Exec(sqlStr, in.UserId, in.ToUserId)
+		if err != nil {
+			logx.Errorw("[mysql] del followed failed",
+				logx.Field("err", err),
+			)
+		}
 	}
 
+	// 更新user模块计数
 	_, err = l.svcCtx.UserRpc.UpdateFollowInfo(l.ctx, &user.UpdateFollowInfoRequest{
 		UserId:     in.UserId,
 		ToUserId:   in.ToUserId,
@@ -115,28 +118,13 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 		return resp, err
 	}
 	// 删除redis数据
-	uidStr, tidStr := strconv.FormatInt(in.UserId, 10), strconv.FormatInt(in.UserId, 10)
-	//pipeline := l.svcCtx.FollowCache.TxPipeline()
-	if _, err = l.svcCtx.FollowCache.SRem(l.ctx, cache.FollowedPrefix+uidStr, tidStr).Result(); err != nil {
-		logx.Error(err)
-	}
-	if _, err = l.svcCtx.FollowCache.SRem(l.ctx, cache.FollowerPrefix+tidStr, uidStr).Result(); err != nil {
-		logx.Error(err)
-	}
-	if _, err = l.svcCtx.FollowCache.HDel(l.ctx, cache.CountPrefix+uidStr, "*").Result(); err != nil {
-		logx.Error(err)
-	}
-	if _, err = l.svcCtx.FollowCache.HDel(l.ctx, cache.CountPrefix+tidStr, "*").Result(); err != nil {
-		logx.Error(err)
-	}
-	//_, err = pipeline.Exec(l.ctx)
-
-	if err != nil {
-		// 注意要添加缓存时间保证最终一致性
+	if err = l.svcCtx.FollowCache.RemRelation(l.ctx, in.UserId, in.ToUserId); err != nil {
+		// TODO, 异步添加消息队列进行删除
 		logx.Errorw("delete redis failed",
 			logx.Field("err", err))
 		return resp, err
 	}
+
 	logx.Info("delete redis success")
 	return resp, nil
 }

@@ -3,6 +3,7 @@ package relation
 import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"net/http"
 
@@ -29,6 +30,11 @@ func NewRelationActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Re
 func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (resp *types.RelationActionResponse, err error) {
 	// todo: add your logic here and delete this line
 	resp = new(types.RelationActionResponse)
+	if req.ActionType != int32(1) && req.ActionType != int32(2) {
+		resp.StatusCode = http.StatusBadRequest
+		resp.StatusMsg = "invalid action type"
+		return resp, nil
+	}
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
 		logx.Errorw("jwt parse token failed",
@@ -41,55 +47,56 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 
 	userId := claims.UserId
 	if userId == req.ToUserId {
-		resp.StatusCode = http.StatusServiceUnavailable
+		resp.StatusCode = http.StatusBadRequest
 		resp.StatusMsg = "can not follow oneself"
 		return resp, nil
 	}
-	var msg string
-	var followRes *follow.ActionResponse
-	followRes, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{
+	_, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{UserId: req.ToUserId})
+	if err != nil {
+		resp.StatusCode = http.StatusBadRequest
+		resp.StatusMsg = err.Error()
+		return resp, nil
+	}
+
+	_, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{
 		UserId:     userId,
 		ToUserId:   req.ToUserId,
 		ActionType: req.ActionType,
 	})
 	if err != nil {
-		return nil, err
-	}
-	msg = followRes.Msg
-	//if req.ActionType == int32(1) {
-	//	res := new(follow.AddResponse)
-	//	res, err = l.svcCtx.FollowRpc.Add(l.ctx, &follow.AddRequest{
-	//		UserId:   userId,
-	//		ToUserId: req.ToUserId,
-	//	})
-	//	if res != nil {
-	//		msg = res.Msg
-	//	}
-	//
-	//} else {
-	//	res := new(follow.DelResponse)
-	//	res, err = l.svcCtx.FollowRpc.Del(l.ctx, &follow.DelRequest{
-	//		UserId:   userId,
-	//		ToUserId: req.ToUserId,
-	//	})
-	//	if res != nil {
-	//		msg = res.Msg
-	//	}
-	//
-	//}
-	//var followRes = new(follow.ActionResponse)
-	//followRes, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{UserId: userId, ToUserId: req.ToUserId, ActionType: req.ActionType})
-	if err != nil {
 		logx.Errorw("rpc follow action failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "internal server error"
+		resp.StatusMsg = err.Error()
 		return resp, nil
 	}
-	//msg = followRes.Msg
 	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = msg
+	resp.StatusMsg = "OK"
 	return resp, nil
 
 }
+
+//if req.ActionType == int32(1) {
+//	res := new(follow.AddResponse)
+//	res, err = l.svcCtx.FollowRpc.Add(l.ctx, &follow.AddRequest{
+//		UserId:   userId,
+//		ToUserId: req.ToUserId,
+//	})
+//	if res != nil {
+//		msg = res.Msg
+//	}
+//
+//} else {
+//	res := new(follow.DelResponse)
+//	res, err = l.svcCtx.FollowRpc.Del(l.ctx, &follow.DelRequest{
+//		UserId:   userId,
+//		ToUserId: req.ToUserId,
+//	})
+//	if res != nil {
+//		msg = res.Msg
+//	}
+//
+//}
+//var followRes = new(follow.ActionResponse)
+//followRes, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{UserId: userId, ToUserId: req.ToUserId, ActionType: req.ActionType})

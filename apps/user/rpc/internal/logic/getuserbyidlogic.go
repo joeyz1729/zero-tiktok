@@ -24,20 +24,15 @@ func NewGetUserByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserByIdLogic) GetUserById(in *model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
 	// todo: add your logic here and delete this line
+	user, err := l.svcCtx.UserRepo.GetUserInfo(in.UserId)
+	if err != nil {
+		return nil, err
+	}
 	resp := new(model.GetUserByIdResponse)
-	//user, err := l.svcCtx.UserModel.FindOneByUserId(l.ctx, in.UserId)
-	//if err != nil {
-	//	if err == sqlc.ErrNotFound {
-	//		return resp, errors.New("user id does not exist")
-	//	}
-	//	return resp, errors.New("mysql query error")
-	//}
-
-	//resp.Name = user.Username
-	//resp.Id = user.UserId
+	resp.Id = in.UserId
+	resp.Name = user.Username
 	resp.Avatar = "no avatar"
 	resp.BackgroundImage = "no background image"
 	resp.Signature = "no signature"
-
 	return resp, nil
 }
