@@ -26,6 +26,7 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 	var resp = new(model.GetRelationResponse)
 	var err error
 	logx.Info("begin get follow relation")
+	resp.IfFollowing = int32(2)
 	// 1. bloom filter
 	//bloomKey := cache.BloomPrefix + mid + ":" + fid
 	//ok, err := l.svcCtx.Filter.ExistsCtx(l.ctx, []byte(bloomKey))
@@ -47,7 +48,7 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 		resp.IfFollowing = int32(1)
 		return resp, nil
 	}
-	// miss
+	// miss or failed
 	ok, err = l.svcCtx.FollowDB.CheckRelation(l.ctx, in.UserId, in.ToUserId)
 	if err != nil {
 		return resp, err

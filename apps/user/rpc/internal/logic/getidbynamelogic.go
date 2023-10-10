@@ -23,7 +23,7 @@ func NewGetIdByNameLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetId
 }
 
 func (l *GetIdByNameLogic) GetIdByName(in *model.GetIdByNameRequest) (*model.GetIdByNameResponse, error) {
-	// todo: add your logic here and delete this line
+	// 更新mysql计数表和redis count值，userId的关注数，toUserId的粉丝数
 
 	return &model.GetIdByNameResponse{}, nil
 }

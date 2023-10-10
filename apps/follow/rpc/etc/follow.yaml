@@ -40,3 +40,11 @@ KafkaMq:
   Topic: follow-rpc
   Offset: first
   Consumer: 1
+
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+  NonBlock: true

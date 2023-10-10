@@ -25,7 +25,6 @@ const (
 	User_GetIdByName_FullMethodName        = "/user.User/GetIdByName"
 	User_GetUserById_FullMethodName        = "/user.User/GetUserById"
 	User_UpdateFollowInfo_FullMethodName   = "/user.User/UpdateFollowInfo"
-	User_UpdateFollowCount_FullMethodName  = "/user.User/UpdateFollowCount"
 	User_UpdateFavoriteInfo_FullMethodName = "/user.User/UpdateFavoriteInfo"
 	User_UpdateWorkInfo_FullMethodName     = "/user.User/UpdateWorkInfo"
 )
@@ -40,7 +39,6 @@ type UserClient interface {
 	GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 	UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
-	UpdateFollowCount(ctx context.Context, in *UpdateFollowCountRequest, opts ...grpc.CallOption) (*UpdateFollowCountResponse, error)
 	UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
 	UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
 }
@@ -107,15 +105,6 @@ func (c *userClient) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoR
 	return out, nil
 }
 
-func (c *userClient) UpdateFollowCount(ctx context.Context, in *UpdateFollowCountRequest, opts ...grpc.CallOption) (*UpdateFollowCountResponse, error) {
-	out := new(UpdateFollowCountResponse)
-	err := c.cc.Invoke(ctx, User_UpdateFollowCount_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userClient) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error) {
 	out := new(UpdateFavoriteInfoResponse)
 	err := c.cc.Invoke(ctx, User_UpdateFavoriteInfo_FullMethodName, in, out, opts...)
@@ -144,7 +133,6 @@ type UserServer interface {
 	GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error)
 	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error)
 	UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error)
-	UpdateFollowCount(context.Context, *UpdateFollowCountRequest) (*UpdateFollowCountResponse, error)
 	UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error)
 	UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error)
 	mustEmbedUnimplementedUserServer()
@@ -171,9 +159,6 @@ func (UnimplementedUserServer) GetUserById(context.Context, *GetUserByIdRequest)
 }
 func (UnimplementedUserServer) UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollowInfo not implemented")
-}
-func (UnimplementedUserServer) UpdateFollowCount(context.Context, *UpdateFollowCountRequest) (*UpdateFollowCountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollowCount not implemented")
 }
 func (UnimplementedUserServer) UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavoriteInfo not implemented")
@@ -302,24 +287,6 @@ func _User_UpdateFollowInfo_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_UpdateFollowCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateFollowCountRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).UpdateFollowCount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_UpdateFollowCount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).UpdateFollowCount(ctx, req.(*UpdateFollowCountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _User_UpdateFavoriteInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateFavoriteInfoRequest)
 	if err := dec(in); err != nil {
@@ -386,10 +353,6 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateFollowInfo",
 			Handler:    _User_UpdateFollowInfo_Handler,
-		},
-		{
-			MethodName: "UpdateFollowCount",
-			Handler:    _User_UpdateFollowCount_Handler,
 		},
 		{
 			MethodName: "UpdateFavoriteInfo",

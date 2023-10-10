@@ -5,15 +5,15 @@ package server
 
 import (
 	"context"
-	model2 "github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/logic"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
 )
 
 type UserServer struct {
 	svcCtx *svc.ServiceContext
-	model2.UnimplementedUserServer
+	model.UnimplementedUserServer
 }
 
 func NewUserServer(svcCtx *svc.ServiceContext) *UserServer {
@@ -22,42 +22,42 @@ func NewUserServer(svcCtx *svc.ServiceContext) *UserServer {
 	}
 }
 
-func (s *UserServer) UserInfo(ctx context.Context, in *model2.UserInfoRequest) (*model2.UserInfoResponse, error) {
+func (s *UserServer) UserInfo(ctx context.Context, in *model.UserInfoRequest) (*model.UserInfoResponse, error) {
 	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
 	return l.UserInfo(in)
 }
 
-func (s *UserServer) Register(ctx context.Context, in *model2.RegisterRequest) (*model2.RegisterResponse, error) {
+func (s *UserServer) Register(ctx context.Context, in *model.RegisterRequest) (*model.RegisterResponse, error) {
 	l := logic.NewRegisterLogic(ctx, s.svcCtx)
 	return l.Register(in)
 }
 
-func (s *UserServer) Login(ctx context.Context, in *model2.LoginRequest) (*model2.LoginResponse, error) {
+func (s *UserServer) Login(ctx context.Context, in *model.LoginRequest) (*model.LoginResponse, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)
 }
 
-func (s *UserServer) GetIdByName(ctx context.Context, in *model2.GetIdByNameRequest) (*model2.GetIdByNameResponse, error) {
+func (s *UserServer) GetIdByName(ctx context.Context, in *model.GetIdByNameRequest) (*model.GetIdByNameResponse, error) {
 	l := logic.NewGetIdByNameLogic(ctx, s.svcCtx)
 	return l.GetIdByName(in)
 }
 
-func (s *UserServer) GetUserById(ctx context.Context, in *model2.GetUserByIdRequest) (*model2.GetUserByIdResponse, error) {
+func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
 	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
 	return l.GetUserById(in)
 }
 
-func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model2.UpdateFollowInfoRequest) (*model2.UpdateFollowInfoResponse, error) {
+func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
 	l := logic.NewUpdateFollowInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFollowInfo(in)
 }
 
-func (s *UserServer) UpdateFavoriteInfo(ctx context.Context, in *model2.UpdateFavoriteInfoRequest) (*model2.UpdateFavoriteInfoResponse, error) {
+func (s *UserServer) UpdateFavoriteInfo(ctx context.Context, in *model.UpdateFavoriteInfoRequest) (*model.UpdateFavoriteInfoResponse, error) {
 	l := logic.NewUpdateFavoriteInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFavoriteInfo(in)
 }
 
-func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model2.UpdateWorkInfoRequest) (*model2.UpdateWorkInfoResponse, error) {
+func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model.UpdateWorkInfoRequest) (*model.UpdateWorkInfoResponse, error) {
 	l := logic.NewUpdateWorkInfoLogic(ctx, s.svcCtx)
 	return l.UpdateWorkInfo(in)
 }

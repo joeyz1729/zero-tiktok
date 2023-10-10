@@ -3,14 +3,17 @@ package svc
 import (
 	"context"
 	"fmt"
+	"github.com/zeromicro/go-zero/zrpc"
+
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	datadb "github.com/YiZou89/zero-tiktok/apps/follow/dao/db"
-	"github.com/zeromicro/go-queue/kq"
-	"github.com/zeromicro/go-zero/core/bloom"
-
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/config"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
+
 	"github.com/go-redis/redis/v8"
 	sqlx "github.com/jmoiron/sqlx"
+	"github.com/zeromicro/go-queue/kq"
+	"github.com/zeromicro/go-zero/core/bloom"
 	redisz "github.com/zeromicro/go-zero/core/stores/redis"
 )
 
@@ -25,6 +28,8 @@ type ServiceContext struct {
 	//KqWriter *kafka.Writer
 
 	Filter *bloom.Filter
+
+	UserRpc user.User
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -61,5 +66,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Filter:      filter,
 		//KqWriter:    w,
 		KqPusher: pusher,
+		UserRpc:  user.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

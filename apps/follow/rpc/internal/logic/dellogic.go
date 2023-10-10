@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	"github.com/YiZou89/zero-tiktok/apps/follow/model"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
@@ -63,11 +64,22 @@ func (l *DelLogic) Del(in *model.DelRequest) (*model.DelResponse, error) {
 	}
 
 	pipeline := l.svcCtx.FollowCache.TxPipeline()
-	_, err = pipeline.SRem(l.ctx, cache.FollowedPrefix+uidStr, tid).Result()
-	_, err = pipeline.SRem(l.ctx, cache.FollowerPrefix+tidStr, uid).Result()
-	_, err = pipeline.HDel(l.ctx, cache.CountPrefix+uidStr).Result()
-	_, err = pipeline.HDel(l.ctx, cache.CountPrefix+tidStr).Result()
-	_, err = pipeline.Exec(l.ctx)
+	if _, err = pipeline.SRem(l.ctx, cache.FollowedPrefix+uidStr, tid).Result(); err != nil {
+		logx.Error(err)
+	}
+	if _, err = pipeline.SRem(l.ctx, cache.FollowerPrefix+tidStr, uid).Result(); err != nil {
+		logx.Error(err)
+	}
+	if _, err = pipeline.HDel(l.ctx, cache.CountPrefix+uidStr).Result(); err != nil {
+		logx.Error(err)
+	}
+	if _, err = pipeline.HDel(l.ctx, cache.CountPrefix+tidStr).Result(); err != nil {
+		logx.Error(err)
+	}
+	cmds, err := pipeline.Exec(l.ctx)
+	for _, cmd := range cmds {
+		fmt.Println(cmd.Err())
+	}
 	if err != nil {
 		logx.Errorw("[redis] transaction pipeline failed",
 			logx.Field("err", err),

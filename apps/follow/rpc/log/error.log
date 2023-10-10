@@ -21,3 +21,25 @@
 {"@timestamp":"2023-09-29T22:56:22.991+08:00","caller":"cache/cache.go:90","content":"[redis] transaction pipeline failed","err":"context canceled","level":"error"}
 {"@timestamp":"2023-09-29T22:56:23.519+08:00","caller":"cache/cache.go:90","content":"[redis] transaction pipeline failed","err":"context canceled","level":"error"}
 {"@timestamp":"2023-09-29T22:56:23.806+08:00","caller":"cache/cache.go:90","content":"[redis] transaction pipeline failed","err":"context canceled","level":"error"}
+{"@timestamp":"2023-10-10T16:33:21.060+08:00","caller":"cache/cache.go:90","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:40:54.473+08:00","caller":"cache/cache.go:90","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:40:54.498+08:00","caller":"logic/actionlogic.go:128","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:44:38.434+08:00","caller":"cache/cache.go:91","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:44:42.676+08:00","caller":"cache/cache.go:91","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:44:42.707+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:44:46.827+08:00","caller":"cache/cache.go:91","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:44:46.835+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:44:47.491+08:00","caller":"cache/cache.go:91","content":"[redis] transaction pipeline failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:46:18.382+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:48:36.700+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T16:50:00.982+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:01:51.793+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:01:53.654+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:01:55.357+08:00","caller":"logic/actionlogic.go:127","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:03:22.448+08:00","caller":"logic/actionlogic.go:131","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:05:12.483+08:00","caller":"logic/actionlogic.go:140","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:06:39.754+08:00","caller":"logic/actionlogic.go:140","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:06:40.872+08:00","caller":"logic/actionlogic.go:140","content":"delete redis failed","err":"EXECABORT Transaction discarded because of previous errors.","level":"error"}
+{"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:127","content":"ERR wrong number of arguments for 'hdel' command","level":"error"}
+{"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:130","content":"ERR wrong number of arguments for 'hdel' command","level":"error"}
+{"@timestamp":"2023-10-10T17:08:01.389+08:00","caller":"logic/actionlogic.go:136","content":"delete redis failed","err":"ERR wrong number of arguments for 'hdel' command","level":"error"}

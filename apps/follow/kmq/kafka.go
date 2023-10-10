@@ -68,6 +68,7 @@ func biz(v string) (err error) {
 	}
 	logx.Info(relation)
 	if relation.ActionType == int32(1) {
+
 		return addRelation(relation.UserId, relation.ToUserId)
 
 	} else {

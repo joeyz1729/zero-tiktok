@@ -3,11 +3,9 @@ package cache
 import (
 	"context"
 	"errors"
-	"strconv"
-	"time"
-
 	"github.com/go-redis/redis/v8"
 	"github.com/zeromicro/go-zero/core/logx"
+	"strconv"
 )
 
 var (
@@ -73,17 +71,18 @@ func (fc *FollowCache) UpdateAll(ctx context.Context, uid, tid int64) (err error
 }
 
 func (fc *FollowCache) AddRelation(ctx context.Context, uid, tid int64, cnt bool, fedCount, ferCount int32) (err error) {
+	ctx = context.Background()
 	uidStr, tidStr := strconv.FormatInt(uid, 10), strconv.FormatInt(tid, 10)
 	pipeline := fc.Client.TxPipeline()
 	_, err = pipeline.SAdd(ctx, FollowedPrefix+uidStr, tid).Result()
 	_, err = pipeline.SAdd(ctx, FollowerPrefix+tidStr, uid).Result()
-	_, err = pipeline.ExpireNX(ctx, FollowedPrefix+uidStr, time.Minute*5).Result()
-	_, err = pipeline.ExpireNX(ctx, FollowerPrefix+tidStr, time.Minute*5).Result()
+	//_, err = pipeline.ExpireNX(ctx, FollowedPrefix+uidStr, time.Minute*5).Result()
+	//_, err = pipeline.ExpireNX(ctx, FollowerPrefix+tidStr, time.Minute*5).Result()
 	if cnt {
-		_, err = pipeline.HSet(ctx, CountPrefix+uidStr, FollowedPrefix, fedCount).Result()
+		_, err = pipeline.HSet(ctx, CountPrefix+uidStr, FollowedField, fedCount).Result()
 		_, err = pipeline.HSet(ctx, CountPrefix+tidStr, FollowerField, ferCount).Result()
-		_, err = pipeline.ExpireNX(ctx, CountPrefix+uidStr, time.Minute*5).Result()
-		_, err = pipeline.ExpireNX(ctx, CountPrefix+tidStr, time.Minute*5).Result()
+		//_, err = pipeline.ExpireNX(ctx, CountPrefix+uidStr, time.Minute*5).Result()
+		//_, err = pipeline.ExpireNX(ctx, CountPrefix+tidStr, time.Minute*5).Result()
 	}
 	_, err = pipeline.Exec(ctx)
 	if err != nil {

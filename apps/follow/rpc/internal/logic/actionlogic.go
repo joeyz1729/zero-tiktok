@@ -7,8 +7,13 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
 	"github.com/YiZou89/zero-tiktok/apps/follow/model"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
+)
+
+const (
+	IfPushMq = false
 )
 
 type ActionLogic struct {
@@ -45,50 +50,45 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	if err != nil {
 		return nil, err
 	}
-	if checkRes.IfFollowing == int32(1) {
-		resp.Msg = "repeated add"
+	if checkRes.IfFollowing == in.ActionType {
+		resp.Msg = "repeated operation"
 		return resp, nil
 	}
 
 	// 1. 添加 mq 异步修改
-
-	actionData, err := json.Marshal(dao.Action{
-		UserId:     in.UserId,
-		ToUserId:   in.ToUserId,
-		ActionType: in.ActionType,
-	})
-	if err != nil {
-		resp.Msg = "json marshal failed"
-		logx.Errorw("json marshal failed",
-			logx.Field("err", err))
-		return resp, err
+	if IfPushMq {
+		actionData, err := json.Marshal(dao.Action{
+			UserId:     in.UserId,
+			ToUserId:   in.ToUserId,
+			ActionType: in.ActionType,
+		})
+		if err != nil {
+			resp.Msg = "json marshal failed"
+			logx.Errorw("json marshal failed",
+				logx.Field("err", err))
+			return resp, err
+		}
+		err = l.svcCtx.KqPusher.Push(string(actionData))
+		//err = l.svcCtx.KqWriter.WriteMessages(l.ctx,
+		//	kafka.Message{
+		//		Value: actionData,
+		//	})
+		if err == nil {
+			logx.Info("push kafka mq success")
+			resp.Msg = "push kafka mq success"
+			_, err = l.svcCtx.UserRpc.UpdateFollowInfo(l.ctx, &user.UpdateFollowInfoRequest{
+				UserId:     in.UserId,
+				ToUserId:   in.ToUserId,
+				ActionType: in.ActionType == int32(1),
+			})
+			if err != nil {
+				return resp, err
+			}
+			return resp, nil
+		}
+		logx.Info("push kafka mq failed, start update mysql and redis")
+		// 2. 如果 mq 异步失败，则同步修改数据库 + redis
 	}
-	err = l.svcCtx.KqPusher.Push(string(actionData))
-	//err = l.svcCtx.KqWriter.WriteMessages(l.ctx,
-	//	kafka.Message{
-	//		Value: actionData,
-	//	})
-	if err == nil {
-		logx.Info("push kafka mq success")
-		resp.Msg = "push kafka mq success"
-		return resp, nil
-	}
-	// 2. 如果 mq 异步失败，则同步修改数据库 + redis
-	logx.Info("push kafka mq failed, start update mysql and redis")
-	uidStr, tidStr := strconv.FormatInt(in.UserId, 10), strconv.FormatInt(in.UserId, 10)
-
-	// 1. 添加到 bloom filter
-	//bloomKey := data.BloomPrefix + uidStr + ":" + tidStr
-	//err = l.svcCtx.Filter.AddCtx(l.ctx, []byte(bloomKey))
-	//if err != nil {
-	//	logx.Errorw("[bloom filter] add failed",
-	//		logx.Field("err", err),
-	//	)
-	//	resp.Code = http.StatusInternalServerError
-	//	resp.Msg = "add bloom filter failed"
-	//	return resp, err
-	//}
-	//logx.Info("add bloom filter success")
 
 	// 添加数据库两张表，并修改计数
 	sqlStr := `insert into tiktok_follow.followed(user_id, followed_id) value(?, ?)`
@@ -106,13 +106,31 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 		// rollback followed
 	}
 
+	_, err = l.svcCtx.UserRpc.UpdateFollowInfo(l.ctx, &user.UpdateFollowInfoRequest{
+		UserId:     in.UserId,
+		ToUserId:   in.ToUserId,
+		ActionType: in.ActionType == int32(1),
+	})
+	if err != nil {
+		return resp, err
+	}
 	// 删除redis数据
-	pipeline := l.svcCtx.FollowCache.TxPipeline()
-	pipeline.SRem(l.ctx, cache.FollowedPrefix+uidStr, tidStr)
-	pipeline.SRem(l.ctx, cache.FollowerPrefix+tidStr, uidStr)
-	pipeline.HDel(l.ctx, cache.CountPrefix+uidStr)
-	pipeline.HDel(l.ctx, cache.CountPrefix+tidStr)
-	_, err = pipeline.Exec(l.ctx)
+	uidStr, tidStr := strconv.FormatInt(in.UserId, 10), strconv.FormatInt(in.UserId, 10)
+	//pipeline := l.svcCtx.FollowCache.TxPipeline()
+	if _, err = l.svcCtx.FollowCache.SRem(l.ctx, cache.FollowedPrefix+uidStr, tidStr).Result(); err != nil {
+		logx.Error(err)
+	}
+	if _, err = l.svcCtx.FollowCache.SRem(l.ctx, cache.FollowerPrefix+tidStr, uidStr).Result(); err != nil {
+		logx.Error(err)
+	}
+	if _, err = l.svcCtx.FollowCache.HDel(l.ctx, cache.CountPrefix+uidStr, "*").Result(); err != nil {
+		logx.Error(err)
+	}
+	if _, err = l.svcCtx.FollowCache.HDel(l.ctx, cache.CountPrefix+tidStr, "*").Result(); err != nil {
+		logx.Error(err)
+	}
+	//_, err = pipeline.Exec(l.ctx)
+
 	if err != nil {
 		// 注意要添加缓存时间保证最终一致性
 		logx.Errorw("delete redis failed",
@@ -122,3 +140,16 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	logx.Info("delete redis success")
 	return resp, nil
 }
+
+// 1. 添加到 bloom filter
+//bloomKey := data.BloomPrefix + uidStr + ":" + tidStr
+//err = l.svcCtx.Filter.AddCtx(l.ctx, []byte(bloomKey))
+//if err != nil {
+//	logx.Errorw("[bloom filter] add failed",
+//		logx.Field("err", err),
+//	)
+//	resp.Code = http.StatusInternalServerError
+//	resp.Msg = "add bloom filter failed"
+//	return resp, err
+//}
+//logx.Info("add bloom filter success")
