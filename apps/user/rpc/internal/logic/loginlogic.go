@@ -2,14 +2,9 @@ package logic
 
 import (
 	"context"
-	"errors"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
-	"github.com/YiZou89/zero-tiktok/pkg/tool"
-
-	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
-
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type LoginLogic struct {
@@ -29,18 +24,11 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 func (l *LoginLogic) Login(in *model.LoginRequest) (*model.LoginResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.LoginResponse)
-	user, err := l.svcCtx.UserModel.FindOneByUsername(l.ctx, in.Username)
+	userId, err := l.svcCtx.UserRepo.CheckLogin(in.Username, in.Password)
 	if err != nil {
-		if err == sqlc.ErrNotFound {
-			return resp, errors.New("user not found")
-		}
-		return resp, errors.New("query failed")
+		return resp, err
 	}
 
-	if tool.Encrypt(in.Password) != user.Password {
-		return resp, errors.New("incorrect password")
-	}
-	resp.UserId = user.UserId
-
+	resp.UserId = userId
 	return resp, nil
 }

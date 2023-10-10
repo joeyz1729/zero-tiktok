@@ -4,9 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
+
+	"github.com/YiZou89/zero-tiktok/pkg/tool"
+
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
+	sqlz "github.com/zeromicro/go-zero/core/stores/sqlx"
 	"strconv"
 	"time"
 )
@@ -23,6 +29,17 @@ const (
 	FieldTotalFavorited = "totalfavorited"
 	FieldWorkCount      = "workcount"
 	FieldFavoriteCount  = "favoritecount"
+)
+
+const (
+	defaultAvatar          = "default avatar"
+	defaultBackgroundImage = "default background image"
+	defaultSignature       = "default signature"
+)
+
+var (
+	ErrUserNotExist    = errors.New("user not exist")
+	ErrInvalidPassword = errors.New("invalid password")
 )
 
 var (
@@ -65,8 +82,8 @@ func (r *Repo) Register(userId int64, username, password string) error {
 	}
 	defer tx.Rollback()
 
-	sqlStr := `insert into tiktok_user.user(user_id, username, password) value(?, ?, ?)`
-	_, err = tx.Exec(sqlStr, userId, username, password)
+	sqlStr := `insert into tiktok_user.user(user_id, username, password, avatar, background_image, signature) value(?, ?, ?, ?, ?, ?)`
+	_, err = tx.Exec(sqlStr, userId, username, password, defaultAvatar, defaultBackgroundImage, defaultSignature)
 	if err != nil {
 		return err
 	}
@@ -97,6 +114,7 @@ func (r *Repo) Register(userId int64, username, password string) error {
 type UserDetail struct {
 	UserId   int64  `db:"user_id"`
 	Username string `db:"username"`
+	Password string `db:"password"`
 
 	FollowedCount int64 `db:"followed_count" json:"followedcount,string"` // 关注总数
 	FollowerCount int64 `db:"follower_count" json:"followercount,string"` // 粉丝总数
@@ -153,4 +171,30 @@ func (r *Repo) GetCount(userId int64, user *UserDetail) (err error) {
 	sqlStr := `select (followed_count, follower_count, total_favorited, work_count, favorite_count) from tiktok_user.user_count where user_id = ?`
 	err = r.db.Get(user, sqlStr, userId)
 	return err
+}
+
+func (r *Repo) CheckUserValid(username string) (ok bool, err error) {
+	var id int64
+	sqlStr := `select id from tiktok_user.user where username = ? limit 1`
+	err = r.db.Get(&id, sqlStr, username)
+	if err != nil && err != sqlz.ErrNotFound {
+		return false, err
+	}
+	return err != sqlz.ErrNotFound, nil
+}
+
+func (r *Repo) CheckLogin(username, password string) (userId int64, err error) {
+	var user UserDetail
+	sqlStr := `select user_id, password from tiktok_user.user where username = ? limit 1`
+	err = r.db.Get(&user, sqlStr, username)
+	if err != nil && err != sqlc.ErrNotFound {
+		return 0, err
+	}
+	if err == sqlc.ErrNotFound {
+		return 0, ErrUserNotExist
+	}
+	if tool.Encrypt(password) != user.Password {
+		return 0, ErrInvalidPassword
+	}
+	return user.UserId, nil
 }
