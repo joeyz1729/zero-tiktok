@@ -67,36 +67,6 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.FollowerList
 			WorkCount:      userInfo.WorkCount,
 		}
 	}
-	//for i, id := range followerRes.FollowerIds {
-	//	userRes := new(user.GetUserByIdResponse)
-	//	userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
-	//		UserId: id,
-	//	})
-	//	if err != nil {
-	//		logx.Errorw("user rpc failed",
-	//			logx.Field("err", err),
-	//		)
-	//		resp.StatusCode = http.StatusInternalServerError
-	//		resp.StatusMsg = "user rpc failed"
-	//		return resp, nil
-	//	}
-	//	userList[i] = types.UserInfo{
-	//		Id:              userRes.Id,
-	//		Name:            userRes.Name,
-	//		Avatar:          userRes.Avatar,
-	//		BackgroundImage: userRes.BackgroundImage,
-	//		Signature:       userRes.Signature,
-	//	}
-	//	//TODO, comprehensive user info
-	//}
-
-	//fmt.Println(userList)
-
-	//logx.Info("generate next page token")
-	//nextPage := pagination.Page{
-	//	NextId: uint64(followerRes.NextCursor),
-	//}
-	//resp.NextToken = string(nextPage.Encode())
 	resp.UserList = userList
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"
@@ -178,3 +148,34 @@ func (l *RelationFollowerListLogic) RelationFollowerListByPage(req *types.Follow
 	resp.StatusMsg = "success"
 	return resp, nil
 }
+
+//for i, id := range followerRes.FollowerIds {
+//	userRes := new(user.GetUserByIdResponse)
+//	userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
+//		UserId: id,
+//	})
+//	if err != nil {
+//		logx.Errorw("user rpc failed",
+//			logx.Field("err", err),
+//		)
+//		resp.StatusCode = http.StatusInternalServerError
+//		resp.StatusMsg = "user rpc failed"
+//		return resp, nil
+//	}
+//	userList[i] = types.UserInfo{
+//		Id:              userRes.Id,
+//		Name:            userRes.Name,
+//		Avatar:          userRes.Avatar,
+//		BackgroundImage: userRes.BackgroundImage,
+//		Signature:       userRes.Signature,
+//	}
+//	//TODO, comprehensive user info
+//}
+
+//fmt.Println(userList)
+
+//logx.Info("generate next page token")
+//nextPage := pagination.Page{
+//	NextId: uint64(followerRes.NextCursor),
+//}
+//resp.NextToken = string(nextPage.Encode())

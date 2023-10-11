@@ -25,3 +25,18 @@ CacheRedis:
   Addr: 127.0.0.1:6379
 
 
+UserRpc:
+  #  Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+  NonBlock: true
+
+VideoRpc:
+  #  Target: consul://127.0.0.1:8500/consul-video.rpc?wait=14s
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: video.rpc
+  NonBlock: true

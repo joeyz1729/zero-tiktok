@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -65,6 +66,7 @@ func (fc *FollowCache) AddFollower(ctx context.Context, userId int64, ids []int6
 	pipeline := fc.TxPipeline()
 	pipeline.Del(ctx, FollowerPrefix+uidStr)
 	pipeline.SAdd(ctx, FollowerPrefix+uidStr, args...)
+	pipeline.Expire(ctx, FollowerPrefix+uidStr, 5*time.Minute)
 	_, err = pipeline.Exec(ctx)
 	if err != nil {
 		logx.Error("redis pipeline failed", err)
@@ -83,6 +85,7 @@ func (fc *FollowCache) AddFollowed(ctx context.Context, userId int64, ids []int6
 	pipeline := fc.TxPipeline()
 	pipeline.Del(ctx, FollowedPrefix+uidStr)
 	pipeline.SAdd(ctx, FollowedPrefix+uidStr, args...)
+	pipeline.Expire(ctx, FollowedPrefix+uidStr, time.Minute*5)
 	_, err = pipeline.Exec(ctx)
 	if err != nil {
 		logx.Error("redis pipeline failed", err)

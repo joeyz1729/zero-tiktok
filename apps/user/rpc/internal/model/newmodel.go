@@ -4,74 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
+	"github.com/zeromicro/go-zero/core/logx"
 
-	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	sqlz "github.com/zeromicro/go-zero/core/stores/sqlx"
 	"strconv"
 	"time"
 )
-
-const (
-	UserInfoPrefix  = "tiktok:user:info:"  // hash
-	UserCountPrefix = "tiktok:user:count:" // hash
-)
-
-const (
-	FieldUsername       = "username"
-	FieldFollowedCount  = "followedcount"
-	FieldFollowerCount  = "followercount"
-	FieldTotalFavorited = "totalfavorited"
-	FieldWorkCount      = "workcount"
-	FieldFavoriteCount  = "favoritecount"
-)
-
-const (
-	defaultAvatar          = "default avatar"
-	defaultBackgroundImage = "default background image"
-	defaultSignature       = "default signature"
-)
-
-var (
-	ErrUserNotExist    = errors.New("user not exist")
-	ErrInvalidPassword = errors.New("invalid password")
-)
-
-var (
-	countMap = map[string]interface{}{
-		FieldFollowedCount:  0,
-		FieldFollowerCount:  0,
-		FieldTotalFavorited: 0,
-		FieldWorkCount:      0,
-		FieldFavoriteCount:  0,
-	}
-)
-
-type Repo struct {
-	db  *sqlx.DB
-	rdb *redis.Client
-}
-
-var repo *Repo
-
-func NewRepo(datasource, redisAddr string) *Repo {
-	db, err := sqlx.Connect("mysql", datasource)
-	rdb := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
-	})
-	rdb.Ping(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	repo = &Repo{
-		db:  db,
-		rdb: rdb,
-	}
-	return repo
-}
 
 func (r *Repo) Register(userId int64, username, password string) error {
 	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
@@ -110,6 +50,7 @@ func (r *Repo) Register(userId int64, username, password string) error {
 }
 
 type UserDetail struct {
+	Id       int64  `db:"id"`
 	UserId   int64  `db:"user_id"`
 	Username string `db:"username"`
 	Password string `db:"password"`
@@ -117,9 +58,11 @@ type UserDetail struct {
 	FollowedCount int64 `db:"followed_count" json:"followedcount,string"` // 关注总数
 	FollowerCount int64 `db:"follower_count" json:"followercount,string"` // 粉丝总数
 
-	TotalFavorited int64 `db:"total_favorited" json:"totalfavorited,string"` //获赞数量
-	WorkCount      int64 `db:"work_count" json:"workcount,string"`           //作品数量
-	FavoriteCount  int64 `db:"favorite_count" json:"favoritecount,string"`   //点赞数量
+	TotalFavorited int64     `db:"total_favorited" json:"totalfavorited,string"` //获赞数量
+	WorkCount      int64     `db:"work_count" json:"workcount,string"`           //作品数量
+	FavoriteCount  int64     `db:"favorite_count" json:"favoritecount,string"`   //点赞数量
+	CreateTime     time.Time `db:"create_time"`
+	UpdateTime     time.Time `db:"update_time"`
 }
 
 func (r *Repo) GetUserInfo(userId int64) (user *UserDetail, err error) {
@@ -127,12 +70,14 @@ func (r *Repo) GetUserInfo(userId int64) (user *UserDetail, err error) {
 	user.UserId = userId
 	username, err := r.GetUsername(userId)
 	if err != nil {
+		logx.Error("get username failed", err)
 		return nil, err
 	}
 	user.Username = username
 
 	err = r.GetCount(userId, user)
 	if err != nil {
+		logx.Error("get count failed", err)
 		return nil, err
 	}
 	return user, nil
@@ -156,19 +101,30 @@ func (r *Repo) GetUsername(userId int64) (username string, err error) {
 
 func (r *Repo) GetCount(userId int64, user *UserDetail) (err error) {
 	uidStr := strconv.FormatInt(userId, 10)
-	cm, err := r.rdb.HGetAll(context.Background(), UserCountPrefix+uidStr).Result()
-	if err == nil {
-		b, err := json.Marshal(cm)
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(b, user)
+	num, err := r.rdb.Exists(context.Background(), UserCountPrefix+uidStr).Result()
+	if err != nil {
+		logx.Error("check redis exists failed")
 		return err
 	}
+	if num != 0 {
+		cm, err := r.rdb.HGetAll(context.Background(), UserCountPrefix+uidStr).Result()
+		if err == nil {
+			b, err := json.Marshal(cm)
+			if err != nil {
+				return err
+			}
+			err = json.Unmarshal(b, user)
+			return err
+		}
+	}
 
-	sqlStr := `select (followed_count, follower_count, total_favorited, work_count, favorite_count) from tiktok_user.user_count where user_id = ?`
+	sqlStr := `select * from tiktok_user.user_count where user_id = ?`
 	err = r.db.Get(user, sqlStr, userId)
-	return err
+	if err != nil {
+		return
+	}
+	return r.AddCountCache(userId, user)
+
 }
 
 func (r *Repo) CheckUserValid(username string) (ok bool, err error) {
@@ -195,4 +151,16 @@ func (r *Repo) CheckLogin(username, password string) (userId int64, err error) {
 		return 0, ErrInvalidPassword
 	}
 	return user.UserId, nil
+}
+
+func (r *Repo) AddCountCache(uid int64, user *UserDetail) (err error) {
+	pipeline := r.rdb.TxPipeline()
+	uidStr := strconv.FormatInt(uid, 10)
+	pipeline.HSet(context.Background(), UserCountPrefix+uidStr, FieldFollowerCount, user.FollowerCount)
+	pipeline.HSet(context.Background(), UserCountPrefix+uidStr, FieldFollowedCount, user.FollowedCount)
+	pipeline.HSet(context.Background(), UserCountPrefix+uidStr, FieldTotalFavorited, user.TotalFavorited)
+	pipeline.HSet(context.Background(), UserCountPrefix+uidStr, FieldWorkCount, user.WorkCount)
+	pipeline.HSet(context.Background(), UserCountPrefix+uidStr, FieldFavoriteCount, user.FavoriteCount)
+	_, err = pipeline.Exec(context.Background())
+	return err
 }

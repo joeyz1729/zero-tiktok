@@ -14,10 +14,6 @@ type Config struct {
 
 	CacheRedis cache.CacheConf
 
-	Redis struct {
-		Addr string
-	}
-
 	//Consul consul.Conf
 
 	Snowflake struct {

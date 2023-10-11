@@ -48,3 +48,8 @@
 {"@timestamp":"2023-10-10T22:54:00.849+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
 {"@timestamp":"2023-10-10T22:54:22.369+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
 {"@timestamp":"2023-10-10T22:54:29.061+08:00","caller":"cache/cache.go:216","content":"redis pipeline failedredis: can't marshal []int64 (implement encoding.BinaryMarshaler)","level":"error"}
+{"@timestamp":"2023-10-11T11:00:38.787+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}
+{"@timestamp":"2023-10-11T11:28:43.487+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}
+{"@timestamp":"2023-10-11T11:36:14.279+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}
+{"@timestamp":"2023-10-11T12:15:59.054+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
+{"@timestamp":"2023-10-11T16:04:04.509+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}

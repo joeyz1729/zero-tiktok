@@ -37,84 +37,33 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 		resp.StatusMsg = err.Error()
 		return resp, nil
 	}
-
 	logx.Infof("follow ids: %v\n", followRes.FollowIds)
 
-	userList := make([]types.UserInfo, len(followRes.FollowIds))
-	for i, id := range followRes.FollowIds {
-		userRes := new(user.GetUserByIdResponse)
-		userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
-			UserId: id,
-		})
-		if err != nil {
-			logx.Errorw("user rpc failed",
-				logx.Field("err", err),
-			)
-			resp.StatusCode = http.StatusInternalServerError
-			resp.StatusMsg = err.Error()
-			return resp, nil
-		}
-		userList[i] = types.UserInfo{
-			Id:              userRes.Id,
-			Name:            userRes.Name,
-			Avatar:          userRes.Avatar,
-			BackgroundImage: userRes.BackgroundImage,
-			Signature:       userRes.Signature,
-		}
-		//TODO, comprehensive user info
-
-	}
-	//fmt.Println(userList)
-	resp.UserList = userList
-	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = "success"
-	return resp, nil
-}
-
-func (l *RelationFollowListLogic) RelationFollowListByPage(req *types.FollowListRequest) (resp *types.FollowListResponse, err error) {
-	// todo: add your logic here and delete this line
-	resp = new(types.FollowListResponse)
-	followRes, err := l.svcCtx.FollowRpc.GetFollowIds(l.ctx, &follow.GetFollowIdsRequest{
-		UserId: req.UserId,
+	usersRes := new(user.GetUsersResponse)
+	usersRes, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &user.GetUsersRequest{
+		UserIds: followRes.FollowIds,
 	})
 	if err != nil {
-		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "follow rpc failed"
-		return resp, nil
+		return nil, err
 	}
-	if len(followRes.FollowIds) == 0 {
-		resp.StatusCode = http.StatusOK
-		resp.StatusMsg = "empty list"
-		return resp, nil
-	}
-	logx.Infof("follow ids: %v\n", followRes.FollowIds)
-	logx.Info("start get user detail")
-	userList := make([]types.User, len(followRes.FollowIds))
-	for i, id := range followRes.FollowIds {
-		userRes := new(user.GetUserByIdResponse)
-		userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
-			UserId: id,
-		})
-		if err != nil {
-			logx.Errorw("user rpc failed",
-				logx.Field("err", err),
-			)
-			resp.StatusCode = http.StatusInternalServerError
-			resp.StatusMsg = "user rpc failed"
-			return resp, nil
+	userList := make([]types.UserInfo, len(followRes.FollowIds))
+	for i, userInfo := range usersRes.UserList {
+		userList[i] = types.UserInfo{
+			Id:              userInfo.Id,
+			Name:            userInfo.Name,
+			Avatar:          userInfo.Avatar,
+			BackgroundImage: userInfo.BackgroundImage,
+			Signature:       userInfo.Signature,
+
+			FollowCount:   userInfo.FollowCount,
+			FollowerCount: userInfo.FollowerCount,
+
+			TotalFavorited: userInfo.TotalFavorited,
+			FavoriteCount:  userInfo.FavoriteCount,
+			WorkCount:      userInfo.WorkCount,
 		}
-		userInfo := types.User{
-			Id:              userRes.Id,
-			Name:            userRes.Name,
-			Avatar:          userRes.Avatar,
-			BackgroundImage: userRes.BackgroundImage,
-			Signature:       userRes.Signature,
-		}
-		//TODO, comprehensive user info
-		userList[i] = userInfo
 	}
-	//fmt.Println(userList)
-	//resp.UserList = userList
+	resp.UserList = userList
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"
 	return resp, nil

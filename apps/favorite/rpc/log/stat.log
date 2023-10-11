@@ -817,3 +817,8 @@
 {"@timestamp":"2023-10-09T14:45:34.137+08:00","caller":"stat/usage.go:61","content":"CPU: 0m, MEMORY: Alloc=3.6Mi, TotalAlloc=36.5Mi, Sys=15.4Mi, NumGC=170","level":"stat"}
 {"@timestamp":"2023-10-09T14:45:34.216+08:00","caller":"load/sheddingstat.go:61","content":"(rpc) shedding_stat [1m], cpu: 0, total: 0, pass: 0, drop: 0","level":"stat"}
 {"@timestamp":"2023-10-09T14:45:38.547+08:00","caller":"stat/metrics.go:210","content":"(rpc.rpc) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}
+{"@timestamp":"2023-10-11T15:55:55.364+08:00","caller":"stat/usage.go:61","content":"CPU: 0m, MEMORY: Alloc=4.3Mi, TotalAlloc=7.5Mi, Sys=19.2Mi, NumGC=3","level":"stat"}
+{"@timestamp":"2023-10-11T15:55:55.406+08:00","caller":"load/sheddingstat.go:61","content":"(rpc) shedding_stat [1m], cpu: 0, total: 1, pass: 1, drop: 0","level":"stat"}
+{"@timestamp":"2023-10-11T15:57:35.947+08:00","caller":"stat/usage.go:61","content":"CPU: 0m, MEMORY: Alloc=4.4Mi, TotalAlloc=7.6Mi, Sys=19.4Mi, NumGC=3","level":"stat"}
+{"@timestamp":"2023-10-11T15:57:35.984+08:00","caller":"load/sheddingstat.go:61","content":"(rpc) shedding_stat [1m], cpu: 0, total: 4, pass: 4, drop: 0","level":"stat"}
+{"@timestamp":"2023-10-11T15:57:38.744+08:00","caller":"stat/metrics.go:210","content":"(rpc.rpc) - qps: 0.1/s, drops: 0, avg time: 11.5ms, med: 16.6ms, 90th: 16.7ms, 99th: 16.7ms, 99.9th: 16.7ms","level":"stat"}

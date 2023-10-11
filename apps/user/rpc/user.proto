@@ -96,6 +96,7 @@ message update_favorite_info_request {
   int64 user_id = 1;
   int64 video_id = 2;
   bool action_type = 3;
+  int64 author_id = 4;
 }
 
 message update_favorite_info_response {

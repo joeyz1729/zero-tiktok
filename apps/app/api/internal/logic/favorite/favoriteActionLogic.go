@@ -2,14 +2,12 @@ package favorite
 
 import (
 	"context"
+	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"net/http"
-
-	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -31,71 +29,51 @@ func NewFavoriteActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fa
 func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (resp *types.FavoriteActionResponse, err error) {
 	// todo: add your logic here and delete this line
 	resp = new(types.FavoriteActionResponse)
+	// action type
+	if req.ActionType != int32(1) && req.ActionType != int32(2) {
+		resp.StatusCode = http.StatusOK
+		resp.StatusMsg = "invalid action type"
+		return
+	}
+	// user id
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
 		logx.Errorw("jwt parse token failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "invalid token"
+		resp.StatusMsg = "invalid token: " + err.Error()
 		return resp, nil
 	}
-
-	_, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &video.GetVideoByIdRequest{
+	uid := claims.UserId
+	// video id
+	videoRes := new(video.GetVideoByIdResponse)
+	videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &video.GetVideoByIdRequest{
 		VideoId: req.VideoId,
 	})
 	if err != nil {
 		logx.Errorw("invalid video id",
 			logx.Field("err", err))
-		return resp, err
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "check video id failed: " + err.Error()
+		return resp, nil
 	}
-
-	// TODO
-	uid := claims.UserId
-	// 1 add favorite
-	var actionRes = new(favorite.ActionResponse)
-	if req.ActionType == 1 {
-		actionRes, err = l.svcCtx.FavoriteRpc.AddAction(l.ctx, &favorite.ActionRequest{
-			UserId:  uid,
-			VideoId: req.VideoId,
-		})
-	} else if req.ActionType == 2 {
-		actionRes, err = l.svcCtx.FavoriteRpc.DelAction(l.ctx, &favorite.ActionRequest{
-			UserId:  uid,
-			VideoId: req.VideoId,
-		})
-	} else {
-		resp.StatusCode = http.StatusOK
-		resp.StatusMsg = "invalid action type"
-		return
-	}
-
-	// 2. update user info
-	_, err = l.svcCtx.UserRpc.UpdateFavoriteInfo(l.ctx, &user.UpdateFavoriteInfoRequest{
-		ActionType: true,
+	authorId := videoRes.VideoInfo.AuthorId
+	// start
+	_, err = l.svcCtx.FavoriteRpc.Action(l.ctx, &favorite.ActionRequest{
+		UserId:     uid,
+		VideoId:    req.VideoId,
+		ActionType: req.ActionType,
+		AuthorId:   authorId,
 	})
 	if err != nil {
-		return
+		logx.Errorw("favorite action",
+			logx.Field("err", err))
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "update action failed:" + err.Error()
+		return resp, nil
 	}
-
-	//// 3. update video info
-	_, err = l.svcCtx.VideoRpc.UpdateFavoriteCount(l.ctx, &video.UpdateFavoriteCountRequest{
-		ActionType: true,
-	})
-	if err != nil {
-		return
-	}
-
-	//if err != nil {
-	//	resp.StatusCode = http.StatusOK
-	//	resp.StatusMsg = "failed"
-	//	logx.Errorw("favorite rpc",
-	//		logx.Field("err", err),
-	//	)
-	//	return
-	//}
-
 	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = actionRes.Msg
-	return
+	resp.StatusMsg = "OK"
+	return resp, nil
 }

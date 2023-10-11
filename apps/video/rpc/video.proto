@@ -11,6 +11,7 @@ service Video {
   rpc GetVideoById(get_video_by_id_request) returns(get_video_by_id_response);
   rpc Feed(feed_request) returns(feed_response);
   rpc GetWorkCount(get_work_count_request) returns (get_work_count_response);
+
   rpc UpdateFavoriteCount(update_favorite_count_request) returns(update_favorite_count_response);
 }
 
@@ -93,7 +94,9 @@ message get_work_count_response{
 }
 
 message update_favorite_count_request {
-  bool action_type = 1;
+  int64 user_id = 1;
+  int64 video_id = 2;
+  bool action_type = 3;
 }
 
 message update_favorite_count_response {

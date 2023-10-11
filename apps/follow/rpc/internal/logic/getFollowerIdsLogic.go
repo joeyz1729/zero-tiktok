@@ -49,10 +49,3 @@ func (l *GetFollowerIdsLogic) GetFollowerIds(in *model.GetFollowerIdsRequest) (*
 	resp.FollowerIds = ids
 	return resp, nil
 }
-
-func min(i, j int) int {
-	if i < j {
-		return i
-	}
-	return j
-}

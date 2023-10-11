@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
 
@@ -30,8 +29,10 @@ func (l *GetUsersLogic) GetUsers(in *model.GetUsersRequest) (*model.GetUsersResp
 	for i, uid := range in.UserIds {
 		user, err := l.svcCtx.UserRepo.GetUserInfo(uid)
 		if err != nil {
+			logx.Error("get user info failed")
 			return nil, err
 		}
+		logx.Info(user)
 		users[i] = &model.UserInfo{
 			Id:              uid,
 			Name:            user.Username,

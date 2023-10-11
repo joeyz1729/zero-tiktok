@@ -14,4 +14,8 @@ type Config struct {
 	CacheRedis struct {
 		Addr string
 	}
+
+	UserRpc zrpc.RpcClientConf
+
+	VideoRpc zrpc.RpcClientConf
 }

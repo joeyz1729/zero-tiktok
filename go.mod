@@ -8,7 +8,6 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/minio/minio-go/v7 v7.0.63
-	github.com/redis/go-redis/v9 v9.2.1
 	github.com/sony/sonyflake v1.2.0
 	github.com/u2takey/ffmpeg-go v0.5.0
 	github.com/zeromicro/go-queue v1.1.8
@@ -16,6 +15,8 @@ require (
 	github.com/zeromicro/zero-contrib/zrpc/registry/consul v0.0.0-20230807142214-5952d42ba776
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
+	gorm.io/driver/mysql v1.5.2
+	gorm.io/gorm v1.25.5
 )
 
 require (
@@ -52,6 +53,8 @@ require (
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect

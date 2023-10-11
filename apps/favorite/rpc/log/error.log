@@ -1,0 +1,2 @@
+{"@timestamp":"2023-10-11T15:55:31.020+08:00","caller":"logic/actionlogic.go:36","content":"is favorite video failed: record not found","level":"error"}
+{"@timestamp":"2023-10-11T15:56:09.331+08:00","caller":"logic/actionlogic.go:36","content":"is favorite video failed: record not found","level":"error"}

@@ -2,14 +2,15 @@ package logic
 
 import (
 	"context"
-	"fmt"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
-	"net/http"
-
+	"errors"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
-
 	"github.com/zeromicro/go-zero/core/logx"
+	"net/http"
+)
+
+var (
+	ErrRepeatedOperation = errors.New("repeated operation")
 )
 
 type ActionLogic struct {
@@ -29,81 +30,64 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	// todo: add your logic here and delete this line
 	resp := new(model.ActionResponse)
-	logx.Info(in.UserId, in.VideoId, in.ActionType)
-	var ifCancel bool
-
-	// 1. query record
-	sqlStr := fmt.Sprintf(`select cancel from tiktok_favorite.favorite where user_id = ? and video_id = ? limit 1`)
-	err := l.svcCtx.FavorRepo.FavoriteDB.Get(&ifCancel, sqlStr, in.UserId, in.VideoId)
+	// 检查关系是否存在
+	exist, err := l.svcCtx.FavorRepo.IsFavoriteRecordExist(l.ctx, in.UserId, in.VideoId)
 	if err != nil {
-		if err != sqlc.ErrNotFound {
-			logx.Errorw("find relation failed",
-				logx.Field("err", err))
-		}
-		resp.Code = int32(0)
-		resp.Msg = "mysql query failed"
-		return resp, err
+		logx.Error("is favorite video failed: " + err.Error())
+		return nil, err
 	}
-	if err == sqlc.ErrNotFound {
-
+	// 是否重复
+	if exist && in.ActionType == int32(1) || !exist && in.ActionType == int32(2) {
+		return nil, ErrRepeatedOperation
+	}
+	// 更新
+	if in.ActionType == int32(1) {
+		err = l.svcCtx.FavorRepo.CreateFavoriteRecord(l.ctx, &model.Favorite{UserId: in.UserId, VideoId: in.VideoId})
+	} else {
+		err = l.svcCtx.FavorRepo.DeleteFavoriteRecord(l.ctx, &model.Favorite{UserId: in.UserId, VideoId: in.VideoId})
 	}
 	if err != nil {
-		fmt.Println(err)
-		if err != sqlc.ErrNotFound {
-			// query failed
-			logx.Errorw("find relation failed",
-				logx.Field("err", err),
-			)
-			resp.Code = int32(0)
-			resp.Msg = "mysql query failed"
-			return resp, err
-		}
-		// relation does not exist
-		if in.ActionType == int32(2) {
-			resp.Code = int32(02)
-			resp.Msg = "unfollowing failed, relation does not exist"
-			return resp, nil
-		}
-		// add follow relation
-		_, err = l.svcCtx.FavorRepo.FavoriteModel.Insert(l.ctx, &model.Favorite{
-			UserId:  in.UserId,
-			VideoId: in.VideoId,
-			Cancel:  false,
-		})
-		if err != nil {
-			logx.Errorw("add following relation failed",
-				logx.Field("err", err),
-			)
-			resp.Code = int32(0)
-			resp.Msg = "mysql insert failed"
-			return resp, err
-		}
-		resp.Code = int32(01)
-		resp.Msg = "add follow relation success"
-		return resp, nil
+		logx.Error("update favorite failed:", err)
+		return nil, err
 	}
 
-	// query success, update
-	if in.ActionType == int32(1) && ifCancel == false || in.ActionType == int32(2) && ifCancel == true {
-		resp.Code = int32(00)
-		resp.Msg = "repeat operation"
-		return resp, nil
-	}
-	var cancel bool
-	if in.ActionType == int32(2) {
-		cancel = true
-	}
-	sqlStr = `update tiktok_favorite.favorite set cancel = ? where user_id = ? and video_id = ?`
-	_, err = l.svcCtx.FavorRepo.FavoriteDB.Exec(sqlStr, cancel, in.UserId, in.VideoId)
-	if err != nil {
-		logx.Errorw("update relation failed",
-			logx.Field("err", err),
-		)
-		resp.Code = int32(0)
-		resp.Msg = "update relation failed"
-		return resp, err
-	}
-
+	//rpc 更新计数
+	//var errCh = make(chan error, 2)
+	//var wg sync.WaitGroup
+	//wg.Add(2)
+	//go func() {
+	//	defer wg.Done()
+	//	_, err := l.svcCtx.UserRpc.UpdateFavoriteInfo(l.ctx, &user.UpdateFavoriteInfoRequest{
+	//		UserId:     in.UserId,
+	//		VideoId:    in.VideoId,
+	//		ActionType: in.ActionType == int32(1),
+	//		AuthorId:   in.AuthorId,
+	//	})
+	//	if err != nil {
+	//		logx.Errorw("update user info",
+	//			logx.Field("err", err))
+	//		errCh <- err
+	//	}
+	//}()
+	//go func() {
+	//	defer wg.Done()
+	//	_, err := l.svcCtx.VideoRpc.UpdateFavoriteCount(l.ctx, &video.UpdateFavoriteCountRequest{
+	//		UserId:     in.UserId,
+	//		VideoId:    in.VideoId,
+	//		ActionType: in.ActionType == int32(1),
+	//	})
+	//	if err != nil {
+	//		logx.Errorw("update video info",
+	//			logx.Field("err", err))
+	//		errCh <- err
+	//	}
+	//}()
+	//wg.Wait()
+	//select {
+	//case <-errCh:
+	//	return nil, err
+	//default:
+	//}
 	resp.Code = http.StatusOK
 	resp.Msg = "update record success"
 	return resp, nil
