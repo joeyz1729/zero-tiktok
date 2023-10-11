@@ -301,3 +301,4 @@
 {"@timestamp":"2023-10-11T12:32:10.018+08:00","caller":"logic/getuserslogic.go:35","content":"\u0026{0 5 admin5  0 1 0 0 0 0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC}","level":"info"}
 {"@timestamp":"2023-10-11T12:32:10.018+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:64920 - /user.User/GetUsers - {\"user_ids\":[1,2,3,4,5]}","duration":"22.1ms","level":"info","span":"cd6191db00bd13c1","trace":"c2a4c3fe06bf74ca4a16704d2e9d7567"}
 {"@timestamp":"2023-10-11T15:55:15.061+08:00","caller":"serverinterceptors/statinterceptor.go:90","content":"172.23.44.170:58018 - /user.User/Register - {\"username\":\"10111555\",\"password\":\"123\"}","duration":"66.9ms","level":"info","span":"7df85f569012e8f5","trace":"bfef2a2e68c4118db79ce6317a96467d"}
+{"@timestamp":"2023-10-11T16:06:41.812+08:00","caller":"prometheus/agent.go:40","content":"Starting prometheus agent at 127.0.0.1:9081","level":"info"}

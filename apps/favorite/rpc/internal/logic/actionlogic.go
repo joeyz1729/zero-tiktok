@@ -5,8 +5,11 @@ import (
 	"errors"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/zeromicro/go-zero/core/logx"
 	"net/http"
+	"sync"
 )
 
 var (
@@ -52,42 +55,42 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	}
 
 	//rpc 更新计数
-	//var errCh = make(chan error, 2)
-	//var wg sync.WaitGroup
-	//wg.Add(2)
-	//go func() {
-	//	defer wg.Done()
-	//	_, err := l.svcCtx.UserRpc.UpdateFavoriteInfo(l.ctx, &user.UpdateFavoriteInfoRequest{
-	//		UserId:     in.UserId,
-	//		VideoId:    in.VideoId,
-	//		ActionType: in.ActionType == int32(1),
-	//		AuthorId:   in.AuthorId,
-	//	})
-	//	if err != nil {
-	//		logx.Errorw("update user info",
-	//			logx.Field("err", err))
-	//		errCh <- err
-	//	}
-	//}()
-	//go func() {
-	//	defer wg.Done()
-	//	_, err := l.svcCtx.VideoRpc.UpdateFavoriteCount(l.ctx, &video.UpdateFavoriteCountRequest{
-	//		UserId:     in.UserId,
-	//		VideoId:    in.VideoId,
-	//		ActionType: in.ActionType == int32(1),
-	//	})
-	//	if err != nil {
-	//		logx.Errorw("update video info",
-	//			logx.Field("err", err))
-	//		errCh <- err
-	//	}
-	//}()
-	//wg.Wait()
-	//select {
-	//case <-errCh:
-	//	return nil, err
-	//default:
-	//}
+	var errCh = make(chan error, 2)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		_, err := l.svcCtx.UserRpc.UpdateFavoriteInfo(l.ctx, &user.UpdateFavoriteInfoRequest{
+			UserId:     in.UserId,
+			VideoId:    in.VideoId,
+			ActionType: in.ActionType == int32(1),
+			AuthorId:   in.AuthorId,
+		})
+		if err != nil {
+			logx.Errorw("update user info",
+				logx.Field("err", err))
+			errCh <- err
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		_, err := l.svcCtx.VideoRpc.UpdateFavoriteCount(l.ctx, &video.UpdateFavoriteCountRequest{
+			UserId:     in.UserId,
+			VideoId:    in.VideoId,
+			ActionType: in.ActionType == int32(1),
+		})
+		if err != nil {
+			logx.Errorw("update video info",
+				logx.Field("err", err))
+			errCh <- err
+		}
+	}()
+	wg.Wait()
+	select {
+	case <-errCh:
+		return nil, err
+	default:
+	}
 	resp.Code = http.StatusOK
 	resp.Msg = "update record success"
 	return resp, nil
