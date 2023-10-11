@@ -80,6 +80,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 		return resp, err
 	}
 
+	// add video
 	// 添加到redis，用于发布列表，视频流，用户work count统计
 	pipeline := l.svcCtx.VideoCache.TxPipeline()
 	pipeline.ZAdd(l.ctx, "tiktok:video:time", &redis.Z{Score: float64(time.Now().Unix() - time.Date(2023, time.September, 1, 1, 46, 40, 0, time.UTC).Unix()), Member: vid})
@@ -95,7 +96,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	// todo, 异步入库
 	go func() {
 
-		_, err = l.svcCtx.VideoModel.Insert(context.Background(), &model.Video{
+		err = l.svcCtx.VideoRepo.AddVideoInfo(l.ctx, &model.Video{
 			VideoId:     int64(vid),
 			AuthorId:    in.GetUserId(),
 			Title:       in.GetTitle(),
@@ -103,6 +104,14 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 			CoverUrl:    coverURL,
 			PublishTime: timeNow,
 		})
+		//_, err = l.svcCtx.VideoModel.Insert(context.Background(), &model.Video{
+		//	VideoId:     int64(vid),
+		//	AuthorId:    in.GetUserId(),
+		//	Title:       in.GetTitle(),
+		//	PlayUrl:     playURL,
+		//	CoverUrl:    coverURL,
+		//	PublishTime: timeNow,
+		//})
 		if err != nil {
 			logx.Errorw("[mysql] add video failed",
 				logx.Field("err", err))

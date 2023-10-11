@@ -66,3 +66,8 @@ func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model.UpdateWorkInf
 	l := logic.NewUpdateWorkInfoLogic(ctx, s.svcCtx)
 	return l.UpdateWorkInfo(in)
 }
+
+func (s *UserServer) GetAuthor(ctx context.Context, in *model.GetAuthorRequest) (*model.GetAuthorResponse, error) {
+	l := logic.NewGetAuthorLogic(ctx, s.svcCtx)
+	return l.GetAuthor(in)
+}

@@ -50,11 +50,3 @@ func (m *customVideoModel) FindVideosByUserId(ctx context.Context, userId int64)
 		return nil, err
 	}
 }
-
-type VideoDetail struct {
-	VideoId  int64  `db:"video_id"`
-	AuthorId int64  `db:"author_id"`
-	Title    string `db:"title"`
-	PlayUrl  string `db:"play_url"`
-	CoverUrl string `db:"cover_url"`
-}

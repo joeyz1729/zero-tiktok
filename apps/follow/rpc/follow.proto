@@ -16,6 +16,7 @@ service Follow {
   rpc GetFollowIds(get_follow_ids_request) returns(get_follow_ids_response);
   rpc GetFollowerIds(get_follower_ids_request) returns(get_follower_ids_response);
   rpc GetRelation(get_relation_request) returns(get_relation_response);
+//  rpc GetRelations(get_relations_request) returns(get_relations_response);
   rpc Add(add_request) returns(add_response);
   rpc Del(del_request) returns(del_response);
   rpc GetFollowCount(get_follow_count_request) returns(get_follow_count_response);

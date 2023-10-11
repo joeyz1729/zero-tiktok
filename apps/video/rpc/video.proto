@@ -8,10 +8,13 @@ service Video {
 //  rpc Feed(feed_request) returns(feed_response);
   rpc PublishAction(publish_action_request) returns(publish_action_response);
   rpc GetListByUserId(get_list_by_user_id_request) returns(get_list_by_user_id_response);
+  rpc GetListByAuthorId(get_list_by_author_id_request) returns(get_list_by_author_id_response);
+
   rpc GetVideoById(get_video_by_id_request) returns(get_video_by_id_response);
+  rpc GetVideosByIds(get_videos_by_ids_request) returns(get_videos_by_ids_response);
+
   rpc Feed(feed_request) returns(feed_response);
   rpc GetWorkCount(get_work_count_request) returns (get_work_count_response);
-
   rpc UpdateFavoriteCount(update_favorite_count_request) returns(update_favorite_count_response);
 }
 
@@ -47,6 +50,15 @@ message get_list_by_user_id_request {
 message get_list_by_user_id_response {
   repeated VideoInfo video_list = 1; // 用户发布的视频列表
 }
+
+message get_list_by_author_id_request {
+  int64 user_id = 1; // 用户id
+}
+
+message get_list_by_author_id_response {
+  repeated VideoDetail video_list = 1; // 用户发布的视频列表
+}
+
 //
 //
 //message UserInfo {
@@ -72,7 +84,6 @@ message VideoInfo {
   //  int64 favorite_count = 5; // 视频的点赞总数
 //  int64 comment_count = 6; // 视频的评论总数
 //  bool is_favorite = 7; // true-已点赞，false-未点赞
-
 }
 
 
@@ -101,4 +112,42 @@ message update_favorite_count_request {
 
 message update_favorite_count_response {
 
+}
+
+
+message get_videos_by_ids_request {
+  int64 user_id = 1;
+  repeated int64 video_ids = 2;
+}
+
+message get_videos_by_ids_response {
+  int32 status_code = 1;
+  string status_msg = 2;
+  repeated VideoDetail video_list = 3;
+
+}
+
+message UserInfo {
+  int64 id = 1; // 用户id
+  string name = 2; // 用户名称
+  int64 follow_count = 3; // 关注总数
+  int64 follower_count = 4; // 粉丝总数
+  bool is_follow = 5; // true-已关注，false-未关注
+  string avatar = 6; //用户头像
+  string background_image = 7; //用户个人页顶部大图
+  string signature = 8; //个人简介
+  int64 total_favorited = 9; //获赞数量
+  int64 work_count = 10; //作品数量
+  int64 favorite_count = 11; //点赞数量
+}
+
+message VideoDetail {
+  int64 id = 1; // 视频唯一标识
+  UserInfo author = 2;
+  string play_url = 3; // 视频播放地址
+  string cover_url = 4; // 视频封面地址
+  string title = 5; // 视频标题
+  int64 favorite_count = 6; // 视频的点赞总数
+  int64 comment_count = 7; // 视频的评论总数
+  bool is_favorite = 8; // true-已点赞，false-未点赞
 }

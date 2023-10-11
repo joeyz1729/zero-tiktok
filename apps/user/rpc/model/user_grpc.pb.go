@@ -28,6 +28,7 @@ const (
 	User_UpdateFollowInfo_FullMethodName   = "/user.User/UpdateFollowInfo"
 	User_UpdateFavoriteInfo_FullMethodName = "/user.User/UpdateFavoriteInfo"
 	User_UpdateWorkInfo_FullMethodName     = "/user.User/UpdateWorkInfo"
+	User_GetAuthor_FullMethodName          = "/user.User/GetAuthor"
 )
 
 // UserClient is the client API for User service.
@@ -43,6 +44,7 @@ type UserClient interface {
 	UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
 	UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
 	UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
+	GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error)
 }
 
 type userClient struct {
@@ -134,6 +136,15 @@ func (c *userClient) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoReque
 	return out, nil
 }
 
+func (c *userClient) GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error) {
+	out := new(GetAuthorResponse)
+	err := c.cc.Invoke(ctx, User_GetAuthor_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -147,6 +158,7 @@ type UserServer interface {
 	UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error)
 	UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error)
 	UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error)
+	GetAuthor(context.Context, *GetAuthorRequest) (*GetAuthorResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -180,6 +192,9 @@ func (UnimplementedUserServer) UpdateFavoriteInfo(context.Context, *UpdateFavori
 }
 func (UnimplementedUserServer) UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateWorkInfo not implemented")
+}
+func (UnimplementedUserServer) GetAuthor(context.Context, *GetAuthorRequest) (*GetAuthorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAuthor not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -356,6 +371,24 @@ func _User_UpdateWorkInfo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetAuthor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetAuthor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_GetAuthor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetAuthor(ctx, req.(*GetAuthorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -398,6 +431,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateWorkInfo",
 			Handler:    _User_UpdateWorkInfo_Handler,
+		},
+		{
+			MethodName: "GetAuthor",
+			Handler:    _User_GetAuthor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

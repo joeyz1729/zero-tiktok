@@ -15,23 +15,31 @@ import (
 type (
 	FeedRequest                 = model.FeedRequest
 	FeedResponse                = model.FeedResponse
+	GetListByAuthorIdRequest    = model.GetListByAuthorIdRequest
+	GetListByAuthorIdResponse   = model.GetListByAuthorIdResponse
 	GetListByUserIdRequest      = model.GetListByUserIdRequest
 	GetListByUserIdResponse     = model.GetListByUserIdResponse
 	GetVideoByIdRequest         = model.GetVideoByIdRequest
 	GetVideoByIdResponse        = model.GetVideoByIdResponse
+	GetVideosByIdsRequest       = model.GetVideosByIdsRequest
+	GetVideosByIdsResponse      = model.GetVideosByIdsResponse
 	GetWorkCountRequest         = model.GetWorkCountRequest
 	GetWorkCountResponse        = model.GetWorkCountResponse
 	PublishActionRequest        = model.PublishActionRequest
 	PublishActionResponse       = model.PublishActionResponse
 	UpdateFavoriteCountRequest  = model.UpdateFavoriteCountRequest
 	UpdateFavoriteCountResponse = model.UpdateFavoriteCountResponse
+	UserInfo                    = model.UserInfo
+	VideoDetail                 = model.VideoDetail
 	VideoInfo                   = model.VideoInfo
 
 	Video interface {
 		// rpc Feed(feed_request) returns(feed_response);
 		PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
 		GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
+		GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
 		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
+		GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error)
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 		GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
 		UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
@@ -59,9 +67,19 @@ func (m *defaultVideo) GetListByUserId(ctx context.Context, in *GetListByUserIdR
 	return client.GetListByUserId(ctx, in, opts...)
 }
 
+func (m *defaultVideo) GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.GetListByAuthorId(ctx, in, opts...)
+}
+
 func (m *defaultVideo) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetVideoById(ctx, in, opts...)
+}
+
+func (m *defaultVideo) GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.GetVideosByIds(ctx, in, opts...)
 }
 
 func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {

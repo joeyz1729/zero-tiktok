@@ -41,7 +41,7 @@ func (l *UpdateFavoriteCountLogic) UpdateFavoriteCount(in *model.UpdateFavoriteC
 
 	// delete cache
 	vidStr := strconv.FormatInt(in.VideoId, 10)
-	if _, err = l.svcCtx.VideoCache.Del(context.Background(), model.VideoCountPrefix+vidStr).Result(); err != nil {
+	if _, err = l.svcCtx.VideoCache.Del(context.Background(), model.VideoInfoPrefix+vidStr).Result(); err != nil {
 		return nil, err
 	}
 	return &model.UpdateFavoriteCountResponse{}, nil

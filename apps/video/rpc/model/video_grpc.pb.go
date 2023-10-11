@@ -21,7 +21,9 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Video_PublishAction_FullMethodName       = "/video.Video/PublishAction"
 	Video_GetListByUserId_FullMethodName     = "/video.Video/GetListByUserId"
+	Video_GetListByAuthorId_FullMethodName   = "/video.Video/GetListByAuthorId"
 	Video_GetVideoById_FullMethodName        = "/video.Video/GetVideoById"
+	Video_GetVideosByIds_FullMethodName      = "/video.Video/GetVideosByIds"
 	Video_Feed_FullMethodName                = "/video.Video/Feed"
 	Video_GetWorkCount_FullMethodName        = "/video.Video/GetWorkCount"
 	Video_UpdateFavoriteCount_FullMethodName = "/video.Video/UpdateFavoriteCount"
@@ -34,7 +36,9 @@ type VideoClient interface {
 	// rpc Feed(feed_request) returns(feed_response);
 	PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
 	GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
+	GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
 	GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
+	GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error)
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 	GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
 	UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
@@ -66,9 +70,27 @@ func (c *videoClient) GetListByUserId(ctx context.Context, in *GetListByUserIdRe
 	return out, nil
 }
 
+func (c *videoClient) GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error) {
+	out := new(GetListByAuthorIdResponse)
+	err := c.cc.Invoke(ctx, Video_GetListByAuthorId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *videoClient) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
 	out := new(GetVideoByIdResponse)
 	err := c.cc.Invoke(ctx, Video_GetVideoById_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoClient) GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error) {
+	out := new(GetVideosByIdsResponse)
+	err := c.cc.Invoke(ctx, Video_GetVideosByIds_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +131,9 @@ type VideoServer interface {
 	// rpc Feed(feed_request) returns(feed_response);
 	PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error)
 	GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error)
+	GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error)
 	GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error)
+	GetVideosByIds(context.Context, *GetVideosByIdsRequest) (*GetVideosByIdsResponse, error)
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
 	GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error)
 	UpdateFavoriteCount(context.Context, *UpdateFavoriteCountRequest) (*UpdateFavoriteCountResponse, error)
@@ -126,8 +150,14 @@ func (UnimplementedVideoServer) PublishAction(context.Context, *PublishActionReq
 func (UnimplementedVideoServer) GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByUserId not implemented")
 }
+func (UnimplementedVideoServer) GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListByAuthorId not implemented")
+}
 func (UnimplementedVideoServer) GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVideoById not implemented")
+}
+func (UnimplementedVideoServer) GetVideosByIds(context.Context, *GetVideosByIdsRequest) (*GetVideosByIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVideosByIds not implemented")
 }
 func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
@@ -187,6 +217,24 @@ func _Video_GetListByUserId_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_GetListByAuthorId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetListByAuthorIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetListByAuthorId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetListByAuthorId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetListByAuthorId(ctx, req.(*GetListByAuthorIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Video_GetVideoById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetVideoByIdRequest)
 	if err := dec(in); err != nil {
@@ -201,6 +249,24 @@ func _Video_GetVideoById_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VideoServer).GetVideoById(ctx, req.(*GetVideoByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Video_GetVideosByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVideosByIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetVideosByIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetVideosByIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetVideosByIds(ctx, req.(*GetVideosByIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -275,8 +341,16 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Video_GetListByUserId_Handler,
 		},
 		{
+			MethodName: "GetListByAuthorId",
+			Handler:    _Video_GetListByAuthorId_Handler,
+		},
+		{
 			MethodName: "GetVideoById",
 			Handler:    _Video_GetVideoById_Handler,
+		},
+		{
+			MethodName: "GetVideosByIds",
+			Handler:    _Video_GetVideosByIds_Handler,
 		},
 		{
 			MethodName: "Feed",

@@ -13,6 +13,8 @@ import (
 )
 
 type (
+	GetAuthorRequest           = model.GetAuthorRequest
+	GetAuthorResponse          = model.GetAuthorResponse
 	GetIdByNameRequest         = model.GetIdByNameRequest
 	GetIdByNameResponse        = model.GetIdByNameResponse
 	GetUserByIdRequest         = model.GetUserByIdRequest
@@ -43,6 +45,7 @@ type (
 		UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
 		UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
 		UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
+		GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error)
 	}
 
 	defaultUser struct {
@@ -99,4 +102,9 @@ func (m *defaultUser) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavorite
 func (m *defaultUser) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.UpdateWorkInfo(ctx, in, opts...)
+}
+
+func (m *defaultUser) GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.GetAuthor(ctx, in, opts...)
 }

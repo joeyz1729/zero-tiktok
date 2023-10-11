@@ -46,10 +46,12 @@ func (c *CacheImpl) CreateFavorite(ctx context.Context, key string, vid int64) (
 
 func (c *CacheImpl) DelFavorite(ctx context.Context, key string, videoId int64) (err error) {
 	_, err = c.SRem(ctx, key, videoId).Result()
+
 	return err
 }
 func (c *CacheImpl) KeyExist(ctx context.Context, key string) (bool, error) {
-	return c.KeyExist(ctx, key)
+	num, err := c.Exists(ctx, key).Result()
+	return num == 0, err
 }
 
 func (c *CacheImpl) GetKeys(ctx context.Context, keyPattern string) ([]string, error) {

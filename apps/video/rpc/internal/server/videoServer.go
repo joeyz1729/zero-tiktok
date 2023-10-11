@@ -33,9 +33,19 @@ func (s *VideoServer) GetListByUserId(ctx context.Context, in *model.GetListByUs
 	return l.GetListByUserId(in)
 }
 
+func (s *VideoServer) GetListByAuthorId(ctx context.Context, in *model.GetListByAuthorIdRequest) (*model.GetListByAuthorIdResponse, error) {
+	l := logic.NewGetListByAuthorIdLogic(ctx, s.svcCtx)
+	return l.GetListByAuthorId(in)
+}
+
 func (s *VideoServer) GetVideoById(ctx context.Context, in *model.GetVideoByIdRequest) (*model.GetVideoByIdResponse, error) {
 	l := logic.NewGetVideoByIdLogic(ctx, s.svcCtx)
 	return l.GetVideoById(in)
+}
+
+func (s *VideoServer) GetVideosByIds(ctx context.Context, in *model.GetVideosByIdsRequest) (*model.GetVideosByIdsResponse, error) {
+	l := logic.NewGetVideosByIdsLogic(ctx, s.svcCtx)
+	return l.GetVideosByIds(in)
 }
 
 func (s *VideoServer) Feed(ctx context.Context, in *model.FeedRequest) (*model.FeedResponse, error) {
