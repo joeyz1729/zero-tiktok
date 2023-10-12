@@ -93,6 +93,7 @@ func (r *Repo) GetUsername(userId int64) (username string, err error) {
 
 	sqlStr := `select (username) from tiktok_user.user where user_id = ? limit 1`
 	err = r.db.Get(&username, sqlStr, userId)
+	//TODO
 	if err != nil {
 		return "", err
 	}

@@ -48,11 +48,6 @@ func (s *VideoServer) GetVideoById(ctx context.Context, in *model.GetVideoByIdRe
 	return l.GetVideoById(in)
 }
 
-func (s *VideoServer) GetVideosByIds(ctx context.Context, in *model.GetVideosByIdsRequest) (*model.GetVideosByIdsResponse, error) {
-	l := logic.NewGetVideosByIdsLogic(ctx, s.svcCtx)
-	return l.GetVideosByIds(in)
-}
-
 func (s *VideoServer) Feed(ctx context.Context, in *model.FeedRequest) (*model.FeedResponse, error) {
 	l := logic.NewFeedLogic(ctx, s.svcCtx)
 	return l.Feed(in)

@@ -28,6 +28,7 @@ type FavorCache interface {
 	GetKeys(c context.Context, keyPattern string) ([]string, error)
 	KeyExist(c context.Context, key string) (bool, error)
 	CreateFavorite(c context.Context, key string, video int64) error
+	AddFavorites(c context.Context, key string, video ...int64) error
 	DelFavorite(c context.Context, key string, videoId int64) error
 	IsFavRecordExist(c context.Context, key string, videoId int64) (bool, error)
 	GetFavoriteVideoIds(c context.Context, key string) ([]int64, error)
@@ -51,7 +52,7 @@ func (c *CacheImpl) DelFavorite(ctx context.Context, key string, videoId int64) 
 }
 func (c *CacheImpl) KeyExist(ctx context.Context, key string) (bool, error) {
 	num, err := c.Exists(ctx, key).Result()
-	return num == 0, err
+	return num == 1, err
 }
 
 func (c *CacheImpl) GetKeys(ctx context.Context, keyPattern string) ([]string, error) {
@@ -72,4 +73,16 @@ func (c *CacheImpl) GetFavoriteVideoIds(ctx context.Context, key string) ([]int6
 		ids[i] = id
 	}
 	return ids, nil
+}
+
+func (r *CacheImpl) AddFavorites(c context.Context, key string, video ...int64) error {
+	//vi := []interface{}{}
+	for _, v := range video {
+		_, err := r.SAdd(c, key, v).Result()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

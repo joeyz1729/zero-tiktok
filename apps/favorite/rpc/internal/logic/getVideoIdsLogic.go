@@ -28,15 +28,11 @@ func (l *GetVideoIdsLogic) GetVideoIds(in *model.GetVideoIdsRequest) (*model.Get
 	resp := new(model.GetVideoIdsResponse)
 	//var videoIds []int64
 	//
-	//sqlStr := `select video_id from tiktok_favorite.favorite where user_id = ?`
-	//err := l.svcCtx.FavorRepo.FavorDB.Select(&videoIds, sqlStr, in.UserId)
-	//if err != nil {
-	//	logx.Errorw("select video ids failed",
-	//		logx.Field("err", err),
-	//	)
-	//	return resp, err
-	//}
-	//resp.VideoNum = int64(len(videoIds))
-	//resp.VideoIds = videoIds
+	ids, err := l.svcCtx.FavorRepo.GetFavorIds(l.ctx, in.UserId)
+	if err != nil {
+		return nil, err
+	}
+	resp.VideoNum = int64(len(ids))
+	resp.VideoIds = ids
 	return resp, nil
 }

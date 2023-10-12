@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
@@ -25,14 +26,36 @@ func NewGetAuthorLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetAuth
 
 func (l *GetAuthorLogic) GetAuthor(in *model.GetAuthorRequest) (*model.GetAuthorResponse, error) {
 	// todo: add your logic here and delete this line
-	// 用于 get publish list中查询作者信息，不需要查询 follow 关系
 	author, err := l.svcCtx.UserRepo.GetUserInfo(in.AuthorId)
 	if err != nil {
 		return nil, err
 	}
+	relation := false
+	if in.UserId != in.AuthorId {
+		followRes, err := l.svcCtx.FollowRpc.GetRelation(l.ctx, &follow.GetRelationRequest{
+			UserId:   in.UserId,
+			ToUserId: in.AuthorId,
+		})
+		if err != nil {
+			return nil, err
+		}
+		relation = followRes.IfFollowing == int32(1)
+	}
+
 	return &model.GetAuthorResponse{
-		Id:   author.UserId,
-		Name: author.Username,
+		Id:              author.UserId,
+		Name:            author.Username,
+		Avatar:          "no avatar",
+		BackgroundImage: "no background image",
+		Signature:       "no signature",
+
+		FavoriteCount:  author.FavoriteCount,
+		TotalFavorited: author.TotalFavorited,
+		WorkCount:      author.WorkCount,
+
+		FollowerCount: author.FollowerCount,
+		FollowCount:   author.FollowedCount,
+		IsFollow:      relation,
 	}, nil
 
 }

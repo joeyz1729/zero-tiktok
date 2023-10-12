@@ -95,6 +95,23 @@ func (fc *FollowCache) AddRelation(ctx context.Context, uid, tid int64, cnt bool
 	return nil
 }
 
+func (fc *FollowCache) AddFollow(ctx context.Context, uid, tid int64) (err error) {
+	ctx = context.Background()
+	uidStr, tidStr := strconv.FormatInt(uid, 10), strconv.FormatInt(tid, 10)
+	pipeline := fc.Client.TxPipeline()
+	_, err = pipeline.SAdd(ctx, FollowedPrefix+uidStr, tid).Result()
+	_, err = pipeline.SAdd(ctx, FollowerPrefix+tidStr, uid).Result()
+	_, err = pipeline.Exec(ctx)
+	if err != nil {
+		logx.Errorw("[redis] transaction pipeline failed",
+			logx.Field("err", err),
+		)
+		return err
+	}
+	logx.Info("[redis] del relation success")
+	return nil
+}
+
 func (fc *FollowCache) UpdateCount(ctx context.Context, uid, tid int64) (err error) {
 	uidStr, tidStr := strconv.FormatInt(uid, 10), strconv.FormatInt(tid, 10)
 	pipeline := fc.Client.TxPipeline()

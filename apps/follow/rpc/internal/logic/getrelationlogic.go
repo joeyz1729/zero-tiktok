@@ -27,24 +27,10 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 	var err error
 	logx.Info("begin get follow relation")
 	resp.IfFollowing = int32(2)
-	// 1. bloom filter
-	//bloomKey := cache.BloomPrefix + mid + ":" + fid
-	//ok, err := l.svcCtx.Filter.ExistsCtx(l.ctx, []byte(bloomKey))
-	//if err != nil {
-	//	logx.Errorw("bloom filter failed",
-	//		logx.Field("err", err),
-	//	)
-	//	return resp, err
-	//}
-	//if !ok {
-	//	logx.Info("bloom filter not exist, return")
-	//	resp.IfFollowing = 0
-	//	resp.IfFollower = 11111
-	//	return resp, nil
-	//}
-	// 2. check redis
+	// cache
 	ok, err := l.svcCtx.FollowCache.GetRelation(l.ctx, in.UserId, in.ToUserId)
-	if err != nil && ok {
+	if err == nil && ok {
+		// cache hit
 		resp.IfFollowing = int32(1)
 		return resp, nil
 	}
@@ -53,10 +39,14 @@ func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.Get
 	if err != nil {
 		return resp, err
 	}
-	if ok {
-		resp.IfFollowing = int32(1)
+	if !ok {
+		return resp, nil
 	}
 
-	go l.svcCtx.FollowCache.AddRelation(l.ctx, in.UserId, in.ToUserId, false, 0, 0)
+	resp.IfFollowing = int32(1)
+	err = l.svcCtx.FollowCache.AddFollow(l.ctx, in.UserId, in.ToUserId)
+	if err != nil {
+		return resp, err
+	}
 	return resp, nil
 }

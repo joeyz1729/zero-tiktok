@@ -28,6 +28,8 @@ type FavorDB interface {
 	IsFavoriteRecordExist(userId, videoId int64) (bool, error)
 	CreateFavoriteRecord(favoriteInfo *model.Favorite) error
 	DeleteFavoriteRecord(favoriteInfo *model.Favorite) error
+
+	GetFavoriteIds(userId int64) ([]int64, error)
 }
 
 var _ FavorDB = (*DBImpl)(nil)
@@ -59,4 +61,17 @@ func (r *DBImpl) DeleteFavoriteRecord(favor *model.Favorite) error {
 func (r *DBImpl) IsFavoriteVideo(userId, videoId int64) (bool, error) {
 
 	return false, nil
+}
+
+func (r *DBImpl) GetFavoriteIds(userId int64) ([]int64, error) {
+	var favors []model.Favorite
+	err := r.Table("favorites").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]int64, len(favors))
+	for i, f := range favors {
+		ids[i] = f.VideoId
+	}
+	return ids, nil
 }

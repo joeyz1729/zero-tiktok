@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -35,7 +34,7 @@ var _ VideoRepo = (*RepoImpl)(nil)
 
 func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) {
 	// 1. 检查缓存
-	key := model.VideoInfoPrefix + strconv.FormatInt(vid, 10)
+	key := VideoInfoPrefix + strconv.FormatInt(vid, 10)
 	hit, err := r.cache.KeyExists(ctx, key)
 	if err == nil && hit {
 		// cache hit
@@ -56,7 +55,7 @@ func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) 
 
 func (r *RepoImpl) GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error) {
 	uidStr := strconv.FormatInt(uid, 10)
-	hit, err := r.cache.KeyExists(ctx, model.VideoPublishPrefix+uidStr)
+	hit, err := r.cache.KeyExists(ctx, VideoPublishPrefix+uidStr)
 	if err == nil && hit {
 		// cache hit
 		//return r.cache.GetVideosByUser(ctx, model.VideoPublishPrefix+uidStr)

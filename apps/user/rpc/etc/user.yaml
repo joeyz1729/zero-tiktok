@@ -36,3 +36,9 @@ Snowflake:
 #Consul:
 #  Host: 127.0.0.1:8500
 #  Key: consul-user.rpc
+
+FollowRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: follow.rpc

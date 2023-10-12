@@ -32,6 +32,8 @@ type FavorRepo interface {
 	IsFavoriteRecordExist(c context.Context, userId, videoId int64) (bool, error)
 	CreateFavoriteRecord(c context.Context, favor *model.Favorite) error
 	DeleteFavoriteRecord(c context.Context, favor *model.Favorite) error
+
+	GetFavorIds(c context.Context, userId int64) ([]int64, error)
 }
 
 var _ FavorRepo = (*RepoImpl)(nil)
@@ -94,4 +96,29 @@ func (r *RepoImpl) DeleteFavoriteRecord(c context.Context, favor *model.Favorite
 	uidStr := strconv.FormatInt(favor.UserId, 10)
 	// 删除缓存
 	return r.cache.DelFavorite(c, FavoriteSetPrefix+uidStr, favor.VideoId)
+}
+
+func (r *RepoImpl) GetFavorIds(c context.Context, userId int64) ([]int64, error) {
+	//	check cache
+	key := FavoriteSetPrefix + strconv.FormatInt(userId, 10)
+	hit, err := r.cache.KeyExist(c, key)
+	if err == nil && hit {
+		// cache
+		ids, err := r.cache.GetFavoriteVideoIds(c, key)
+		if err == nil {
+			return ids, nil
+		}
+	}
+	// database
+	ids, err := r.db.GetFavoriteIds(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	// add cache
+	err = r.cache.AddFavorites(c, key, ids...)
+	if err != nil {
+		return nil, err
+	}
+	return ids, nil
 }

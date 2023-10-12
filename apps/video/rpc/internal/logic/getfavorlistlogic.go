@@ -26,6 +26,7 @@ func NewGetFavorListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetF
 	}
 }
 
+// GetFavorList 获取用户点赞列表
 func (l *GetFavorListLogic) GetFavorList(in *model.GetFavorListRequest) (*model.GetFavorListResponse, error) {
 	var resp = new(model.GetFavorListResponse)
 	// 根据video ids获取列表，
@@ -51,8 +52,24 @@ func (l *GetFavorListLogic) GetFavorList(in *model.GetFavorListRequest) (*model.
 			vd := &video.VideoDetail{
 				Id: v.VideoId,
 				Author: &video.UserInfo{
-					Id: authorRes.Id,
+					Id:              authorRes.Id,
+					Name:            authorRes.Name,
+					Avatar:          authorRes.Avatar,
+					BackgroundImage: authorRes.BackgroundImage,
+					Signature:       authorRes.Signature,
+					FavoriteCount:   authorRes.FavoriteCount,
+					WorkCount:       authorRes.WorkCount,
+					TotalFavorited:  authorRes.TotalFavorited,
+					FollowerCount:   authorRes.FollowerCount,
+					FollowCount:     authorRes.FollowCount,
+					IsFollow:        authorRes.IsFollow,
 				},
+				Title:         v.Title,
+				PlayUrl:       v.PlayUrl,
+				CoverUrl:      v.CoverUrl,
+				FavoriteCount: v.FavoriteCount,
+				CommentCount:  v.CommentCount,
+				IsFavorite:    true,
 			}
 			videoList[i] = vd
 		}(i, vid)

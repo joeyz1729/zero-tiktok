@@ -8,6 +8,8 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 
+	FollowRpc zrpc.RpcClientConf
+
 	Repo struct {
 		DataSource string
 		RedisAddr  string

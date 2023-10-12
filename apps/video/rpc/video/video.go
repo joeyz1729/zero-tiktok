@@ -40,7 +40,6 @@ type (
 		GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
 		GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error)
 		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
-		GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error)
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 		UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
 	}
@@ -80,11 +79,6 @@ func (m *defaultVideo) GetFavorList(ctx context.Context, in *GetFavorListRequest
 func (m *defaultVideo) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetVideoById(ctx, in, opts...)
-}
-
-func (m *defaultVideo) GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error) {
-	client := model.NewVideoClient(m.cli.Conn())
-	return client.GetVideosByIds(ctx, in, opts...)
 }
 
 func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {

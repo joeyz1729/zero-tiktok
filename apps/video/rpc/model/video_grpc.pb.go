@@ -24,7 +24,6 @@ const (
 	Video_GetListByAuthorId_FullMethodName   = "/video.Video/GetListByAuthorId"
 	Video_GetFavorList_FullMethodName        = "/video.Video/GetFavorList"
 	Video_GetVideoById_FullMethodName        = "/video.Video/GetVideoById"
-	Video_GetVideosByIds_FullMethodName      = "/video.Video/GetVideosByIds"
 	Video_Feed_FullMethodName                = "/video.Video/Feed"
 	Video_UpdateFavoriteCount_FullMethodName = "/video.Video/UpdateFavoriteCount"
 )
@@ -39,7 +38,6 @@ type VideoClient interface {
 	GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
 	GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error)
 	GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
-	GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error)
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 	UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
 }
@@ -97,15 +95,6 @@ func (c *videoClient) GetVideoById(ctx context.Context, in *GetVideoByIdRequest,
 	return out, nil
 }
 
-func (c *videoClient) GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error) {
-	out := new(GetVideosByIdsResponse)
-	err := c.cc.Invoke(ctx, Video_GetVideosByIds_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *videoClient) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
 	out := new(FeedResponse)
 	err := c.cc.Invoke(ctx, Video_Feed_FullMethodName, in, out, opts...)
@@ -134,7 +123,6 @@ type VideoServer interface {
 	GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error)
 	GetFavorList(context.Context, *GetFavorListRequest) (*GetFavorListResponse, error)
 	GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error)
-	GetVideosByIds(context.Context, *GetVideosByIdsRequest) (*GetVideosByIdsResponse, error)
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
 	UpdateFavoriteCount(context.Context, *UpdateFavoriteCountRequest) (*UpdateFavoriteCountResponse, error)
 	mustEmbedUnimplementedVideoServer()
@@ -158,9 +146,6 @@ func (UnimplementedVideoServer) GetFavorList(context.Context, *GetFavorListReque
 }
 func (UnimplementedVideoServer) GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVideoById not implemented")
-}
-func (UnimplementedVideoServer) GetVideosByIds(context.Context, *GetVideosByIdsRequest) (*GetVideosByIdsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetVideosByIds not implemented")
 }
 func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
@@ -271,24 +256,6 @@ func _Video_GetVideoById_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Video_GetVideosByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetVideosByIdsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VideoServer).GetVideosByIds(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Video_GetVideosByIds_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VideoServer).GetVideosByIds(ctx, req.(*GetVideosByIdsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Video_Feed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FeedRequest)
 	if err := dec(in); err != nil {
@@ -351,10 +318,6 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetVideoById",
 			Handler:    _Video_GetVideoById_Handler,
-		},
-		{
-			MethodName: "GetVideosByIds",
-			Handler:    _Video_GetVideosByIds_Handler,
 		},
 		{
 			MethodName: "Feed",

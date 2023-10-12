@@ -2,18 +2,21 @@ package dao
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/go-redis/redis/v8"
 	"strconv"
 )
 
 var (
-	FieldInfoTitle     = model.FieldInfoTitle
-	FieldInfoPlayUrl   = model.FieldInfoPlayUrl
-	FieldInfoCoverUrl  = model.FieldInfoCoverUrl
-	FieldInfoAuthorId  = model.FieldInfoAuthorId
-	FieldCountFavorite = model.FieldCountFavorite
-	FieldCountComment  = model.FieldCountComment
+	VideoFeedPrefix    = "tiktok:video::feed"    // +nil zset	(vid, timestamp)
+	VideoInfoPrefix    = "tiktok:video:info:"    // +vid, hash	(info)
+	VideoPublishPrefix = "tiktok:video:publish:" // +uid set (vid)
+
+	FieldInfoTitle     = "title"
+	FieldInfoPlayUrl   = "playurl"
+	FieldInfoCoverUrl  = "coverurl"
+	FieldInfoAuthorId  = "authorid"
+	FieldCountFavorite = "favorite"
+	FieldCountComment  = "comment"
 )
 
 type VideoCache interface {
