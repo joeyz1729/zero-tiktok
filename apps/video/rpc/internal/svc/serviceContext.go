@@ -2,23 +2,26 @@ package svc
 
 import (
 	"fmt"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/dao"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
 	Config config.Config
 
-	VideoModel model.VideoModel
+	//VideoModel model.VideoModel
 
 	VideoCache *redis.Client
 
 	VideoRepo dao.VideoRepo
 
 	VideoDB *sqlx.DB
+
+	UserRpc user.User
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -41,5 +44,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		VideoDB:    db,
 		VideoCache: rdb,
 		VideoRepo:  dao.NewRepoImpl(db, rdb),
+		UserRpc:    user.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

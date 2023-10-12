@@ -71,3 +71,8 @@ func (s *UserServer) GetAuthor(ctx context.Context, in *model.GetAuthorRequest) 
 	l := logic.NewGetAuthorLogic(ctx, s.svcCtx)
 	return l.GetAuthor(in)
 }
+
+func (s *UserServer) GetAuthors(ctx context.Context, in *model.GetAuthorsRequest) (*model.GetAuthorsResponse, error) {
+	l := logic.NewGetAuthorsLogic(ctx, s.svcCtx)
+	return l.GetAuthors(in)
+}

@@ -5,15 +5,18 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
+	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
+	"sync"
 )
 
 type VideoRepo interface {
-	GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error)
-	GetVideoById(ctx context.Context, vid int64) (Video, error)
-	GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
-	AddVideoInfo(ctx context.Context, video *model.Video) error
-	AddVideo(ctx context.Context, video *model.Video) error
+	GetVideoById(ctx context.Context, vid int64) (*Video, error)
+
+	//GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error)
+	//GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
+	//AddVideoInfo(ctx context.Context, video *model.Video) error
+	AddVideo(ctx context.Context, video *Video) error
 }
 
 type RepoImpl struct {
@@ -30,18 +33,25 @@ func NewRepoImpl(db *sqlx.DB, rdb *redis.Client) *RepoImpl {
 
 var _ VideoRepo = (*RepoImpl)(nil)
 
-func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (Video, error) {
-	vidStr := strconv.FormatInt(vid, 10)
-	hit, err := r.cache.KeyExists(ctx, model.VideoInfoPrefix+vidStr)
+func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) {
+	// 1. 检查缓存
+	key := model.VideoInfoPrefix + strconv.FormatInt(vid, 10)
+	hit, err := r.cache.KeyExists(ctx, key)
 	if err == nil && hit {
 		// cache hit
-		return r.cache.GetVideoById(ctx, model.VideoInfoPrefix+vidStr)
+		if v, err := r.cache.GetVideoById(ctx, key); err == nil {
+			v.VideoId = vid
+			return v, nil
+		}
 	}
-	// cache miss
-	defer func() {
-		_ = r.cache.DelVideo(ctx, model.VideoInfoPrefix+vidStr)
-	}()
-	return r.db.GetVideoById(vid)
+	// 缓存命中，或者获取失败
+	// 2. 从数据库读取
+	v, err := r.db.GetVideoById(vid)
+	if err != nil {
+		return nil, err
+	}
+	_ = r.cache.AddVideo(ctx, key, v)
+	return v, nil
 }
 
 func (r *RepoImpl) GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error) {
@@ -49,7 +59,7 @@ func (r *RepoImpl) GetVideosByUserId(ctx context.Context, uid int64) ([]Video, e
 	hit, err := r.cache.KeyExists(ctx, model.VideoPublishPrefix+uidStr)
 	if err == nil && hit {
 		// cache hit
-		return r.cache.GetVideosByUser(ctx, model.VideoPublishPrefix+uidStr)
+		//return r.cache.GetVideosByUser(ctx, model.VideoPublishPrefix+uidStr)
 	}
 
 	// 从数据库读取
@@ -60,17 +70,40 @@ func (r *RepoImpl) GetVideosByUserId(ctx context.Context, uid int64) ([]Video, e
 	// 添加用户的发布列表缓存
 	// 添加视频信息的缓存
 	_ = r.cache.AddPublishList(ctx, uidStr, videos)
-	return videos, nil
+	//return videos, nil
+	return []Video{}, nil
 }
 
-func (r *RepoImpl) AddVideoInfo(ctx context.Context, video *model.Video) (err error) {
+func (r *RepoImpl) AddVideoInfo(ctx context.Context, video *Video) (err error) {
 	return
 }
 
-func (r *RepoImpl) AddVideo(ctx context.Context, video *model.Video) (err error) {
+func (r *RepoImpl) AddVideo(ctx context.Context, video *Video) (err error) {
 	return
 }
 
 func (r *RepoImpl) GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error) {
-	return []*Video{}, nil
+	videos := make([]*Video, len(ids))
+	var wg sync.WaitGroup
+	var errCh = make(chan error, len(ids))
+	wg.Add(len(ids))
+	for i := range videos {
+		go func(i int) {
+			defer wg.Done()
+			video, err := r.GetVideoById(ctx, ids[i])
+			if err != nil {
+				errCh <- err
+				return
+			}
+			videos[i] = video
+		}(i)
+	}
+	wg.Wait()
+	select {
+	case err := <-errCh:
+		logx.Error("get video concurrency ", err)
+		return nil, err
+	default:
+	}
+	return videos, nil
 }

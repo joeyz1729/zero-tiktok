@@ -42,3 +42,9 @@ RedisDB:
   DB: 0
   PoolSize: 100
 
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc

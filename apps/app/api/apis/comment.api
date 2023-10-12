@@ -1,5 +1,7 @@
 syntax = "v1"
 
+import "user.api"
+
 type (
     CommentActionRequest {
         Token string `json:"token"`

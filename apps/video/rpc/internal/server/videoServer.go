@@ -38,6 +38,11 @@ func (s *VideoServer) GetListByAuthorId(ctx context.Context, in *model.GetListBy
 	return l.GetListByAuthorId(in)
 }
 
+func (s *VideoServer) GetFavorList(ctx context.Context, in *model.GetFavorListRequest) (*model.GetFavorListResponse, error) {
+	l := logic.NewGetFavorListLogic(ctx, s.svcCtx)
+	return l.GetFavorList(in)
+}
+
 func (s *VideoServer) GetVideoById(ctx context.Context, in *model.GetVideoByIdRequest) (*model.GetVideoByIdResponse, error) {
 	l := logic.NewGetVideoByIdLogic(ctx, s.svcCtx)
 	return l.GetVideoById(in)
@@ -51,11 +56,6 @@ func (s *VideoServer) GetVideosByIds(ctx context.Context, in *model.GetVideosByI
 func (s *VideoServer) Feed(ctx context.Context, in *model.FeedRequest) (*model.FeedResponse, error) {
 	l := logic.NewFeedLogic(ctx, s.svcCtx)
 	return l.Feed(in)
-}
-
-func (s *VideoServer) GetWorkCount(ctx context.Context, in *model.GetWorkCountRequest) (*model.GetWorkCountResponse, error) {
-	l := logic.NewGetWorkCountLogic(ctx, s.svcCtx)
-	return l.GetWorkCount(in)
 }
 
 func (s *VideoServer) UpdateFavoriteCount(ctx context.Context, in *model.UpdateFavoriteCountRequest) (*model.UpdateFavoriteCountResponse, error) {

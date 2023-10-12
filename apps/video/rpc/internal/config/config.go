@@ -14,7 +14,7 @@ type Config struct {
 
 	CacheRedis cache.CacheConf
 
-	//Consul consul.Conf
+	UserRpc zrpc.RpcClientConf
 
 	Snowflake struct {
 		StartTime string

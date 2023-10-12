@@ -22,10 +22,10 @@ const (
 	Video_PublishAction_FullMethodName       = "/video.Video/PublishAction"
 	Video_GetListByUserId_FullMethodName     = "/video.Video/GetListByUserId"
 	Video_GetListByAuthorId_FullMethodName   = "/video.Video/GetListByAuthorId"
+	Video_GetFavorList_FullMethodName        = "/video.Video/GetFavorList"
 	Video_GetVideoById_FullMethodName        = "/video.Video/GetVideoById"
 	Video_GetVideosByIds_FullMethodName      = "/video.Video/GetVideosByIds"
 	Video_Feed_FullMethodName                = "/video.Video/Feed"
-	Video_GetWorkCount_FullMethodName        = "/video.Video/GetWorkCount"
 	Video_UpdateFavoriteCount_FullMethodName = "/video.Video/UpdateFavoriteCount"
 )
 
@@ -37,10 +37,10 @@ type VideoClient interface {
 	PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
 	GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
 	GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
+	GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error)
 	GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
 	GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error)
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
-	GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error)
 	UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error)
 }
 
@@ -79,6 +79,15 @@ func (c *videoClient) GetListByAuthorId(ctx context.Context, in *GetListByAuthor
 	return out, nil
 }
 
+func (c *videoClient) GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error) {
+	out := new(GetFavorListResponse)
+	err := c.cc.Invoke(ctx, Video_GetFavorList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *videoClient) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
 	out := new(GetVideoByIdResponse)
 	err := c.cc.Invoke(ctx, Video_GetVideoById_FullMethodName, in, out, opts...)
@@ -106,15 +115,6 @@ func (c *videoClient) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *videoClient) GetWorkCount(ctx context.Context, in *GetWorkCountRequest, opts ...grpc.CallOption) (*GetWorkCountResponse, error) {
-	out := new(GetWorkCountResponse)
-	err := c.cc.Invoke(ctx, Video_GetWorkCount_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *videoClient) UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error) {
 	out := new(UpdateFavoriteCountResponse)
 	err := c.cc.Invoke(ctx, Video_UpdateFavoriteCount_FullMethodName, in, out, opts...)
@@ -132,10 +132,10 @@ type VideoServer interface {
 	PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error)
 	GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error)
 	GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error)
+	GetFavorList(context.Context, *GetFavorListRequest) (*GetFavorListResponse, error)
 	GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error)
 	GetVideosByIds(context.Context, *GetVideosByIdsRequest) (*GetVideosByIdsResponse, error)
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
-	GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error)
 	UpdateFavoriteCount(context.Context, *UpdateFavoriteCountRequest) (*UpdateFavoriteCountResponse, error)
 	mustEmbedUnimplementedVideoServer()
 }
@@ -153,6 +153,9 @@ func (UnimplementedVideoServer) GetListByUserId(context.Context, *GetListByUserI
 func (UnimplementedVideoServer) GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByAuthorId not implemented")
 }
+func (UnimplementedVideoServer) GetFavorList(context.Context, *GetFavorListRequest) (*GetFavorListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFavorList not implemented")
+}
 func (UnimplementedVideoServer) GetVideoById(context.Context, *GetVideoByIdRequest) (*GetVideoByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVideoById not implemented")
 }
@@ -161,9 +164,6 @@ func (UnimplementedVideoServer) GetVideosByIds(context.Context, *GetVideosByIdsR
 }
 func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
-}
-func (UnimplementedVideoServer) GetWorkCount(context.Context, *GetWorkCountRequest) (*GetWorkCountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWorkCount not implemented")
 }
 func (UnimplementedVideoServer) UpdateFavoriteCount(context.Context, *UpdateFavoriteCountRequest) (*UpdateFavoriteCountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavoriteCount not implemented")
@@ -235,6 +235,24 @@ func _Video_GetListByAuthorId_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_GetFavorList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFavorListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetFavorList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetFavorList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetFavorList(ctx, req.(*GetFavorListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Video_GetVideoById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetVideoByIdRequest)
 	if err := dec(in); err != nil {
@@ -289,24 +307,6 @@ func _Video_Feed_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Video_GetWorkCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWorkCountRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VideoServer).GetWorkCount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Video_GetWorkCount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VideoServer).GetWorkCount(ctx, req.(*GetWorkCountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Video_UpdateFavoriteCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateFavoriteCountRequest)
 	if err := dec(in); err != nil {
@@ -345,6 +345,10 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Video_GetListByAuthorId_Handler,
 		},
 		{
+			MethodName: "GetFavorList",
+			Handler:    _Video_GetFavorList_Handler,
+		},
+		{
 			MethodName: "GetVideoById",
 			Handler:    _Video_GetVideoById_Handler,
 		},
@@ -355,10 +359,6 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Feed",
 			Handler:    _Video_Feed_Handler,
-		},
-		{
-			MethodName: "GetWorkCount",
-			Handler:    _Video_GetWorkCount_Handler,
 		},
 		{
 			MethodName: "UpdateFavoriteCount",

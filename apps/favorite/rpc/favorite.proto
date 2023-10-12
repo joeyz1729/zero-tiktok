@@ -10,7 +10,7 @@ service Favorite {
   rpc AddAction(action_request) returns(action_response);
   rpc DelAction(action_request) returns(action_response);
   rpc GetVideoIds(get_video_ids_request) returns (get_video_ids_response);
-  rpc GetFavoriteCount(get_favorite_count_request) returns (get_favorite_count_response);
+//  rpc GetFavoriteCount(get_favorite_count_request) returns (get_favorite_count_response);
   rpc GetFavorite(get_favorite_request) returns(get_favorite_response);
 
 }

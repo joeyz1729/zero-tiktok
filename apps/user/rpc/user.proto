@@ -15,6 +15,7 @@ service User {
   rpc UpdateWorkInfo(update_work_info_request) returns(update_work_info_response);
 
   rpc GetAuthor(get_author_request) returns(get_author_response);
+  rpc GetAuthors(get_authors_request) returns(get_authors_response);
 
 }
 
@@ -129,6 +130,7 @@ message get_users_response {
 
 message get_author_request {
   int64 user_id = 1;
+  int64 author_id = 2;
 }
 
 message get_author_response {
@@ -143,4 +145,14 @@ message get_author_response {
   int64 total_favorited = 9; //获赞数量
   int64 work_count = 10; //作品数量
   int64 favorite_count = 11; //点赞数量
+}
+
+
+message get_authors_request {
+  int64 user_id = 1;
+  repeated int64 author_ids = 2;
+}
+
+message get_authors_response {
+  repeated UserInfo author_infos = 1;
 }

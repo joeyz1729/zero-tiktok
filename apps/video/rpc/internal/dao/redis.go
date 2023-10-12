@@ -4,15 +4,29 @@ import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/go-redis/redis/v8"
+	"strconv"
+)
+
+var (
+	FieldInfoTitle     = model.FieldInfoTitle
+	FieldInfoPlayUrl   = model.FieldInfoPlayUrl
+	FieldInfoCoverUrl  = model.FieldInfoCoverUrl
+	FieldInfoAuthorId  = model.FieldInfoAuthorId
+	FieldCountFavorite = model.FieldCountFavorite
+	FieldCountComment  = model.FieldCountComment
 )
 
 type VideoCache interface {
 	KeyExists(context.Context, string) (bool, error)
-	GetVideoById(ctx context.Context, key string) (Video, error)
-	GetVideosByUser(ctx context.Context, key string) ([]Video, error)
-	AddVideoInfo(context.Context, model.Video) error
+
 	DelVideo(context.Context, string) error
-	AddPublishList(context.Context, string, []Video) error
+	AddVideo(context.Context, string, *Video) error
+
+	GetVideoById(ctx context.Context, key string) (*Video, error)
+
+	GetVideosByUser(ctx context.Context, key string) ([]*Video, error)
+
+	AddPublishList(context.Context, string, []*Video) error
 	DelPublishList(context.Context, string) error
 }
 
@@ -31,36 +45,40 @@ func (c *RedisImpl) KeyExists(ctx context.Context, key string) (ok bool, err err
 	return num == 1, err
 }
 
-func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video Video, err error) {
-	//var aidStr, fcStr, ccStr string
-	//pipeline := c.rdb.Pipeline()
-	//aidStr, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldInfoAuthorId).Result()
-	//video.Title, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldInfoTitle).Result()
-	//video.PlayUrl, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldInfoPlayUrl).Result()
-	//video.CoverUrl, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldInfoCoverUrl).Result()
-	//video.CoverUrl, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldInfoCoverUrl).Result()
-	//fcStr, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldCountFavorite).Result()
-	//ccStr, err = pipeline.HGet(ctx, model.VideoInfoPrefix+vidStr, model.FieldCountComment).Result()
-	//_, err = pipeline.Exec(ctx)
-	//if err != nil {
-	//	return model.VideoDetail{}, err
-	//}
-	//if aid, err := strconv.ParseInt(aidStr, 10, 64); err != nil {
-	//	return model.VideoDetail{}, err
-	//} else {
-	//	video.AuthorId = aid
-	//}
-	//
-	//if fc, err := strconv.ParseInt(fcStr, 10, 64); err != nil {
-	//	return model.Video{}, err
-	//}else {video.}
-	//video.AuthorId = aid
+func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video, err error) {
+	cm, err := c.rdb.HGetAll(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	video = new(Video)
+	video.AuthorId, err = strconv.ParseInt(cm[FieldInfoAuthorId], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	video.FavoriteCount, err = strconv.ParseInt(cm[FieldCountFavorite], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	video.CommentCount, err = strconv.ParseInt(cm[FieldCountComment], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	video.Title = cm[FieldInfoTitle]
+	video.CoverUrl = cm[FieldInfoCoverUrl]
+	video.PlayUrl = cm[FieldInfoPlayUrl]
 	return video, nil
 }
 
-func (c *RedisImpl) AddVideoInfo(ctx context.Context, video model.Video) (err error) {
-
-	return
+func (c *RedisImpl) AddVideo(ctx context.Context, key string, video *Video) (err error) {
+	_, err = c.rdb.HSet(ctx, key,
+		FieldInfoAuthorId, video.AuthorId,
+		FieldInfoTitle, video.Title,
+		FieldInfoPlayUrl, video.PlayUrl,
+		FieldInfoCoverUrl, video.CoverUrl,
+		FieldCountFavorite, video.FavoriteCount,
+		FieldCountComment, video.CommentCount,
+	).Result()
+	return err
 }
 
 func (c *RedisImpl) DelVideo(ctx context.Context, key string) (err error) {
@@ -68,13 +86,13 @@ func (c *RedisImpl) DelVideo(ctx context.Context, key string) (err error) {
 	return err
 }
 
-func (c *RedisImpl) GetVideosByUser(ctx context.Context, key string) ([]Video, error) {
-	return []Video{}, nil
+func (c *RedisImpl) GetVideosByUser(ctx context.Context, key string) ([]*Video, error) {
+	return []*Video{}, nil
 }
 
 func (c *RedisImpl) DelPublishList(context.Context, string) error {
 	return nil
 }
-func (c *RedisImpl) AddPublishList(ctx context.Context, uidStr string, videos []Video) error {
+func (c *RedisImpl) AddPublishList(ctx context.Context, uidStr string, videos []*Video) error {
 	return nil
 }

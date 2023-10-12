@@ -53,11 +53,17 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	}
 
 	// 3. video rpc 根据 video ids 列表获取详细的视频信息
-	videosRes := new(video.GetVideosByIdsResponse)
-	videosRes, err = l.svcCtx.VideoRpc.GetVideosByIds(l.ctx, &video.GetVideosByIdsRequest{
+	// 不用查询点赞关系，但是要查询author
+	videosRes := new(video.GetFavorListResponse)
+	videosRes, err = l.svcCtx.VideoRpc.GetFavorList(l.ctx, &video.GetFavorListRequest{
 		UserId:   req.UserId,
 		VideoIds: idsRes.VideoIds,
 	})
+	//videosRes, err = l.svcCtx.VideoRpc.GetVideosByIds(l.ctx, &video.GetVideosByIdsRequest{
+	//	UserId:   req.UserId,
+	//	VideoIds: idsRes.VideoIds,
+	//})
+	// TODO
 	if err != nil || length != len(videosRes.VideoList) {
 		logx.Error("get videos by ids: ", err)
 		resp.StatusCode = http.StatusInternalServerError

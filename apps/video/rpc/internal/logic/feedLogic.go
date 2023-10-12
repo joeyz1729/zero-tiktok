@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/dao"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/go-redis/redis/v8"
@@ -70,7 +71,7 @@ func (l *FeedLogic) Feed(in *model.FeedRequest) (*model.FeedResponse, error) {
 			continue
 		}
 		logx.Infof("get video info, vid:%s", vid)
-		v := new(model.Video)
+		v := new(dao.Video)
 		getStr := `select * from tiktok_video.video where video_id = ?`
 		err = l.svcCtx.VideoDB.Get(v, getStr, videoId)
 		if err != nil {

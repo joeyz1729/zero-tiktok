@@ -25,6 +25,8 @@ func NewGetListByAuthorIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 
 func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *model.GetListByAuthorIdRequest) (*model.GetListByAuthorIdResponse, error) {
 	// todo: add your logic here and delete this line
+	// 根据author id查询发布的视频列表
+	// 不需要查询author信息了，只需要查询info和favor
 
 	return &model.GetListByAuthorIdResponse{}, nil
 }
