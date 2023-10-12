@@ -30,6 +30,7 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err error) {
 	// todo: add your logic here and delete this line
 	resp = new(types.FeedResponse)
+	resp.VideoList = []types.Video{}
 
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
@@ -38,8 +39,7 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 		)
 		resp.StatusCode = http.StatusUnauthorized
 		resp.StatusMsg = "invalid token"
-		resp.VideoList = []types.Video{}
-		resp.NextTime = time.Now().UnixNano()
+		resp.NextTime = time.Now().Unix()
 		return resp, nil
 	}
 	uid := claims.UserId
@@ -53,31 +53,44 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "rpc failed"
-		resp.NextTime = time.Now().UnixNano()
-		resp.VideoList = []types.Video{}
+		resp.StatusMsg = "rpc feed failed"
+		resp.NextTime = time.Now().Unix()
 		return resp, nil
 	}
 	if feedRes.VideoLen == 0 {
-		resp.VideoList = []types.Video{}
-	} else {
-		resp.VideoList = make([]types.Video, feedRes.VideoLen)
-		for i, v := range feedRes.VideoList {
-			vi := types.Video{
-				Id: v.VideoId,
-				Author: types.Author(types.User{
-					Id: v.AuthorId,
-				}),
-				PlayUrl:  v.PlayUrl,
-				CoverUrl: v.CoverUrl,
-				Title:    v.Title,
-			}
-			resp.VideoList[i] = vi
-		}
+		resp.StatusMsg = "empty list"
+		resp.NextTime = time.Now().Unix()
+		resp.StatusCode = http.StatusOK
+		return resp, nil
 	}
 
+	resp.VideoList = make([]types.Video, feedRes.VideoLen)
+	for i, v := range feedRes.VideoList {
+		vi := types.Video{
+			Id: v.Id,
+			Author: types.Author{
+				Id:              v.Author.Id,
+				Name:            v.Author.Name,
+				Avatar:          v.Author.Avatar,
+				BackgroundImage: v.Author.BackgroundImage,
+				Signature:       v.Author.Signature,
+				FollowCount:     v.Author.FollowCount,
+				FollowerCount:   v.Author.FollowerCount,
+				IsFollow:        v.Author.IsFollow,
+				FavoriteCount:   v.Author.FavoriteCount,
+				TotalFavorited:  v.Author.TotalFavorited,
+				WorkCount:       v.Author.WorkCount,
+			},
+			Title:         v.Title,
+			CoverUrl:      v.CoverUrl,
+			PlayUrl:       v.PlayUrl,
+			FavoriteCount: v.FavoriteCount,
+			CommentCount:  v.CommentCount,
+			IsFavorite:    v.IsFavorite,
+		}
+		resp.VideoList[i] = vi
+	}
 	resp.NextTime = feedRes.NextTime
 	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = "success"
-	return
+	return resp, nil
 }

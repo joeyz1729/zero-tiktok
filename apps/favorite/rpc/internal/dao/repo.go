@@ -52,6 +52,7 @@ func (r *RepoImpl) IsFavoriteRecordExist(c context.Context, userId, videoId int6
 	if err != nil {
 		return false, err
 	}
+	// 添加缓存？ 单条添加缓存吗，还是查询整个列表
 	return ok, nil
 }
 

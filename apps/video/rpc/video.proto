@@ -5,7 +5,6 @@ option go_package="./model";
 
 service Video {
 
-//  rpc Feed(feed_request) returns(feed_response);
   rpc PublishAction(publish_action_request) returns(publish_action_response);
   rpc GetListByUserId(get_list_by_user_id_request) returns(get_list_by_user_id_response);
 
@@ -55,7 +54,7 @@ message feed_request {
 message feed_response {
   int64 video_len = 1;
   int64 next_time = 2; // 本次返回的视频中，发布最早的时间，作为下次请求时的latest_time
-  repeated VideoInfo video_list = 3; // 视频列表
+  repeated VideoDetail video_list = 3; // 视频列表
 }
 
 

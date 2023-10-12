@@ -73,3 +73,21 @@ func TestRepoImpl_GetFavorIds(t *testing.T) {
 		fmt.Println(ids)
 	}
 }
+
+func TestRepoImpl_IsFavoriteRecordExist(t *testing.T) {
+	repo := InitRepo()
+	pairs := [][2]int64{
+		{1, 1},
+		{1, 2},
+		{2, 1},
+		{2, 2},
+		{482313611805467523, 1},
+		{482313611805467523, 2},
+		{482313611805467523, 3},
+		{482313611805467523, 479275561387041668},
+		{482313611805467523, 479275563937178500},
+	}
+	for _, p := range pairs {
+		fmt.Println(repo.IsFavoriteRecordExist(context.Background(), p[0], p[1]))
+	}
+}

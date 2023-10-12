@@ -34,7 +34,6 @@ type (
 	VideoInfo                   = model.VideoInfo
 
 	Video interface {
-		// rpc Feed(feed_request) returns(feed_response);
 		PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
 		GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
 		GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
@@ -55,7 +54,6 @@ func NewVideo(cli zrpc.Client) Video {
 	}
 }
 
-// rpc Feed(feed_request) returns(feed_response);
 func (m *defaultVideo) PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.PublishAction(ctx, in, opts...)

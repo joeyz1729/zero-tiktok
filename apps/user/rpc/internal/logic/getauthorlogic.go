@@ -31,7 +31,7 @@ func (l *GetAuthorLogic) GetAuthor(in *model.GetAuthorRequest) (*model.GetAuthor
 		return nil, err
 	}
 	relation := false
-	if in.UserId != in.AuthorId {
+	if in.UserId != in.AuthorId && in.UserId != 0 {
 		followRes, err := l.svcCtx.FollowRpc.GetRelation(l.ctx, &follow.GetRelationRequest{
 			UserId:   in.UserId,
 			ToUserId: in.AuthorId,

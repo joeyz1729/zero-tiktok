@@ -32,7 +32,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VideoClient interface {
-	// rpc Feed(feed_request) returns(feed_response);
 	PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
 	GetListByUserId(ctx context.Context, in *GetListByUserIdRequest, opts ...grpc.CallOption) (*GetListByUserIdResponse, error)
 	GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
@@ -117,7 +116,6 @@ func (c *videoClient) UpdateFavoriteCount(ctx context.Context, in *UpdateFavorit
 // All implementations must embed UnimplementedVideoServer
 // for forward compatibility
 type VideoServer interface {
-	// rpc Feed(feed_request) returns(feed_response);
 	PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error)
 	GetListByUserId(context.Context, *GetListByUserIdRequest) (*GetListByUserIdResponse, error)
 	GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error)

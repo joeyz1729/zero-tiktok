@@ -53,3 +53,4 @@
 {"@timestamp":"2023-10-11T11:36:14.279+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}
 {"@timestamp":"2023-10-11T12:15:59.054+08:00","caller":"logic/getFollowIdsLogic.go:38","content":"get follower ids from mysql failedempty set","level":"error"}
 {"@timestamp":"2023-10-11T16:04:04.509+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}
+{"@timestamp":"2023-10-12T21:58:03.974+08:00","caller":"internal/discovbuilder.go:34","content":"bad resolver state","level":"error"}

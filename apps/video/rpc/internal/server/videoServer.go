@@ -22,7 +22,6 @@ func NewVideoServer(svcCtx *svc.ServiceContext) *VideoServer {
 	}
 }
 
-// rpc Feed(feed_request) returns(feed_response);
 func (s *VideoServer) PublishAction(ctx context.Context, in *model.PublishActionRequest) (*model.PublishActionResponse, error) {
 	l := logic.NewPublishActionLogic(ctx, s.svcCtx)
 	return l.PublishAction(in)

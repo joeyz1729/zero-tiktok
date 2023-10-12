@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 type VideoDB interface {
@@ -10,6 +11,7 @@ type VideoDB interface {
 	GetVideoByUser(uid int64) ([]*Video, error)
 
 	GetVideoIdsByAuthorId(uid int64) ([]int64, error)
+	GetFeedIds(int64) ([]*VideoWithTime, error)
 }
 
 type MysqlImpl struct {
@@ -34,13 +36,13 @@ func (r *MysqlImpl) GetVideoById(vid int64) (video *Video, err error) {
 		return nil, err
 	}
 	return &Video{
-		vid,
-		videoInfo.AuthorId,
-		videoInfo.Title,
-		videoInfo.PlayUrl,
-		videoInfo.CoverUrl,
-		videoCount.FavoriteCount,
-		videoCount.CommentCount,
+		VideoId:       vid,
+		AuthorId:      videoInfo.AuthorId,
+		Title:         videoInfo.Title,
+		PlayUrl:       videoInfo.PlayUrl,
+		CoverUrl:      videoInfo.CoverUrl,
+		FavoriteCount: videoCount.FavoriteCount,
+		CommentCount:  videoCount.CommentCount,
 	}, nil
 
 }
@@ -57,4 +59,14 @@ func (r *MysqlImpl) GetVideoIdsByAuthorId(uid int64) ([]int64, error) {
 		return nil, err
 	}
 	return videoIds, nil
+}
+
+func (r *MysqlImpl) GetFeedIds(lastTime int64) ([]*VideoWithTime, error) {
+	sqlStr := `select video_id, publish_time from tiktok_video.video where publish_time < ? limit 30`
+	videos := make([]*VideoWithTime, 0, 30)
+	err := r.DB.Select(&videos, sqlStr, time.Unix(lastTime, 0))
+	if err != nil {
+		return nil, err
+	}
+	return videos, nil
 }

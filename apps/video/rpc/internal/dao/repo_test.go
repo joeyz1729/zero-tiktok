@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"testing"
+	"time"
 )
 
 func InitRepo() *RepoImpl {
@@ -70,4 +71,10 @@ func TestRepoImpl_GetVideosByAuthorId(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestRepoImpl_FeedIds(t *testing.T) {
+	repo := InitRepo()
+	lastTime := time.Now().Unix()
+	fmt.Println(repo.FeedIds(context.Background(), lastTime))
 }

@@ -19,6 +19,8 @@ type VideoRepo interface {
 	//GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
 	//AddVideoInfo(ctx context.Context, video *model.Video) error
 	AddVideo(ctx context.Context, video *Video) error
+
+	FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error)
 }
 
 type RepoImpl struct {
@@ -129,4 +131,37 @@ func (r *RepoImpl) GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int6
 		return nil, err
 	}
 	return videoIds, nil
+}
+
+func (r *RepoImpl) FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
+	// TODO
+	// 查询cache是否存在
+
+	hit, err := r.cache.KeyExists(ctx, VideoFeedKey)
+	if err == nil && hit {
+		ids, nextTime, err := r.cache.GetFeedIds(ctx, lastTime)
+		if err == nil {
+			return ids, nextTime, nil
+		}
+	}
+	// 如果不存在或者出错则走database
+	videos, err := r.db.GetFeedIds(lastTime)
+	if err != nil {
+		return nil, 0, err
+	}
+	// 将查询结果添加到cache中
+	nextTime := lastTime
+	videoIds := make([]int64, len(videos))
+	for i, v := range videos {
+		videoIds[i] = v.VideoId
+		vt := v.PublishTime.Unix()
+		if vt < nextTime {
+			nextTime = vt
+		}
+		if err := r.cache.AddFeedVideo(ctx, v.VideoId, vt); err != nil {
+			return nil, 0, err
+		}
+	}
+	return videoIds, nextTime, nil
+
 }

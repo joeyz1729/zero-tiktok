@@ -2,6 +2,7 @@ package svc
 
 import (
 	"fmt"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/dao"
@@ -14,14 +15,12 @@ type ServiceContext struct {
 	Config config.Config
 
 	//VideoModel model.VideoModel
-
 	VideoCache *redis.Client
+	VideoRepo  dao.VideoRepo
+	VideoDB    *sqlx.DB
 
-	VideoRepo dao.VideoRepo
-
-	VideoDB *sqlx.DB
-
-	UserRpc user.User
+	UserRpc  user.User
+	FavorRpc favorite.Favorite
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -45,5 +44,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		VideoCache: rdb,
 		VideoRepo:  dao.NewRepoImpl(db, rdb),
 		UserRpc:    user.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		FavorRpc:   favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
 	}
 }
