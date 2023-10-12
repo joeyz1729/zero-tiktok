@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"errors"
 	"github.com/go-redis/redis/v8"
 	"strconv"
 )
@@ -17,6 +18,8 @@ var (
 	FieldInfoAuthorId  = "authorid"
 	FieldCountFavorite = "favorite"
 	FieldCountComment  = "comment"
+
+	ErrInvalidType = errors.New("invalid type")
 )
 
 type VideoCache interface {
@@ -28,8 +31,9 @@ type VideoCache interface {
 	GetVideoById(ctx context.Context, key string) (*Video, error)
 
 	GetVideosByUser(ctx context.Context, key string) ([]*Video, error)
+	GetVideoIdsByAuthor(context.Context, string) ([]int64, error)
 
-	AddPublishList(context.Context, string, []*Video) error
+	AddPublishList(context.Context, string, []int64) error
 	DelPublishList(context.Context, string) error
 }
 
@@ -52,6 +56,9 @@ func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video,
 	cm, err := c.rdb.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, err
+	}
+	if len(cm) != 6 {
+		return nil, ErrInvalidType
 	}
 	video = new(Video)
 	video.AuthorId, err = strconv.ParseInt(cm[FieldInfoAuthorId], 10, 64)
@@ -96,6 +103,24 @@ func (c *RedisImpl) GetVideosByUser(ctx context.Context, key string) ([]*Video, 
 func (c *RedisImpl) DelPublishList(context.Context, string) error {
 	return nil
 }
-func (c *RedisImpl) AddPublishList(ctx context.Context, uidStr string, videos []*Video) error {
+
+// GetVideoIdsByAuthor 根据作者id获取video id列表
+func (c *RedisImpl) GetVideoIdsByAuthor(ctx context.Context, key string) ([]int64, error) {
+	ids, err := c.rdb.SMembers(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	res := make([]int64, len(ids))
+	for i, idStr := range ids {
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		res[i] = id
+	}
+	return res, nil
+}
+
+func (c *RedisImpl) AddPublishList(ctx context.Context, uidStr string, videoIds []int64) error {
 	return nil
 }

@@ -87,8 +87,26 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 		v := types.Video{
 			Id: vi.Id,
 			Author: types.Author{
-				Id: authorRes.Id,
+				Id:              authorRes.Id,
+				Name:            authorRes.Name,
+				Avatar:          authorRes.Avatar,
+				BackgroundImage: authorRes.BackgroundImage,
+				Signature:       authorRes.Signature,
+
+				FollowCount:   authorRes.FollowCount,
+				FollowerCount: authorRes.FollowerCount,
+				IsFollow:      authorRes.IsFollow,
+
+				FavoriteCount:  authorRes.FavoriteCount,
+				TotalFavorited: authorRes.TotalFavorited,
+				WorkCount:      authorRes.WorkCount,
 			},
+			Title:         vi.Title,
+			CoverUrl:      vi.CoverUrl,
+			PlayUrl:       vi.PlayUrl,
+			FavoriteCount: vi.FavoriteCount,
+			CommentCount:  vi.CommentCount,
+			IsFavorite:    vi.IsFavorite,
 		}
 		videoList[i] = v
 	}

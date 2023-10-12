@@ -8,6 +8,8 @@ type VideoDB interface {
 	GetVideoById(vid int64) (*Video, error)
 
 	GetVideoByUser(uid int64) ([]*Video, error)
+
+	GetVideoIdsByAuthorId(uid int64) ([]int64, error)
 }
 
 type MysqlImpl struct {
@@ -45,4 +47,14 @@ func (r *MysqlImpl) GetVideoById(vid int64) (video *Video, err error) {
 
 func (r *MysqlImpl) GetVideoByUser(uid int64) ([]*Video, error) {
 	return nil, nil
+}
+
+func (r *MysqlImpl) GetVideoIdsByAuthorId(uid int64) ([]int64, error) {
+	sqlStr := `select video_id from tiktok_video.video where author_id = ?`
+	var videoIds []int64
+	err := r.DB.Select(&videoIds, sqlStr, uid)
+	if err != nil {
+		return nil, err
+	}
+	return videoIds, nil
 }

@@ -13,3 +13,4 @@
 {"@timestamp":"2023-10-11T11:04:53.979+08:00","caller":"logic/getuserslogic.go:33","content":"get user info failed","level":"error"}
 {"@timestamp":"2023-10-11T11:22:56.982+08:00","caller":"model/newmodel.go:140","content":"get count failedmissing destination name create_time in *model.UserDetail","level":"error"}
 {"@timestamp":"2023-10-11T11:22:56.982+08:00","caller":"logic/getuserslogic.go:33","content":"get user info failed","level":"error"}
+{"@timestamp":"2023-10-12T20:06:03.412+08:00","caller":"model/newmodel.go:73","content":"get username failedsql: no rows in result set","level":"error"}

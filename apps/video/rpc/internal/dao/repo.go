@@ -12,6 +12,9 @@ import (
 type VideoRepo interface {
 	GetVideoById(ctx context.Context, vid int64) (*Video, error)
 
+	GetVideosByAuthorId(context.Context, int64) ([]*Video, error)
+	GetVideoIdsByAuthorId(context.Context, int64) ([]int64, error)
+
 	//GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error)
 	//GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
 	//AddVideoInfo(ctx context.Context, video *model.Video) error
@@ -32,6 +35,15 @@ func NewRepoImpl(db *sqlx.DB, rdb *redis.Client) *RepoImpl {
 
 var _ VideoRepo = (*RepoImpl)(nil)
 
+func (r *RepoImpl) AddVideoInfo(ctx context.Context, video *Video) (err error) {
+	return
+}
+
+func (r *RepoImpl) AddVideo(ctx context.Context, video *Video) (err error) {
+	return
+}
+
+// GetVideoById 根据video  id查询
 func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) {
 	// 1. 检查缓存
 	key := VideoInfoPrefix + strconv.FormatInt(vid, 10)
@@ -53,34 +65,7 @@ func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) 
 	return v, nil
 }
 
-func (r *RepoImpl) GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error) {
-	uidStr := strconv.FormatInt(uid, 10)
-	hit, err := r.cache.KeyExists(ctx, VideoPublishPrefix+uidStr)
-	if err == nil && hit {
-		// cache hit
-		//return r.cache.GetVideosByUser(ctx, model.VideoPublishPrefix+uidStr)
-	}
-
-	// 从数据库读取
-	videos, err := r.db.GetVideoByUser(uid)
-	if err != nil {
-		return nil, err
-	}
-	// 添加用户的发布列表缓存
-	// 添加视频信息的缓存
-	_ = r.cache.AddPublishList(ctx, uidStr, videos)
-	//return videos, nil
-	return []Video{}, nil
-}
-
-func (r *RepoImpl) AddVideoInfo(ctx context.Context, video *Video) (err error) {
-	return
-}
-
-func (r *RepoImpl) AddVideo(ctx context.Context, video *Video) (err error) {
-	return
-}
-
+// GetFavorLists 根据用户点赞的video id列表获取详细信息，不查询is favorite
 func (r *RepoImpl) GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error) {
 	videos := make([]*Video, len(ids))
 	var wg sync.WaitGroup
@@ -105,4 +90,43 @@ func (r *RepoImpl) GetFavorLists(ctx context.Context, ids []int64) ([]*Video, er
 	default:
 	}
 	return videos, nil
+}
+
+// GetVideosByAuthorId 根据author id获取video列表
+func (r *RepoImpl) GetVideosByAuthorId(ctx context.Context, uid int64) ([]*Video, error) {
+	// 获取video ids
+	videoIds, err := r.GetVideoIdsByAuthorId(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+	// 根据video ids获取详细信息
+	videos, err := r.GetFavorLists(ctx, videoIds)
+	if err != nil {
+		return nil, err
+	}
+	return videos, nil
+}
+
+// GetVideoIdsByAuthorId 根据author id获取video id列表
+func (r *RepoImpl) GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int64, error) {
+	uidStr := strconv.FormatInt(uid, 10)
+	key := VideoPublishPrefix + uidStr
+	hit, err := r.cache.KeyExists(ctx, key)
+	if err == nil && hit {
+		ids, err := r.cache.GetVideoIdsByAuthor(ctx, key)
+		if err == nil {
+			return ids, err
+		}
+	}
+	// 从数据库查询
+	videoIds, err := r.db.GetVideoIdsByAuthorId(uid)
+	if err != nil {
+		return nil, err
+	}
+	// 添加缓存
+	err = r.cache.AddPublishList(ctx, key, videoIds)
+	if err != nil {
+		return nil, err
+	}
+	return videoIds, nil
 }

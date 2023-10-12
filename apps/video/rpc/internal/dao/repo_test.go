@@ -33,3 +33,41 @@ func Test_GetVideoById(t *testing.T) {
 		}
 	}
 }
+
+func TestImpl_GetVideoIdsByAuthor(t *testing.T) {
+	repo := InitRepo()
+	vid := int64(479264886078055299)
+	fmt.Println(repo.GetVideoIdsByAuthorId(context.Background(), vid))
+	for i := 1; i <= 5; i++ {
+		vid := int64(i)
+		videoIds, err := repo.GetVideoIdsByAuthorId(context.Background(), vid)
+		if err != nil {
+			fmt.Println("err: ", err)
+		} else {
+			fmt.Println(videoIds)
+		}
+	}
+}
+
+func TestRepoImpl_GetVideosByAuthorId(t *testing.T) {
+	repo := InitRepo()
+	vid := int64(479264886078055299)
+	videos, err := repo.GetVideosByAuthorId(context.Background(), vid)
+	if err != nil {
+		panic(err)
+	}
+	for _, v := range videos {
+		fmt.Println(*v)
+	}
+	for i := 1; i <= 5; i++ {
+		vid := int64(i)
+		videos, err := repo.GetVideosByAuthorId(context.Background(), vid)
+		if err != nil {
+			fmt.Println("err: ", err)
+		} else {
+			for _, v := range videos {
+				fmt.Println(*v)
+			}
+		}
+	}
+}
