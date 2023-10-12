@@ -2,6 +2,10 @@ package dao
 
 import "time"
 
+const (
+	RefreshLimit = 30
+)
+
 type Video struct {
 	VideoId  int64  `db:"video_id"`
 	AuthorId int64  `db:"author_id"`

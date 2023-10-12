@@ -78,3 +78,9 @@ func TestRepoImpl_FeedIds(t *testing.T) {
 	lastTime := time.Now().Unix()
 	fmt.Println(repo.FeedIds(context.Background(), lastTime))
 }
+
+func TestRepoImpl_RefreshFeed(t *testing.T) {
+	repo := InitRepo()
+	lastTime := time.Now().Unix()
+	fmt.Println(repo.RefreshFeed(context.Background(), lastTime))
+}

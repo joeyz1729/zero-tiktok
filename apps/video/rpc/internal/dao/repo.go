@@ -21,6 +21,7 @@ type VideoRepo interface {
 	AddVideo(ctx context.Context, video *Video) error
 
 	FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error)
+	RefreshFeed(ctx context.Context, lastTime int64) error
 }
 
 type RepoImpl struct {
@@ -164,4 +165,31 @@ func (r *RepoImpl) FeedIds(ctx context.Context, lastTime int64) ([]int64, int64,
 	}
 	return videoIds, nextTime, nil
 
+}
+
+func (r *RepoImpl) RefreshFeed(ctx context.Context, lastTime int64) error {
+	// 可以换成查询refreshTime之后的，添加一个limit，然后返回下一个游标，更新refreshTime
+	vs, err := r.db.GetFeedIds(lastTime)
+	if err != nil {
+		return err
+	}
+	var wg sync.WaitGroup
+	wg.Add(len(vs))
+	errCh := make(chan error, len(vs))
+	for _, v := range vs {
+		go func(vid int64, publishTime int64) {
+			defer wg.Done()
+			if err := r.cache.AddFeedVideo(ctx, vid, publishTime); err != nil {
+				errCh <- err
+				return
+			}
+		}(v.VideoId, v.PublishTime.Unix())
+	}
+	wg.Wait()
+	select {
+	case err := <-errCh:
+		return err
+	default:
+		return nil
+	}
 }

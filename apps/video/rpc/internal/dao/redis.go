@@ -8,9 +8,10 @@ import (
 )
 
 var (
-	VideoFeedKey       = "tiktok:video::feed"    // +nil zset	(vid, timestamp)
-	VideoInfoPrefix    = "tiktok:video:info:"    // +vid, hash	(info)
-	VideoPublishPrefix = "tiktok:video:publish:" // +uid set (vid)
+	VideoFeedRefreshKey = "tiktok:video::refresh"
+	VideoFeedKey        = "tiktok:video::feed"    // +nil zset	(vid, timestamp)
+	VideoInfoPrefix     = "tiktok:video:info:"    // +vid, hash	(info)
+	VideoPublishPrefix  = "tiktok:video:publish:" // +uid set (vid)
 
 	FieldInfoTitle     = "title"
 	FieldInfoPlayUrl   = "playurl"
