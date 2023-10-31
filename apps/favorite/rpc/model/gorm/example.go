@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	dsn := "root:Zy_9908091729@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8"
+	dsn := "root:root@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})

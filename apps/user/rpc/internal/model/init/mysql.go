@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	db, err := sqlx.Connect("mysql", "root:Zy_9908091729@tcp(localhost:3306)/tiktok_user?parseTime=true&charset=utf8")
+	db, err := sqlx.Connect("mysql", "root:root@tcp(localhost:3306)/tiktok_user?parseTime=true&charset=utf8")
 	if err != nil {
 		panic(err)
 	}

@@ -10,7 +10,7 @@ import (
 
 func InitRepo() *RepoImpl {
 	repo, err := NewRepo(config.Config{
-		Mysql:      struct{ DataSource string }{DataSource: "root:Zy_9908091729@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8"},
+		Mysql:      struct{ DataSource string }{DataSource: "root:root@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8"},
 		CacheRedis: struct{ Addr string }{Addr: "127.0.0.1:6379"},
 	})
 	if err != nil {

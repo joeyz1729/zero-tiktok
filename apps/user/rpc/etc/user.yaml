@@ -19,7 +19,7 @@ Etcd:
   Key: user.rpc
 
 Repo:
-  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_user?parseTime=true&charset=utf8
+  DataSource: root:root@tcp(localhost:3306)/tiktok_user?parseTime=true&charset=utf8
   RedisAddr: 127.0.0.1:6379
 
 CacheRedis:

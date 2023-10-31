@@ -7,7 +7,7 @@ Consumers: 1
 Offset: last
 
 Mysql:
-  DataSource: root:Zy_9908091729@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8
+  DataSource: root:root@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8
 
 CacheRedis:
   - Host: 127.0.0.1:6379

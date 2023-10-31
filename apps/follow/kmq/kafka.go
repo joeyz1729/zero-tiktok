@@ -25,7 +25,7 @@ func main() {
 	conf.MustLoad("etc/config.yaml", &c)
 	var err error
 	d, err := sqlx.Connect("mysql",
-		"root:Zy_9908091729@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8")
+		"root:root@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8")
 	if err != nil {
 		panic(err)
 	}
