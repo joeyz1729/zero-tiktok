@@ -22,7 +22,6 @@ func NewUpdateFollowInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *UpdateFollowInfoLogic) UpdateFollowInfo(in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
-	// todo: add your logic here and delete this line
 	var err error
 	if in.ActionType {
 		err = l.svcCtx.UserRepo.AddFollow(in.UserId, in.ToUserId)
