@@ -129,7 +129,6 @@ func (fc *FollowCache) UpdateCount(ctx context.Context, uid, tid int64) (err err
 }
 
 func (fc *FollowCache) GetRelation(ctx context.Context, uid, tid int64) (ok bool, err error) {
-	ctx = context.Background()
 	uidStr := strconv.FormatInt(uid, 10)
 	redisKey := FollowedPrefix + uidStr
 	ok, err = fc.SIsMember(ctx, redisKey, tid).Result()

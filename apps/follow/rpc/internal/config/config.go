@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -20,7 +19,7 @@ type Config struct {
 		Password string
 	}
 
-	KafkaMq kq.KqConf
+	//KafkaMq kq.KqConf
 
 	UserRpc zrpc.RpcClientConf
 }

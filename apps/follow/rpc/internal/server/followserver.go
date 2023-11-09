@@ -5,15 +5,15 @@ package server
 
 import (
 	"context"
-	model2 "github.com/YiZou89/zero-tiktok/apps/follow/model"
 
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/logic"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
 )
 
 type FollowServer struct {
 	svcCtx *svc.ServiceContext
-	model2.UnimplementedFollowServer
+	model.UnimplementedFollowServer
 }
 
 func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
@@ -22,37 +22,28 @@ func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
 	}
 }
 
-func (s *FollowServer) Action(ctx context.Context, in *model2.ActionRequest) (*model2.ActionResponse, error) {
+func (s *FollowServer) Action(ctx context.Context, in *model.ActionRequest) (*model.ActionResponse, error) {
 	l := logic.NewActionLogic(ctx, s.svcCtx)
 	return l.Action(in)
 }
 
-func (s *FollowServer) GetFollowIds(ctx context.Context, in *model2.GetFollowIdsRequest) (*model2.GetFollowIdsResponse, error) {
+func (s *FollowServer) GetFollowIds(ctx context.Context, in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
 	l := logic.NewGetFollowIdsLogic(ctx, s.svcCtx)
 	return l.GetFollowIds(in)
 }
 
-func (s *FollowServer) GetFollowerIds(ctx context.Context, in *model2.GetFollowerIdsRequest) (*model2.GetFollowerIdsResponse, error) {
+func (s *FollowServer) GetFollowerIds(ctx context.Context, in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
 	l := logic.NewGetFollowerIdsLogic(ctx, s.svcCtx)
 	return l.GetFollowerIds(in)
 }
 
-func (s *FollowServer) GetRelation(ctx context.Context, in *model2.GetRelationRequest) (*model2.GetRelationResponse, error) {
+func (s *FollowServer) GetRelation(ctx context.Context, in *model.GetRelationRequest) (*model.GetRelationResponse, error) {
 	l := logic.NewGetRelationLogic(ctx, s.svcCtx)
 	return l.GetRelation(in)
 }
 
-func (s *FollowServer) Add(ctx context.Context, in *model2.AddRequest) (*model2.AddResponse, error) {
-	l := logic.NewAddLogic(ctx, s.svcCtx)
-	return l.Add(in)
-}
-
-func (s *FollowServer) Del(ctx context.Context, in *model2.DelRequest) (*model2.DelResponse, error) {
-	l := logic.NewDelLogic(ctx, s.svcCtx)
-	return l.Del(in)
-}
-
-func (s *FollowServer) GetFollowCount(ctx context.Context, in *model2.GetFollowCountRequest) (*model2.GetFollowCountResponse, error) {
+// rpc GetRelations(get_relations_request) returns(get_relations_response);
+func (s *FollowServer) GetFollowCount(ctx context.Context, in *model.GetFollowCountRequest) (*model.GetFollowCountResponse, error) {
 	l := logic.NewGetFollowCountLogic(ctx, s.svcCtx)
 	return l.GetFollowCount(in)
 }

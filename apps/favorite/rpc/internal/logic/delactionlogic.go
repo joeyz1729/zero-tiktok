@@ -29,7 +29,7 @@ func (l *DelActionLogic) DelAction(in *model.ActionRequest) (*model.ActionRespon
 	//
 	//vidStr := strconv.Itoa(int(in.VideoId))
 	//uidStr := strconv.Itoa(int(in.UserId))
-	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
+	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, data.FavoriteSetPrefix+vidStr, uidStr).Result()
 	//if err != nil {
 	//	logx.Errorw("redis check failed",
 	//		logx.Field("err", err))
@@ -40,7 +40,7 @@ func (l *DelActionLogic) DelAction(in *model.ActionRequest) (*model.ActionRespon
 	//	resp.Msg = "repeat operation"
 	//	return resp, nil
 	//}
-	//_, err = l.svcCtx.FavorRepo.FavorCache.SRem(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
+	//_, err = l.svcCtx.FavorRepo.FavorCache.SRem(l.ctx, data.FavoriteSetPrefix+vidStr, uidStr).Result()
 	//if err != nil {
 	//	resp.Code = int32(1)
 	//	resp.Msg = "[redis] del msg failed"
@@ -63,7 +63,7 @@ func (l *DelActionLogic) DelAction(in *model.ActionRequest) (*model.ActionRespon
 //
 //	//vidStr := strconv.Itoa(int(in.VideoId))
 //	//uidStr := strconv.Itoa(int(in.UserId))
-//	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, "1"+uidStr).Result()
+//	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, data.FavoriteSetPrefix+vidStr, "1"+uidStr).Result()
 //	//if err != nil {
 //	//	logx.Errorw("redis check failed",
 //	//		logx.Field("err", err))

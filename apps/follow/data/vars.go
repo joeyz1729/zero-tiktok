@@ -1,4 +1,4 @@
-package dao
+package data
 
 type Action struct {
 	UserId     int64 `json:"user_id"`

@@ -33,7 +33,7 @@ func (fd *FollowDB) AddRelation(ctx context.Context, uid, tid int64) (followedCo
 		return 0, 0, err
 	}
 
-	sqlStr := `insert into tiktok_follow.followed(user_id, followed_id) value(?, ?)`
+	sqlStr := `insert into tiktok_follow.follow(user_id, follow_id) value(?, ?)`
 	_, err = tx.Exec(sqlStr, uid, tid)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
@@ -46,7 +46,6 @@ func (fd *FollowDB) AddRelation(ctx context.Context, uid, tid int64) (followedCo
 		return 0, 0, err
 	}
 
-	sqlStr = `insert into tiktok_follow.follower(user_id, follower_id) value(?, ?)`
 	_, err = tx.Exec(sqlStr, tid, uid)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
@@ -114,13 +113,8 @@ func (fd *FollowDB) DelRelation(ctx context.Context, uid, tid int64) (followedCo
 	// 查询成功，并记录数量
 
 	// 删除关系
-	sqlStr = `delete from tiktok_follow.followed where user_id = ? and followed_id = ?`
+	sqlStr = `delete from tiktok_follow.follow where user_id = ? and follow_id = ?`
 	_, err = tx.Exec(sqlStr, uid, tid)
-	if err != nil {
-		return 0, 0, err
-	}
-	sqlStr = `delete from tiktok_follow.follower where user_id = ? and follower_id = ?`
-	_, err = tx.Exec(sqlStr, tid, uid)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -148,7 +142,7 @@ func (fd *FollowDB) DelRelation(ctx context.Context, uid, tid int64) (followedCo
 }
 
 func (fd *FollowDB) CheckRelation(ctx context.Context, uid, tid int64) (ok bool, err error) {
-	sqlStr := `select id from tiktok_follow.followed where user_id = ? and followed_id = ? limit 1`
+	sqlStr := `select id from tiktok_follow.follow where user_id = ? and follow_id = ? limit 1`
 	row := fd.DB.QueryRowx(sqlStr, uid, tid)
 	// failed
 	var id int64
@@ -177,7 +171,7 @@ func (fb *FollowDB) GetCount(ctx context.Context, uid int64) (followedCount, fol
 }
 
 func (fb *FollowDB) GetFollowerIds(ctx context.Context, uid int64) (ids []int64, err error) {
-	sqlStr := `select user_id from tiktok_follow.followed where followed_id = ? `
+	sqlStr := `select user_id from tiktok_follow.follow where followed_id = ? `
 	err = fb.Select(&ids, sqlStr, uid)
 	if err != nil {
 		logx.Errorw("mysql query failed",
@@ -192,7 +186,7 @@ func (fb *FollowDB) GetFollowerIds(ctx context.Context, uid int64) (ids []int64,
 }
 
 func (fb *FollowDB) GetFollowedIds(ctx context.Context, uid int64) (ids []int64, err error) {
-	sqlStr := `select followed_id from tiktok_follow.followed where user_id = ? `
+	sqlStr := `select follow_id from tiktok_follow.follow where user_id = ? `
 	err = fb.Select(&ids, sqlStr, uid)
 	if err != nil {
 		logx.Errorw("mysql query failed",

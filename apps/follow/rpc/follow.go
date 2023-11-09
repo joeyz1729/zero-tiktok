@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/follow/model"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/server"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
+
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"

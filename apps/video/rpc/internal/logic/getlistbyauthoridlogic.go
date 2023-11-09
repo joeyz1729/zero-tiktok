@@ -33,7 +33,7 @@ func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *model.GetListByAuthorIdRe
 	}
 	videoList := make([]*model.VideoDetail, len(videos))
 	for i, v := range videos {
-		//go func(i int, v *dao.Video) {
+		//go func(i int, v *data.Video) {
 		videoList[i] = &model.VideoDetail{
 			Id: v.VideoId,
 			// author 不需要

@@ -29,7 +29,7 @@ func (l *AddActionLogic) AddAction(in *model.ActionRequest) (*model.ActionRespon
 	//// 1. query record
 	//vidStr := strconv.Itoa(int(in.VideoId))
 	//uidStr := strconv.Itoa(int(in.UserId))
-	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
+	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, data.FavoriteSetPrefix+vidStr, uidStr).Result()
 	//if err != nil {
 	//	logx.Errorw("redis check failed",
 	//		logx.Field("err", err))
@@ -41,7 +41,7 @@ func (l *AddActionLogic) AddAction(in *model.ActionRequest) (*model.ActionRespon
 	//	return resp, nil
 	//}
 	//// 不存在，添加
-	//_, err = l.svcCtx.FavorRepo.FavorCache.SAdd(l.ctx, dao.FavoriteSetPrefix+vidStr, uidStr).Result()
+	//_, err = l.svcCtx.FavorRepo.FavorCache.SAdd(l.ctx, data.FavoriteSetPrefix+vidStr, uidStr).Result()
 	//if err != nil {
 	//	resp.Code = int32(0)
 	//	resp.Msg = "[redis] add favorite failed"
@@ -62,7 +62,7 @@ func (l *AddActionLogic) SyncAddAction(in *model.ActionRequest) (*model.ActionRe
 	//// 1. query record
 	//vidStr := strconv.Itoa(int(in.VideoId))
 	//uidStr := strconv.Itoa(int(in.UserId))
-	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, dao.FavoriteSetPrefix+vidStr, "0"+uidStr).Result()
+	//exist, err := l.svcCtx.FavorRepo.FavorCache.SIsMember(l.ctx, data.FavoriteSetPrefix+vidStr, "0"+uidStr).Result()
 	//if err != nil {
 	//	logx.Errorw("redis check failed",
 	//		logx.Field("err", err))

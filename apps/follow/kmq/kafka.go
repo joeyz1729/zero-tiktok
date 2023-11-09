@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
+	"github.com/YiZou89/zero-tiktok/apps/follow/data/cache"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	"github.com/zeromicro/go-zero/core/logx"
 
-	"github.com/YiZou89/zero-tiktok/apps/follow/dao"
-	mysqldb "github.com/YiZou89/zero-tiktok/apps/follow/dao/db"
+	"github.com/YiZou89/zero-tiktok/apps/follow/data"
+	mysqldb "github.com/YiZou89/zero-tiktok/apps/follow/data/db"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/core/conf"
@@ -59,7 +59,7 @@ func main() {
 
 func biz(v string) (err error) {
 	fmt.Printf("=> %s\n", v)
-	var relation dao.Action
+	var relation data.Action
 	err = json.Unmarshal([]byte(v), &relation)
 	if err != nil {
 		logx.Errorw("json unmarshal data from kafka mq failed",

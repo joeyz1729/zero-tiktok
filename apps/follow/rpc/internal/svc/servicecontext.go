@@ -3,31 +3,24 @@ package svc
 import (
 	"context"
 	"fmt"
-	"github.com/zeromicro/go-zero/zrpc"
-
-	"github.com/YiZou89/zero-tiktok/apps/follow/dao/cache"
-	datadb "github.com/YiZou89/zero-tiktok/apps/follow/dao/db"
+	"github.com/YiZou89/zero-tiktok/apps/follow/data"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
-
 	"github.com/go-redis/redis/v8"
-	sqlx "github.com/jmoiron/sqlx"
-	"github.com/zeromicro/go-queue/kq"
-	"github.com/zeromicro/go-zero/core/bloom"
-	redisz "github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/jmoiron/sqlx"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
 	Config config.Config
 
-	FollowDB *datadb.FollowDB
+	FollowRepo *data.Repo
 
-	FollowCache *cache.FollowCache
+	//FollowDB *datadb.FollowDB
 
-	KqPusher *kq.Pusher
-	//KqWriter *kafka.Writer
-
-	Filter *bloom.Filter
+	//FollowCache *cache.FollowCache
 
 	UserRpc user.User
 }
@@ -50,22 +43,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
-	store := redisz.MustNewRedis(
-		redisz.RedisConf{
-			Host: redisAddr,
-			Type: redisz.NodeType},
-	)
-	filter := bloom.New(store, "tiktok:follow:bloom", 20*1<<20)
-
-	pusher := kq.NewPusher(c.KafkaMq.Brokers, c.KafkaMq.Topic)
-
 	return &ServiceContext{
-		Config:      c,
-		FollowDB:    datadb.NewFollowDB(db),
-		FollowCache: cache.NewFollowCache(rdb),
-		Filter:      filter,
-		//KqWriter:    w,
-		KqPusher: pusher,
-		UserRpc:  user.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		Config:     c,
+		FollowRepo: data.NewRepo(db, rdb),
+		UserRpc:    user.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

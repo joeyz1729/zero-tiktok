@@ -1,13 +1,9 @@
 Name: follow.rpc
 ListenOn: 0.0.0.0:9093
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: follow.rpc
 Log:
   ServiceName: follow-rpc
-  Mode: file
-  Path: ./log
+#  Mode: file
+#  Path: ./log
 Telemetry:
   Name: follow-rpc
   Endpoint: http://127.0.0.1:14268/api/traces
@@ -18,15 +14,17 @@ Prometheus:
   Port: 9083
   Path: /metrics
 
-Mysql:
-  DataSource: root:root@tcp(localhost:3306)/tiktok_follow?parseTime=true&charset=utf8
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: follow.rpc
 
-CacheRedis:
-  - Host: 127.0.0.1:6379
+Mysql:
+  DataSource: root:root1234@tcp(localhost:13306)/tiktok_follow?parseTime=true&charset=utf8
 
 RedisDB:
   Host: "127.0.0.1"
-  Port: 6379
+  Port: 16379
   Password: ""
   DB: 0
   PoolSize: 100

@@ -28,7 +28,6 @@ func NewRelationActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Re
 }
 
 func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (resp *types.RelationActionResponse, err error) {
-	// todo: add your logic here and delete this line
 	resp = new(types.RelationActionResponse)
 	if req.ActionType != int32(1) && req.ActionType != int32(2) {
 		resp.StatusCode = http.StatusBadRequest
