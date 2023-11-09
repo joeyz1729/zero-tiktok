@@ -3,7 +3,7 @@ package logic
 import (
 	"context"
 	"errors"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 	"github.com/YiZou89/zero-tiktok/pkg/tool"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"

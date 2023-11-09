@@ -55,9 +55,9 @@ func (l *DelActionLogic) DelAction(in *model.ActionRequest) (*model.ActionRespon
 }
 
 //
-//func (l *DelActionLogic) DelActionSync(in *model.ActionRequest) (*model.ActionResponse, error) {
+//func (l *DelActionLogic) DelActionSync(in *data.ActionRequest) (*data.ActionResponse, error) {
 //	// todo: add your logic here and delete this line
-//	resp := new(model.ActionResponse)
+//	resp := new(data.ActionResponse)
 //	var err error
 //	logx.Info(in.UserId, in.VideoId)
 //

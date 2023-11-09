@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"

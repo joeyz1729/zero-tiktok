@@ -16,7 +16,7 @@ type (
 	}
 )
 
-// NewMessageModel returns a model for the database table.
+// NewMessageModel returns a data for the database table.
 func NewMessageModel(conn sqlx.SqlConn) MessageModel {
 	return &customMessageModel{
 		defaultMessageModel: newMessageModel(conn),

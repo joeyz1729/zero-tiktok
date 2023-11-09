@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package user;
-option go_package="./model";
+option go_package="./data";
 
 service User {
   rpc UserInfo(user_info_request) returns(user_info_response);

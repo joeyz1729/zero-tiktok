@@ -51,10 +51,10 @@ func (l *GetListByUserIdLogic) GetListByUserId(in *model.GetListByUserIdRequest)
 	//		}
 	//		writer.Write(v)
 	//
-	//	}, func(pipe <-chan *model.Video, writer mr.Writer[[]*model.VideoInfo], cancel func(error)) {
-	//		var result []*model.VideoInfo
+	//	}, func(pipe <-chan *data.Video, writer mr.Writer[[]*data.VideoInfo], cancel func(error)) {
+	//		var result []*data.VideoInfo
 	//		for p := range pipe {
-	//			vf := &model.VideoInfo{
+	//			vf := &data.VideoInfo{
 	//				VideoId:  p.VideoId,
 	//				AuthorId: in.GetUserId(),
 	//				PlayUrl:  p.PlayUrl,

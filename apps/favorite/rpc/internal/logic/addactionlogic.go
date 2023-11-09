@@ -91,7 +91,7 @@ func (l *AddActionLogic) SyncAddAction(in *model.ActionRequest) (*model.ActionRe
 	//	return resp, nil
 	//}
 	//// err == ErrNotFound
-	//_, err = l.svcCtx.FavorRepo.FavoriteModel.Insert(l.ctx, &model.Favorite{
+	//_, err = l.svcCtx.FavorRepo.FavoriteModel.Insert(l.ctx, &data.Favorite{
 	//	UserId:  in.UserId,
 	//	VideoId: in.VideoId,
 	//})

@@ -70,12 +70,6 @@ service api-api {
 service api-api {
 	@handler InfoHandler
 	get /info (UserInfoRequest) returns (UserInfoResponse)
-
-	@handler MrInfoHandler
-	get /mrinfo (UserMrInfoRequest) returns (UserMrInfoResponse)
-
-	@handler CacheInfoHandler
-	get /cacheinfo (UserInfoRequest) returns (UserInfoResponse)
 }
 
 // favorite模块

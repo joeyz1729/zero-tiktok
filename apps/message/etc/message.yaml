@@ -16,7 +16,7 @@ Prometheus:
 #Etcd:
 #  Hosts:
 #  - 127.0.0.1:2379
-#  Key: model.rpc
+#  Key: data.rpc
 
 Mysql:
   DataSource: root:root@(localhost:3306)/tiktok_message?parseTime=true&charset=utf8

@@ -104,7 +104,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 			PlayUrl:  playURL,
 			CoverUrl: coverURL,
 		})
-		//_, err = l.svcCtx.VideoModel.Insert(context.Background(), &model.Video{
+		//_, err = l.svcCtx.VideoModel.Insert(context.Background(), &data.Video{
 		//	VideoId:     int64(vid),
 		//	AuthorId:    in.GetUserId(),
 		//	Title:       in.GetTitle(),

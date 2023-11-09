@@ -14,7 +14,7 @@ import (
 type ServiceContext struct {
 	Config config.Config
 
-	//VideoModel model.VideoModel
+	//VideoModel data.VideoModel
 	VideoCache *redis.Client
 	VideoRepo  dao.VideoRepo
 	VideoDB    *sqlx.DB
@@ -39,7 +39,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
 		Config: c,
-		//VideoModel: model.NewVideoModel(sqlConn, c.CacheRedis),
+		//VideoModel: data.NewVideoModel(sqlConn, c.CacheRedis),
 		VideoDB:    db,
 		VideoCache: rdb,
 		VideoRepo:  dao.NewRepoImpl(db, rdb),

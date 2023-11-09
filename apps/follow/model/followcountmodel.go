@@ -16,7 +16,7 @@ type (
 	}
 )
 
-// NewFollowCountModel returns a model for the database table.
+// NewFollowCountModel returns a data for the database table.
 func NewFollowCountModel(conn sqlx.SqlConn) FollowCountModel {
 	return &customFollowCountModel{
 		defaultFollowCountModel: newFollowCountModel(conn),

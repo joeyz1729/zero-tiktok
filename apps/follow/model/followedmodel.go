@@ -16,7 +16,7 @@ type (
 	}
 )
 
-// NewFollowedModel returns a model for the database table.
+// NewFollowedModel returns a data for the database table.
 func NewFollowedModel(conn sqlx.SqlConn) FollowedModel {
 	return &customFollowedModel{
 		defaultFollowedModel: newFollowedModel(conn),

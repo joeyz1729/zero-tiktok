@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/server"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
 	"github.com/YiZou89/zero-tiktok/pkg/tool"
 

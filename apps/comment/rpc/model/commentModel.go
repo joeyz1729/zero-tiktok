@@ -16,7 +16,7 @@ type (
 	}
 )
 
-// NewCommentModel returns a model for the database table.
+// NewCommentModel returns a data for the database table.
 func NewCommentModel(conn sqlx.SqlConn) CommentModel {
 	return &customCommentModel{
 		defaultCommentModel: newCommentModel(conn),

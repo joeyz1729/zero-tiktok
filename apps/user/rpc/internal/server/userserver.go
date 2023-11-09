@@ -5,15 +5,15 @@ package server
 
 import (
 	"context"
+	model2 "github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/logic"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
 )
 
 type UserServer struct {
 	svcCtx *svc.ServiceContext
-	model.UnimplementedUserServer
+	model2.UnimplementedUserServer
 }
 
 func NewUserServer(svcCtx *svc.ServiceContext) *UserServer {
@@ -22,57 +22,57 @@ func NewUserServer(svcCtx *svc.ServiceContext) *UserServer {
 	}
 }
 
-func (s *UserServer) UserInfo(ctx context.Context, in *model.UserInfoRequest) (*model.UserInfoResponse, error) {
+func (s *UserServer) UserInfo(ctx context.Context, in *model2.UserInfoRequest) (*model2.UserInfoResponse, error) {
 	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
 	return l.UserInfo(in)
 }
 
-func (s *UserServer) Register(ctx context.Context, in *model.RegisterRequest) (*model.RegisterResponse, error) {
+func (s *UserServer) Register(ctx context.Context, in *model2.RegisterRequest) (*model2.RegisterResponse, error) {
 	l := logic.NewRegisterLogic(ctx, s.svcCtx)
 	return l.Register(in)
 }
 
-func (s *UserServer) Login(ctx context.Context, in *model.LoginRequest) (*model.LoginResponse, error) {
+func (s *UserServer) Login(ctx context.Context, in *model2.LoginRequest) (*model2.LoginResponse, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)
 }
 
-func (s *UserServer) GetIdByName(ctx context.Context, in *model.GetIdByNameRequest) (*model.GetIdByNameResponse, error) {
+func (s *UserServer) GetIdByName(ctx context.Context, in *model2.GetIdByNameRequest) (*model2.GetIdByNameResponse, error) {
 	l := logic.NewGetIdByNameLogic(ctx, s.svcCtx)
 	return l.GetIdByName(in)
 }
 
-func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
+func (s *UserServer) GetUserById(ctx context.Context, in *model2.GetUserByIdRequest) (*model2.GetUserByIdResponse, error) {
 	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
 	return l.GetUserById(in)
 }
 
-func (s *UserServer) GetUsers(ctx context.Context, in *model.GetUsersRequest) (*model.GetUsersResponse, error) {
+func (s *UserServer) GetUsers(ctx context.Context, in *model2.GetUsersRequest) (*model2.GetUsersResponse, error) {
 	l := logic.NewGetUsersLogic(ctx, s.svcCtx)
 	return l.GetUsers(in)
 }
 
-func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
+func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model2.UpdateFollowInfoRequest) (*model2.UpdateFollowInfoResponse, error) {
 	l := logic.NewUpdateFollowInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFollowInfo(in)
 }
 
-func (s *UserServer) UpdateFavoriteInfo(ctx context.Context, in *model.UpdateFavoriteInfoRequest) (*model.UpdateFavoriteInfoResponse, error) {
+func (s *UserServer) UpdateFavoriteInfo(ctx context.Context, in *model2.UpdateFavoriteInfoRequest) (*model2.UpdateFavoriteInfoResponse, error) {
 	l := logic.NewUpdateFavoriteInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFavoriteInfo(in)
 }
 
-func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model.UpdateWorkInfoRequest) (*model.UpdateWorkInfoResponse, error) {
+func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model2.UpdateWorkInfoRequest) (*model2.UpdateWorkInfoResponse, error) {
 	l := logic.NewUpdateWorkInfoLogic(ctx, s.svcCtx)
 	return l.UpdateWorkInfo(in)
 }
 
-func (s *UserServer) GetAuthor(ctx context.Context, in *model.GetAuthorRequest) (*model.GetAuthorResponse, error) {
+func (s *UserServer) GetAuthor(ctx context.Context, in *model2.GetAuthorRequest) (*model2.GetAuthorResponse, error) {
 	l := logic.NewGetAuthorLogic(ctx, s.svcCtx)
 	return l.GetAuthor(in)
 }
 
-func (s *UserServer) GetAuthors(ctx context.Context, in *model.GetAuthorsRequest) (*model.GetAuthorsResponse, error) {
+func (s *UserServer) GetAuthors(ctx context.Context, in *model2.GetAuthorsRequest) (*model2.GetAuthorsResponse, error) {
 	l := logic.NewGetAuthorsLogic(ctx, s.svcCtx)
 	return l.GetAuthors(in)
 }

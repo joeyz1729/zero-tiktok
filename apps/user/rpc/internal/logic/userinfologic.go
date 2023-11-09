@@ -2,9 +2,8 @@ package logic
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/model"
-
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -23,7 +22,6 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 }
 
 func (l *UserInfoLogic) UserInfo(in *model.UserInfoRequest) (*model.UserInfoResponse, error) {
-	// todo: add your logic here and delete this line
 	resp := new(model.UserInfoResponse)
 	resp.User = new(model.UserInfo)
 	user, err := l.svcCtx.UserRepo.GetUserInfo(in.UserId)
@@ -34,9 +32,9 @@ func (l *UserInfoLogic) UserInfo(in *model.UserInfoRequest) (*model.UserInfoResp
 	}
 	resp.User.Id = in.UserId
 	resp.User.Name = user.Username
-	resp.User.Avatar = "no avatar"
-	resp.User.BackgroundImage = "no background image"
-	resp.User.Signature = "no signature"
+	resp.User.Avatar = user.Avatar
+	resp.User.BackgroundImage = user.BackgroundImage
+	resp.User.Signature = user.Signature
 
 	resp.User.FollowCount = user.FollowedCount
 	resp.User.FollowerCount = user.FollowerCount

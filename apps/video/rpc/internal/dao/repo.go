@@ -17,7 +17,7 @@ type VideoRepo interface {
 
 	//GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error)
 	//GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
-	//AddVideoInfo(ctx context.Context, video *model.Video) error
+	//AddVideoInfo(ctx context.Context, video *data.Video) error
 	AddVideo(ctx context.Context, video *Video) error
 
 	FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error)

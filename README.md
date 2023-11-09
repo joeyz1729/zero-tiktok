@@ -19,10 +19,10 @@ tiktok
 │    │    ├─ message
 │    │    ├─ message.go
 │    │    ├─ message.proto
-│    │    └─ model
+│    │    └─ data
 │    ├─ user
 │    │    ├─ admin
-│    │    ├─ model
+│    │    ├─ data
 │    │    └─ rpc
 │    └─ video
 │           ├─ admin

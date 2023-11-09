@@ -4,7 +4,10 @@ import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
+	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"net/http"
+	"sync"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,23 +27,43 @@ func NewInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *InfoLogic {
 }
 
 func (l *InfoLogic) Info(req *types.UserInfoRequest) (resp *types.UserInfoResponse, err error) {
-	// todo: add your logic here and delete this line
 	// token 校验
-	//resp = new(types.UserInfoResponse)
-	//claims, err := jwtx.ParseToken(req.Token)
-	//if err != nil {
-	//	logx.Errorw("parse token failed, or token is invalid",
-	//		logx.Field("err", err))
-	//	return resp, nil
-	//}
-	//userId := claims.UserId // 该用户id
-	//toUserId := req.UserId  // 查询用户id
-	//resp.UserInfo = types.User{}
-	//errChan := make(chan error, 7)
-	//defer close(errChan)
-	//var wg sync.WaitGroup
-	//wg.Add(4)
-	//
+	resp = new(types.UserInfoResponse)
+	claims, err := jwtx.ParseToken(req.Token)
+	if err != nil {
+		logx.Errorw("parse token failed, or token is invalid",
+			logx.Field("err", err))
+		return resp, nil
+	}
+	userId := claims.UserId // 该用户id
+	logx.Infof("userid:%d\n", userId)
+	toUserId := req.UserId // 查询用户id
+	resp.UserInfo = types.User{}
+	errChan := make(chan error, 7)
+	defer close(errChan)
+	var wg sync.WaitGroup
+	wg.Add(4)
+	userRes, err := l.svcCtx.UserRpc.UserInfo(l.ctx, &user.UserInfoRequest{UserId: toUserId})
+	if err != nil {
+		return nil, err
+	}
+
+	resp.UserInfo.Id = toUserId
+	resp.UserInfo.Name = userRes.User.Name
+	resp.UserInfo.Avatar = userRes.User.Avatar
+	resp.UserInfo.BackgroundImage = userRes.User.BackgroundImage
+	resp.UserInfo.Signature = userRes.User.Signature
+	resp.UserInfo.FollowCount = userRes.User.FollowCount
+	resp.UserInfo.FollowerCount = userRes.User.FollowerCount
+	resp.UserInfo.TotalFavorited = userRes.User.TotalFavorited
+	resp.UserInfo.FavoriteCount = userRes.User.FavoriteCount
+
+	// todo
+	///resp.UserInfo.IsFollow = userRes.User.IsFollowing
+	resp.StatusCode = http.StatusOK
+	resp.StatusMsg = "success"
+	return resp, nil
+
 	//// user 模块
 	//go func() {
 	//	defer wg.Done()
@@ -104,7 +127,5 @@ func (l *InfoLogic) Info(req *types.UserInfoRequest) (resp *types.UserInfoRespon
 	//	return &types.UserInfoResponse{}, nil
 	//default:
 	//}
-	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = "success"
-	return resp, nil
+
 }

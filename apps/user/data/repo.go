@@ -1,4 +1,4 @@
-package model
+package data
 
 import (
 	"context"
@@ -6,20 +6,6 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
-)
-
-const (
-	UserInfoPrefix  = "tiktok:user:info:"  // hash
-	UserCountPrefix = "tiktok:user:count:" // hash
-)
-
-const (
-	FieldUsername       = "username"
-	FieldFollowedCount  = "followedcount"
-	FieldFollowerCount  = "followercount"
-	FieldTotalFavorited = "totalfavorited"
-	FieldWorkCount      = "workcount"
-	FieldFavoriteCount  = "favoritecount"
 )
 
 const (
