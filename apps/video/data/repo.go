@@ -38,12 +38,8 @@ func NewRepoImpl(db *sqlx.DB, rdb *redis.Client) *RepoImpl {
 
 var _ VideoRepo = (*RepoImpl)(nil)
 
-func (r *RepoImpl) AddVideoInfo(ctx context.Context, video *Video) (err error) {
-	return
-}
-
 func (r *RepoImpl) AddVideo(ctx context.Context, video *Video) (err error) {
-	return
+	return r.db.AddVideo(video)
 }
 
 // GetVideoById 根据video  id查询

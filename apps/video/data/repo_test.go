@@ -11,7 +11,7 @@ import (
 )
 
 func InitRepo() *RepoImpl {
-	dsn := "root:root@tcp(localhost:3306)/tiktok_video?parseTime=true&charset=utf8"
+	dsn := "root:root1234@tcp(localhost:13306)/tiktok_video?parseTime=true&charset=utf8"
 	db, err := sqlx.Connect("mysql", dsn)
 	if err != nil {
 		panic(err)

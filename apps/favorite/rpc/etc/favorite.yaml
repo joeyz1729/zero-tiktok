@@ -19,7 +19,7 @@ Etcd:
   Key: favorite.rpc
 
 Mysql:
-  DataSource: root:root@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8
+  DataSource: root:root1234@tcp(localhost:13306)/tiktok_favorite?parseTime=true&charset=utf8
 
 CacheRedis:
   Addr: 127.0.0.1:6379

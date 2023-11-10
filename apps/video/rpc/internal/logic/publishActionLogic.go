@@ -3,7 +3,6 @@ package logic
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/video/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/ffmpeg"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
@@ -13,8 +12,6 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
 	"github.com/YiZou89/zero-tiktok/pkg/utils"
-	"github.com/zeromicro/go-zero/core/stores/redis"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -33,7 +30,6 @@ func NewPublishActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pub
 }
 
 func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*model.PublishActionResponse, error) {
-	// todo: add your logic here and delete this line
 	resp := new(model.PublishActionResponse)
 	var err error
 	// snowflake gen video id
@@ -52,7 +48,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	if err != nil {
 		logx.Errorw("upload file failed",
 			logx.Field("err", err))
-		return resp, err
+		return nil, err
 	}
 	playURL := minio.MinioVideoBucketName + "/" + filename + in.Type
 	logx.Info("upload file success", uploadInfo)
@@ -62,14 +58,14 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	if err != nil {
 		logx.Errorw("get object path failed",
 			logx.Field("err", err))
-		return resp, err
+		return nil, err
 	}
 
-	buf, err := ffmpeg.GetSnapshot(filepath.String()) //TODO
+	buf, err := ffmpeg.GetSnapshot(filepath.String())
 	if err != nil || buf.Len() == 0 {
 		logx.Errorw("get video snapshot failed",
 			logx.Field("err", err))
-		return resp, err
+		return nil, err
 	}
 
 	// 将封面文件上传至minio
@@ -78,48 +74,22 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	if err != nil {
 		logx.Errorw("upload cover img failed",
 			logx.Field("err", err))
-		return resp, err
+		return nil, err
 	}
 
-	// add video
-	// 添加到redis，用于发布列表，视频流，用户work count统计
-	pipeline := l.svcCtx.VideoCache.TxPipeline()
-	pipeline.ZAdd(l.ctx, "tiktok:video:time", &redis.Z{Score: float64(time.Now().Unix() - time.Date(2023, time.September, 1, 1, 46, 40, 0, time.UTC).Unix()), Member: vid})
-	pipeline.SAdd(l.ctx, "tiktok:video:user:"+fmt.Sprintf("%d", in.UserId), vid)
-	_, err = pipeline.Exec(l.ctx)
+	err = l.svcCtx.VideoRepo.AddVideo(l.ctx, &data.Video{
+		VideoId:  int64(vid),
+		AuthorId: in.GetUserId(),
+		Title:    in.GetTitle(),
+		PlayUrl:  playURL,
+		CoverUrl: coverURL,
+	})
+
 	if err != nil {
-		logx.Errorw("[redis] add redis failed",
+		logx.Errorw("[mysql] add video failed",
 			logx.Field("err", err))
-		return resp, err
+		return nil, err
 	}
-	logx.Info("[redis] add redis success")
-
-	// todo, 异步入库
-	go func() {
-
-		err = l.svcCtx.VideoRepo.AddVideo(l.ctx, &data.Video{
-			VideoId:  int64(vid),
-			AuthorId: in.GetUserId(),
-			Title:    in.GetTitle(),
-			PlayUrl:  playURL,
-			CoverUrl: coverURL,
-		})
-		//_, err = l.svcCtx.VideoModel.Insert(context.Background(), &data.Video{
-		//	VideoId:     int64(vid),
-		//	AuthorId:    in.GetUserId(),
-		//	Title:       in.GetTitle(),
-		//	PlayUrl:     playURL,
-		//	CoverUrl:    coverURL,
-		//	PublishTime: timeNow,
-		//})
-		if err != nil {
-			logx.Errorw("[mysql] add video failed",
-				logx.Field("err", err))
-		} else {
-			logx.Info("[mysql] add video success")
-		}
-	}()
-
 	resp.VideoId = int64(vid)
 	return resp, nil
 
