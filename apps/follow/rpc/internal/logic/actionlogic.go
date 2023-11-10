@@ -19,7 +19,6 @@ const (
 
 var (
 	ErrRepeatedOperation = errors.New("repeated operation")
-	DtmServer            = "etcd://localhost:2379/dtmservice"
 )
 
 type ActionLogic struct {
@@ -52,18 +51,14 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	if err != nil {
 		return nil, err
 	}
-	gid := dtmgrpc.MustGenGid(DtmServer)
-	msg := dtmgrpc.NewMsgGrpc(DtmServer, gid).Add(userServer+"/user.User/UpdateFollowInfo", &user.UpdateFollowInfoRequest{
+	gid := dtmgrpc.MustGenGid(l.svcCtx.DtmServer)
+	msg := dtmgrpc.NewMsgGrpc(l.svcCtx.DtmServer, gid).Add(userServer+"/user.User/UpdateFollowInfo", &user.UpdateFollowInfoRequest{
 		UserId:     in.UserId,
 		ToUserId:   in.ToUserId,
 		ActionType: in.ActionType == int32(1),
 	})
 
-	db, err := sql.Open("mysql", "root:root1234@tcp(localhost:13306)/tiktok_follow?parseTime=true&charset=utf8")
-	if err != nil {
-		return nil, err
-	}
-	err = msg.DoAndSubmitDB(userServer+"/user.User/FollowPrepare", db, func(tx *sql.Tx) error {
+	err = msg.DoAndSubmitDB(userServer+"/user.User/FollowPrepare", l.svcCtx.BarrierDB, func(tx *sql.Tx) error {
 		//userId, toUserId := in.UserId, in.ToUserId
 		var e error
 		if in.ActionType == int32(1) {

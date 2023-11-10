@@ -22,4 +22,6 @@ type Config struct {
 	//KafkaMq kq.KqConf
 
 	UserRpc zrpc.RpcClientConf
+
+	DtmServer string
 }

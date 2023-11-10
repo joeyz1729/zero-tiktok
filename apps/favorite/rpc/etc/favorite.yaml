@@ -19,7 +19,7 @@ Etcd:
   Key: favorite.rpc
 
 Mysql:
-  DataSource: root:root1234@tcp(localhost:13306)/tiktok_favorite?parseTime=true&charset=utf8
+  DataSource: root:root1234@tcp(localhost:13307)/tiktok_favorite?parseTime=true&charset=utf8
 
 CacheRedis:
   Addr: 127.0.0.1:6379
@@ -40,3 +40,6 @@ VideoRpc:
       - 127.0.0.1:2379
     Key: video.rpc
   NonBlock: true
+
+
+DtmServer: "etcd://localhost:2379/dtmservice"

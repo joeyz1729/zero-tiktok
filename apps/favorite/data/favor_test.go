@@ -3,18 +3,29 @@ package data
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
 )
 
+var (
+	dsn       = "root:root1234@tcp(localhost:13307)/tiktok_favorite?parseTime=true&charset=utf8"
+	redisAddr = "127.0.0.1:6379"
+)
+
 func InitRepo() *RepoImpl {
 	repo, err := NewRepo(
-		"root:root@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8",
-		"127.0.0.1:6379")
+		dsn, redisAddr)
 	if err != nil {
 		panic(err)
 	}
 	return repo
+}
+
+func Test_Connect(t *testing.T) {
+	repo, err := NewRepo(dsn, redisAddr)
+	assert.Nil(t, err)
+	assert.NotNil(t, repo)
 }
 
 func TestDBImpl_GetFavoriteIds(t *testing.T) {

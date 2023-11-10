@@ -2,6 +2,7 @@ package svc
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/follow/data"
 	"github.com/YiZou89/zero-tiktok/apps/follow/data/cache"
@@ -25,10 +26,17 @@ type ServiceContext struct {
 	FollowCache *cache.FollowCache
 
 	UserRpc user.User
+
+	BarrierDB *sql.DB
+	DtmServer string
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	db, err := sqlx.Connect("mysql", c.Mysql.DataSource)
+	if err != nil {
+		panic(err)
+	}
+	barrier, err := sql.Open("mysql", "root:root1234@tcp(localhost:13306)/tiktok_follow?parseTime=true&charset=utf8")
 	if err != nil {
 		panic(err)
 	}
@@ -51,5 +59,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		UserRpc:     user.NewUser(zrpc.MustNewClient(c.UserRpc)),
 		FollowCache: cache.NewFollowCache(rdb),
 		FollowDB:    mdb.NewFollowDB(db),
+		DtmServer:   c.DtmServer,
+		BarrierDB:   barrier,
 	}
 }

@@ -46,3 +46,6 @@ UserRpc:
       - 127.0.0.1:2379
     Key: user.rpc
   NonBlock: true
+
+
+DtmServer: "etcd://localhost:2379/dtmservice"
