@@ -10,15 +10,16 @@ import (
 
 type VideoDB interface {
 	AddVideo(*Video) error // 视频发布时添加视频信息和视频计数信息到数据库
+
+	AddFavoriteCount(videoId int64) error
+	DelFavoriteCount(videoId int64) error
+
 	GetVideoById(vid int64) (*Video, error)
 
 	GetVideoByUser(uid int64) ([]*Video, error)
 
 	GetVideoIdsByAuthorId(uid int64) ([]int64, error)
 	GetFeedIds(int64) ([]*VideoWithTime, error)
-
-	AddFavoriteCount(videoId int64) error
-	DelFavoriteCount(videoId int64) error
 }
 
 type MysqlImpl struct {

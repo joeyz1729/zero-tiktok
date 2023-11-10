@@ -6,6 +6,8 @@ import (
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/stretchr/testify/assert"
+	"sync"
 	"testing"
 	"time"
 )
@@ -83,4 +85,27 @@ func TestRepoImpl_RefreshFeed(t *testing.T) {
 	repo := InitRepo()
 	lastTime := time.Now().Unix()
 	fmt.Println(repo.RefreshFeed(context.Background(), lastTime))
+}
+
+func TestRepoImpl_UpdateFavoriteCount(t *testing.T) {
+	repo := InitRepo()
+	num := 50
+	var wg sync.WaitGroup
+	wg.Add(num * 2)
+	for i := 0; i < num; i++ {
+		go func(i int) {
+			defer wg.Done()
+			err := repo.AddFavoriteCount(context.Background(), int64(i%5+1))
+			assert.Nil(t, err)
+		}(i)
+	}
+	for i := 0; i < num; i++ {
+		go func(i int) {
+			defer wg.Done()
+			err := repo.DelFavoriteCount(context.Background(), int64(i%5+1))
+			assert.Nil(t, err)
+		}(i)
+	}
+	wg.Wait()
+
 }

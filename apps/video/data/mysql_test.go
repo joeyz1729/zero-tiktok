@@ -45,7 +45,4 @@ func Test_UpdateCount(t *testing.T) {
 		err := repo.DelFavoriteCount(context.Background(), int64(i))
 		assert.Nil(t, err)
 	}
-	for i := 1; i <= 5; i++ {
-
-	}
 }
