@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/follow/data"
+	"github.com/YiZou89/zero-tiktok/apps/follow/data/cache"
+	mdb "github.com/YiZou89/zero-tiktok/apps/follow/data/db"
 	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/config"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/go-redis/redis/v8"
@@ -18,9 +20,9 @@ type ServiceContext struct {
 
 	FollowRepo *data.Repo
 
-	//FollowDB *datadb.FollowDB
+	FollowDB *mdb.FollowDB
 
-	//FollowCache *cache.FollowCache
+	FollowCache *cache.FollowCache
 
 	UserRpc user.User
 }
@@ -44,8 +46,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 
 	return &ServiceContext{
-		Config:     c,
-		FollowRepo: data.NewRepo(db, rdb),
-		UserRpc:    user.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		Config:      c,
+		FollowRepo:  data.NewRepo(db, rdb),
+		UserRpc:     user.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		FollowCache: cache.NewFollowCache(rdb),
+		FollowDB:    mdb.NewFollowDB(db),
 	}
 }

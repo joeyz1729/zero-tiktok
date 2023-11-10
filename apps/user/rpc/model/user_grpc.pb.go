@@ -30,6 +30,7 @@ const (
 	User_UpdateWorkInfo_FullMethodName     = "/user.User/UpdateWorkInfo"
 	User_GetAuthor_FullMethodName          = "/user.User/GetAuthor"
 	User_GetAuthors_FullMethodName         = "/user.User/GetAuthors"
+	User_FollowPrepare_FullMethodName      = "/user.User/FollowPrepare"
 )
 
 // UserClient is the client API for User service.
@@ -47,6 +48,7 @@ type UserClient interface {
 	UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
 	GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error)
 	GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
+	FollowPrepare(ctx context.Context, in *FollowPrepareRequest, opts ...grpc.CallOption) (*FollowPrepareRequest, error)
 }
 
 type userClient struct {
@@ -156,6 +158,15 @@ func (c *userClient) GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts
 	return out, nil
 }
 
+func (c *userClient) FollowPrepare(ctx context.Context, in *FollowPrepareRequest, opts ...grpc.CallOption) (*FollowPrepareRequest, error) {
+	out := new(FollowPrepareRequest)
+	err := c.cc.Invoke(ctx, User_FollowPrepare_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -171,6 +182,7 @@ type UserServer interface {
 	UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error)
 	GetAuthor(context.Context, *GetAuthorRequest) (*GetAuthorResponse, error)
 	GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
+	FollowPrepare(context.Context, *FollowPrepareRequest) (*FollowPrepareRequest, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -210,6 +222,9 @@ func (UnimplementedUserServer) GetAuthor(context.Context, *GetAuthorRequest) (*G
 }
 func (UnimplementedUserServer) GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuthors not implemented")
+}
+func (UnimplementedUserServer) FollowPrepare(context.Context, *FollowPrepareRequest) (*FollowPrepareRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FollowPrepare not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -422,6 +437,24 @@ func _User_GetAuthors_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_FollowPrepare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FollowPrepareRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).FollowPrepare(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_FollowPrepare_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).FollowPrepare(ctx, req.(*FollowPrepareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -472,6 +505,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAuthors",
 			Handler:    _User_GetAuthors_Handler,
+		},
+		{
+			MethodName: "FollowPrepare",
+			Handler:    _User_FollowPrepare_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

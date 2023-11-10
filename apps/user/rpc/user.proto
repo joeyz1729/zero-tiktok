@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package user;
-option go_package="./data";
+option go_package="./model";
 
 service User {
   rpc UserInfo(user_info_request) returns(user_info_response);
@@ -16,6 +16,8 @@ service User {
 
   rpc GetAuthor(get_author_request) returns(get_author_response);
   rpc GetAuthors(get_authors_request) returns(get_authors_response);
+
+  rpc FollowPrepare(follow_prepare_request) returns(follow_prepare_request);
 
 }
 
@@ -155,4 +157,13 @@ message get_authors_request {
 
 message get_authors_response {
   repeated UserInfo author_infos = 1;
+}
+
+message follow_prepare_request {
+  int64 user_id = 1;
+  bool action_type = 2;
+}
+
+message follow_prepare_response{
+
 }

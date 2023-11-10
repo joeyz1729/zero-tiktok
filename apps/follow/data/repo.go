@@ -43,7 +43,7 @@ func (r *Repo) CheckRelation(userId int64, toUserId int64) (ok bool, err error) 
 }
 
 func (r *Repo) AddRelation(userId int64, toUserId int64) (err error) {
-	sqlStr := `insert into tiktok_follow.followed(user_id, followed_id) value(?, ?)`
+	sqlStr := `insert into tiktok_follow.follow(user_id, follow_id) value(?, ?)`
 	_, err = r.mdb.Exec(sqlStr, userId, toUserId)
 	// 删除redis数据
 
@@ -52,7 +52,7 @@ func (r *Repo) AddRelation(userId int64, toUserId int64) (err error) {
 }
 
 func (r *Repo) DelRelation(userId int64, toUserId int64) (err error) {
-	sqlStr := `delete from tiktok_follow.followed where user_id = ? and followed_id = ? limit 1`
+	sqlStr := `delete from tiktok_follow.follow where user_id = ? and follow_id = ? limit 1`
 	_, err = r.mdb.Exec(sqlStr, userId, toUserId)
 	err = r.cache.RemRelation(ctx, userId, toUserId)
 	return err
