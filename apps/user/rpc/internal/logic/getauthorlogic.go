@@ -39,7 +39,7 @@ func (l *GetAuthorLogic) GetAuthor(in *model.GetAuthorRequest) (*model.GetAuthor
 		if err != nil {
 			return nil, err
 		}
-		relation = followRes.IfFollowing == int32(1)
+		relation = followRes.IsFollowing
 	}
 
 	return &model.GetAuthorResponse{

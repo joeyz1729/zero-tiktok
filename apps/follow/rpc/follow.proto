@@ -60,8 +60,8 @@ message get_relation_request {
 }
 
 message get_relation_response {
-  int32 if_following = 1;
-  int32 if_follower = 2;
+  bool is_following = 1;
+  bool is_followed = 2;
 }
 
 message add_request {

@@ -121,11 +121,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/follower/list",
 				Handler: relation.RelationFollowerListHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/check",
-				Handler: relation.RelationFollowCheckHandler(serverCtx),
-			},
 		},
 		rest.WithPrefix("/douyin/relation"),
 	)

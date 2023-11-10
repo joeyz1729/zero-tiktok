@@ -39,6 +39,7 @@ func (r *Repo) CheckRelation(userId int64, toUserId int64) (ok bool, err error) 
 		logx.Error(err)
 		return false, err
 	}
+	// 问题，缓存是关注列表的集合，如果添加缓存是添加所有的吗？
 	return ok, nil
 }
 

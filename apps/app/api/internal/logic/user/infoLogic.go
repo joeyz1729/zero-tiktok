@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"net/http"
@@ -39,93 +40,48 @@ func (l *InfoLogic) Info(req *types.UserInfoRequest) (resp *types.UserInfoRespon
 	logx.Infof("userid:%d\n", userId)
 	toUserId := req.UserId // 查询用户id
 	resp.UserInfo = types.User{}
-	errChan := make(chan error, 7)
+	errChan := make(chan error, 2)
 	defer close(errChan)
 	var wg sync.WaitGroup
-	wg.Add(4)
-	userRes, err := l.svcCtx.UserRpc.UserInfo(l.ctx, &user.UserInfoRequest{UserId: toUserId})
-	if err != nil {
+	wg.Add(2)
+	var userRes = &user.UserInfoResponse{}
+	go func() {
+		defer wg.Done()
+		userRes, err = l.svcCtx.UserRpc.UserInfo(l.ctx, &user.UserInfoRequest{UserId: toUserId})
+		if err != nil {
+			errChan <- err
+		}
+		resp.UserInfo.Id = toUserId
+		resp.UserInfo.Name = userRes.User.Name
+		resp.UserInfo.Avatar = userRes.User.Avatar
+		resp.UserInfo.BackgroundImage = userRes.User.BackgroundImage
+		resp.UserInfo.Signature = userRes.User.Signature
+		resp.UserInfo.FollowCount = userRes.User.FollowCount
+		resp.UserInfo.FollowerCount = userRes.User.FollowerCount
+		resp.UserInfo.TotalFavorited = userRes.User.TotalFavorited
+		resp.UserInfo.FavoriteCount = userRes.User.FavoriteCount
+
+	}()
+	var followRes = &follow.GetRelationResponse{}
+	go func() {
+		defer wg.Done()
+		followRes, err = l.svcCtx.FollowRpc.GetRelation(l.ctx, &follow.GetRelationRequest{UserId: userId, ToUserId: toUserId})
+		if err != nil {
+			errChan <- err
+		}
+	}()
+	wg.Wait()
+	select {
+	case result := <-errChan:
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "internal server error"
+		logx.Error(result.Error())
 		return nil, err
+	default:
+		resp.UserInfo.IsFollow = followRes.IsFollowing
+		resp.StatusCode = http.StatusOK
+		resp.StatusMsg = "success"
+		return resp, nil
 	}
-
-	resp.UserInfo.Id = toUserId
-	resp.UserInfo.Name = userRes.User.Name
-	resp.UserInfo.Avatar = userRes.User.Avatar
-	resp.UserInfo.BackgroundImage = userRes.User.BackgroundImage
-	resp.UserInfo.Signature = userRes.User.Signature
-	resp.UserInfo.FollowCount = userRes.User.FollowCount
-	resp.UserInfo.FollowerCount = userRes.User.FollowerCount
-	resp.UserInfo.TotalFavorited = userRes.User.TotalFavorited
-	resp.UserInfo.FavoriteCount = userRes.User.FavoriteCount
-
-	// todo
-	///resp.UserInfo.IsFollow = userRes.User.IsFollowing
-	resp.StatusCode = http.StatusOK
-	resp.StatusMsg = "success"
-	return resp, nil
-
-	//// user 模块
-	//go func() {
-	//	defer wg.Done()
-	//	var userRes *user.GetUserByIdResponse
-	//	userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{UserId: toUserId})
-	//	if err != nil {
-	//		errChan <- err
-	//	} else {
-	//		resp.UserInfo.Id = toUserId
-	//		resp.UserInfo.Name = userRes.Name
-	//		resp.UserInfo.Avatar = userRes.Avatar
-	//		resp.UserInfo.BackgroundImage = userRes.BackgroundImage
-	//		resp.UserInfo.Signature = userRes.Signature
-	//	}
-	//}()
-	//
-	//// 调用follow模块
-	//go func() {
-	//	defer wg.Done()
-	//	var followRes *follow.GetFollowCountResponse
-	//	followRes, err = l.svcCtx.FollowRpc.GetFollowCount(l.ctx, &follow.GetFollowCountRequest{UserId: userId, ToUserId: toUserId})
-	//	if err != nil {
-	//		errChan <- err
-	//	} else {
-	//		resp.UserInfo.FollowCount = followRes.FollowCount
-	//		resp.UserInfo.FollowerCount = followRes.FollowerCount
-	//		resp.UserInfo.IsFollow = followRes.IsFollowing
-	//	}
-	//}()
-	//
-	//// 调用video模块
-	//go func() {
-	//	defer wg.Done()
-	//	var videoRes *video.GetWorkCountResponse
-	//	videoRes, err = l.svcCtx.VideoRpc.GetWorkCount(l.ctx, &video.GetWorkCountRequest{UserId: toUserId})
-	//	if err != nil {
-	//		errChan <- err
-	//	} else {
-	//		resp.UserInfo.WorkCount = videoRes.WorkCount
-	//	}
-	//}()
-	//
-	////like模块
-	//go func() {
-	//	defer wg.Done()
-	//	var likeRes *favorite.GetFavoriteCountResponse
-	//	likeRes, err = l.svcCtx.FavoriteRpc.GetFavoriteCount(l.ctx, &favorite.GetFavoriteCountRequest{UserId: toUserId})
-	//	if err != nil {
-	//		errChan <- err
-	//	} else {
-	//		resp.UserInfo.TotalFavorited = likeRes.TotalFavorited
-	//		resp.UserInfo.FavoriteCount = likeRes.FavoriteCount
-	//	}
-	//}()
-	//wg.Wait()
-	//select {
-	//case result := <-errChan:
-	//	resp.StatusCode = http.StatusInternalServerError
-	//	resp.StatusMsg = "internal server error"
-	//	logx.Error(result.Error())
-	//	return &types.UserInfoResponse{}, nil
-	//default:
-	//}
 
 }
