@@ -26,7 +26,7 @@ func NewGetFavoriteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFa
 func (l *GetFavoriteLogic) GetFavorite(in *model.GetFavoriteRequest) (*model.GetFavoriteResponse, error) {
 	// todo: add your logic here and delete this line
 	// 根据uid， vid查询favor
-	exist, err := l.svcCtx.FavorRepo.IsFavoriteRecordExist(l.ctx, in.UserId, in.VideoId)
+	exist, err := l.svcCtx.FavorRepo.CheckFavor(l.ctx, in.UserId, in.VideoId)
 	if err != nil {
 		return nil, err
 	}

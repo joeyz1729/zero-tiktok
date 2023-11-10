@@ -58,7 +58,7 @@ func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (
 		return resp, nil
 	}
 	authorId := videoRes.VideoInfo.AuthorId
-	// start
+	// 添加更新，需要修改关系，user的点赞数，author的被点赞数，video的被点赞数
 	_, err = l.svcCtx.FavoriteRpc.Action(l.ctx, &favorite.ActionRequest{
 		UserId:     uid,
 		VideoId:    req.VideoId,

@@ -3,16 +3,14 @@ package data
 import (
 	"context"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/config"
 	"strconv"
 	"testing"
 )
 
 func InitRepo() *RepoImpl {
-	repo, err := NewRepo(config.Config{
-		Mysql:      struct{ DataSource string }{DataSource: "root:root@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8"},
-		CacheRedis: struct{ Addr string }{Addr: "127.0.0.1:6379"},
-	})
+	repo, err := NewRepo(
+		"root:root@tcp(localhost:3306)/tiktok_favorite?parseTime=true&charset=utf8",
+		"127.0.0.1:6379")
 	if err != nil {
 		panic(err)
 	}
@@ -88,6 +86,6 @@ func TestRepoImpl_IsFavoriteRecordExist(t *testing.T) {
 		{482313611805467523, 479275563937178500},
 	}
 	for _, p := range pairs {
-		fmt.Println(repo.IsFavoriteRecordExist(context.Background(), p[0], p[1]))
+		fmt.Println(repo.CheckFavor(context.Background(), p[0], p[1]))
 	}
 }

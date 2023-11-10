@@ -19,7 +19,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	r, err := data.NewRepo(c)
+	r, err := data.NewRepo(c.Mysql.DataSource, c.CacheRedis.Addr)
 	if err != nil {
 		panic(err)
 	}

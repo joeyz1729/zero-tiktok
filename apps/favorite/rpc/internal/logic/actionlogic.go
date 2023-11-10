@@ -34,7 +34,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	// todo: add your logic here and delete this line
 	resp := new(model.ActionResponse)
 	// 检查关系是否存在
-	exist, err := l.svcCtx.FavorRepo.IsFavoriteRecordExist(l.ctx, in.UserId, in.VideoId)
+	exist, err := l.svcCtx.FavorRepo.CheckFavor(l.ctx, in.UserId, in.VideoId)
 	if err != nil {
 		logx.Error("is favorite video failed: " + err.Error())
 		return nil, err
