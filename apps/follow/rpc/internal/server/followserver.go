@@ -22,28 +22,31 @@ func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
 	}
 }
 
+// 关注操作
 func (s *FollowServer) Action(ctx context.Context, in *model.ActionRequest) (*model.ActionResponse, error) {
 	l := logic.NewActionLogic(ctx, s.svcCtx)
 	return l.Action(in)
 }
 
-func (s *FollowServer) GetFollowIds(ctx context.Context, in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
-	l := logic.NewGetFollowIdsLogic(ctx, s.svcCtx)
-	return l.GetFollowIds(in)
-}
-
+// 获取粉丝列表
 func (s *FollowServer) GetFollowerIds(ctx context.Context, in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
 	l := logic.NewGetFollowerIdsLogic(ctx, s.svcCtx)
 	return l.GetFollowerIds(in)
 }
 
+// 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+func (s *FollowServer) GetFollowIds(ctx context.Context, in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
+	l := logic.NewGetFollowIdsLogic(ctx, s.svcCtx)
+	return l.GetFollowIds(in)
+}
+
+func (s *FollowServer) GetFollowList(ctx context.Context, in *model.GetFollowListRequest) (*model.GetFollowListResponse, error) {
+	l := logic.NewGetFollowListLogic(ctx, s.svcCtx)
+	return l.GetFollowList(in)
+}
+
+// 查询关系
 func (s *FollowServer) GetRelation(ctx context.Context, in *model.GetRelationRequest) (*model.GetRelationResponse, error) {
 	l := logic.NewGetRelationLogic(ctx, s.svcCtx)
 	return l.GetRelation(in)
-}
-
-// rpc GetRelations(get_relations_request) returns(get_relations_response);
-func (s *FollowServer) GetFollowCount(ctx context.Context, in *model.GetFollowCountRequest) (*model.GetFollowCountResponse, error) {
-	l := logic.NewGetFollowCountLogic(ctx, s.svcCtx)
-	return l.GetFollowCount(in)
 }

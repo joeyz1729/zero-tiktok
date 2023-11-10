@@ -15,14 +15,10 @@ import (
 type (
 	ActionRequest          = model.ActionRequest
 	ActionResponse         = model.ActionResponse
-	AddRequest             = model.AddRequest
-	AddResponse            = model.AddResponse
-	DelRequest             = model.DelRequest
-	DelResponse            = model.DelResponse
-	GetFollowCountRequest  = model.GetFollowCountRequest
-	GetFollowCountResponse = model.GetFollowCountResponse
 	GetFollowIdsRequest    = model.GetFollowIdsRequest
 	GetFollowIdsResponse   = model.GetFollowIdsResponse
+	GetFollowListRequest   = model.GetFollowListRequest
+	GetFollowListResponse  = model.GetFollowListResponse
 	GetFollowerIdsRequest  = model.GetFollowerIdsRequest
 	GetFollowerIdsResponse = model.GetFollowerIdsResponse
 	GetRelationRequest     = model.GetRelationRequest
@@ -31,12 +27,15 @@ type (
 	Response               = model.Response
 
 	Follow interface {
+		// 关注操作
 		Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
-		GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error)
+		// 获取粉丝列表
 		GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error)
+		// 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+		GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error)
+		GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListResponse, error)
+		// 查询关系
 		GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
-		// rpc GetRelations(get_relations_request) returns(get_relations_response);
-		GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error)
 	}
 
 	defaultFollow struct {
@@ -50,28 +49,31 @@ func NewFollow(cli zrpc.Client) Follow {
 	}
 }
 
+// 关注操作
 func (m *defaultFollow) Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
 	client := model.NewFollowClient(m.cli.Conn())
 	return client.Action(ctx, in, opts...)
 }
 
-func (m *defaultFollow) GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
-	return client.GetFollowIds(ctx, in, opts...)
-}
-
+// 获取粉丝列表
 func (m *defaultFollow) GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error) {
 	client := model.NewFollowClient(m.cli.Conn())
 	return client.GetFollowerIds(ctx, in, opts...)
 }
 
+// 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+func (m *defaultFollow) GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error) {
+	client := model.NewFollowClient(m.cli.Conn())
+	return client.GetFollowIds(ctx, in, opts...)
+}
+
+func (m *defaultFollow) GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListResponse, error) {
+	client := model.NewFollowClient(m.cli.Conn())
+	return client.GetFollowList(ctx, in, opts...)
+}
+
+// 查询关系
 func (m *defaultFollow) GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error) {
 	client := model.NewFollowClient(m.cli.Conn())
 	return client.GetRelation(ctx, in, opts...)
-}
-
-// rpc GetRelations(get_relations_request) returns(get_relations_response);
-func (m *defaultFollow) GetFollowCount(ctx context.Context, in *GetFollowCountRequest, opts ...grpc.CallOption) (*GetFollowCountResponse, error) {
-	client := model.NewFollowClient(m.cli.Conn())
-	return client.GetFollowCount(ctx, in, opts...)
 }

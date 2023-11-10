@@ -29,7 +29,10 @@ func NewRelationFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListRequest) (resp *types.FollowListResponse, err error) {
 	// todo: add your logic here and delete this line
 	resp = new(types.FollowListResponse)
-	followRes, err := l.svcCtx.FollowRpc.GetFollowIds(l.ctx, &follow.GetFollowIdsRequest{
+	//followRes, err := l.svcCtx.FollowRpc.GetFollowIds(l.ctx, &follow.GetFollowIdsRequest{
+	//	UserId: req.UserId,
+	//})
+	followRes, err := l.svcCtx.FollowRpc.GetFollowList(l.ctx, &follow.GetFollowListRequest{
 		UserId: req.UserId,
 	})
 	if err != nil {
@@ -37,16 +40,15 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 		resp.StatusMsg = err.Error()
 		return resp, nil
 	}
-	logx.Infof("follow ids: %v\n", followRes.FollowIds)
 
 	usersRes := new(user.GetUsersResponse)
 	usersRes, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &user.GetUsersRequest{
-		UserIds: followRes.FollowIds,
+		UserIds: followRes.FollowedIds,
 	})
 	if err != nil {
 		return nil, err
 	}
-	userList := make([]types.UserInfo, len(followRes.FollowIds))
+	userList := make([]types.UserInfo, len(followRes.FollowedIds))
 	for i, userInfo := range usersRes.UserList {
 		userList[i] = types.UserInfo{
 			Id:              userInfo.Id,
@@ -61,6 +63,8 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 			TotalFavorited: userInfo.TotalFavorited,
 			FavoriteCount:  userInfo.FavoriteCount,
 			WorkCount:      userInfo.WorkCount,
+
+			IsFollow: followRes.Relations[i],
 		}
 	}
 	resp.UserList = userList

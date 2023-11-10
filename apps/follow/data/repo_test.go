@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -40,4 +41,30 @@ func TestRepo_CheckRelation(t *testing.T) {
 		}
 	}
 
+}
+
+func TestRepo_GetFollowedIds(t *testing.T) {
+	for i := 1; i <= 5; i++ {
+		ids, err := r.GetFollowedIds(int64(i))
+		if err != nil {
+			fmt.Printf("[%d] get followed failed\n", i)
+		}
+		if len(ids) != 0 {
+			fmt.Printf("[%d] get followed success\n", i)
+			fmt.Println(ids)
+		}
+	}
+}
+
+func TestRepo_GetFollowerIds(t *testing.T) {
+	for i := 1; i <= 5; i++ {
+		ids, err := r.GetFollowerIds(int64(i))
+		if err != nil {
+			fmt.Printf("[%d] get follower failed\n", i)
+		}
+		if len(ids) != 0 {
+			fmt.Printf("[%d] get follower success\n", i)
+			fmt.Println(ids)
+		}
+	}
 }

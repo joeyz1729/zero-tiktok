@@ -35,6 +35,7 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 	}
 }
 
+// Action 用户关注操作的rpc，使用分布式事务
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
 	logx.Infof("user_id: %d, to_user_id: %d, action_type: %d", in.UserId, in.ToUserId, in.ActionType)
 	var resp = new(model.ActionResponse)
