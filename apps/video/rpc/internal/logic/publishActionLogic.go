@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/dao"
+	"github.com/YiZou89/zero-tiktok/apps/video/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/ffmpeg"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
 	"time"
@@ -97,7 +97,7 @@ func (l *PublishActionLogic) PublishAction(in *model.PublishActionRequest) (*mod
 	// todo, 异步入库
 	go func() {
 
-		err = l.svcCtx.VideoRepo.AddVideo(l.ctx, &dao.Video{
+		err = l.svcCtx.VideoRepo.AddVideo(l.ctx, &data.Video{
 			VideoId:  int64(vid),
 			AuthorId: in.GetUserId(),
 			Title:    in.GetTitle(),

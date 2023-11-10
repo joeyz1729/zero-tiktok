@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/dao"
+	"github.com/YiZou89/zero-tiktok/apps/video/data"
 	"strconv"
 
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
@@ -42,7 +42,7 @@ func (l *UpdateFavoriteCountLogic) UpdateFavoriteCount(in *model.UpdateFavoriteC
 
 	// delete cache
 	vidStr := strconv.FormatInt(in.VideoId, 10)
-	if _, err = l.svcCtx.VideoCache.Del(context.Background(), dao.VideoInfoPrefix+vidStr).Result(); err != nil {
+	if _, err = l.svcCtx.VideoCache.Del(context.Background(), data.VideoInfoPrefix+vidStr).Result(); err != nil {
 		return nil, err
 	}
 	return &model.UpdateFavoriteCountResponse{}, nil

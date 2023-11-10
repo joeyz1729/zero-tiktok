@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
+	"github.com/YiZou89/zero-tiktok/apps/video/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/dao"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -16,7 +16,7 @@ type ServiceContext struct {
 
 	//VideoModel data.VideoModel
 	VideoCache *redis.Client
-	VideoRepo  dao.VideoRepo
+	VideoRepo  data.VideoRepo
 	VideoDB    *sqlx.DB
 
 	UserRpc  user.User
@@ -42,7 +42,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		//VideoModel: data.NewVideoModel(sqlConn, c.CacheRedis),
 		VideoDB:    db,
 		VideoCache: rdb,
-		VideoRepo:  dao.NewRepoImpl(db, rdb),
+		VideoRepo:  data.NewRepoImpl(db, rdb),
 		UserRpc:    user.NewUser(zrpc.MustNewClient(c.UserRpc)),
 		FavorRpc:   favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
 	}

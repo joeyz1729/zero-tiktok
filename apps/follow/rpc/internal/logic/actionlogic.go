@@ -37,7 +37,6 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 }
 
 func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, error) {
-	// todo: add your logic here and delete this line
 	logx.Infof("user_id: %d, to_user_id: %d, action_type: %d", in.UserId, in.ToUserId, in.ActionType)
 	var resp = new(model.ActionResponse)
 	// 检查关系

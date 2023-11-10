@@ -27,7 +27,6 @@ func NewFavoriteActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fa
 }
 
 func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (resp *types.FavoriteActionResponse, err error) {
-	// todo: add your logic here and delete this line
 	resp = new(types.FavoriteActionResponse)
 	// action type
 	if req.ActionType != int32(1) && req.ActionType != int32(2) {
