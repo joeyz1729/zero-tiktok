@@ -1,4 +1,4 @@
-package dao
+package data
 
 import (
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"

@@ -1,8 +1,8 @@
 package svc
 
 import (
+	"github.com/YiZou89/zero-tiktok/apps/favorite/data"
 	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/dao"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -11,7 +11,7 @@ import (
 type ServiceContext struct {
 	Config config.Config
 
-	FavorRepo *dao.RepoImpl
+	FavorRepo *data.RepoImpl
 
 	UserRpc user.User
 
@@ -19,7 +19,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	r, err := dao.NewRepo(c)
+	r, err := data.NewRepo(c)
 	if err != nil {
 		panic(err)
 	}
