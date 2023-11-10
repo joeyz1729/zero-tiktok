@@ -48,3 +48,13 @@ func (r *Repo) AddDetailCache(uid int64, user *UserInfo) (err error) {
 	_, err = pipeline.Exec(ctx)
 	return err
 }
+
+func (r *Repo) DelCountCache(userId, authorId int64) (err error) {
+	uidStr := strconv.FormatInt(userId, 10)
+	aidStr := strconv.FormatInt(authorId, 10)
+	pipeline := r.rdb.Pipeline()
+	r.rdb.Del(context.Background(), UserCountPrefix+uidStr)
+	r.rdb.Del(context.Background(), UserCountPrefix+aidStr)
+	_, err = pipeline.Exec(context.Background())
+	return
+}

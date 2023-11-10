@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -32,4 +33,19 @@ func Test_AddVideos(t *testing.T) {
 		}
 	}
 
+}
+
+func Test_UpdateCount(t *testing.T) {
+	repo := InitRepo()
+	for i := 1; i <= 5; i++ {
+		err := repo.AddFavoriteCount(context.Background(), int64(i))
+		assert.Nil(t, err)
+	}
+	for i := 1; i <= 5; i++ {
+		err := repo.DelFavoriteCount(context.Background(), int64(i))
+		assert.Nil(t, err)
+	}
+	for i := 1; i <= 5; i++ {
+
+	}
 }

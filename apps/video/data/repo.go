@@ -10,6 +10,11 @@ import (
 )
 
 type VideoRepo interface {
+	AddVideo(ctx context.Context, video *Video) error // 视频发布时添加视频
+
+	AddFavoriteCount(ctx context.Context, videoId int64) error // 点赞操作后更新计数
+	DelFavoriteCount(ctx context.Context, videoId int64) error // 点赞操作后更新计数
+
 	GetVideoById(ctx context.Context, vid int64) (*Video, error)
 
 	GetVideosByAuthorId(context.Context, int64) ([]*Video, error)
@@ -18,7 +23,6 @@ type VideoRepo interface {
 	//GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error)
 	//GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
 	//AddVideoInfo(ctx context.Context, video *data.Video) error
-	AddVideo(ctx context.Context, video *Video) error
 
 	FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error)
 	RefreshFeed(ctx context.Context, lastTime int64) error
@@ -38,6 +42,7 @@ func NewRepoImpl(db *sqlx.DB, rdb *redis.Client) *RepoImpl {
 
 var _ VideoRepo = (*RepoImpl)(nil)
 
+// AddVideo 添加数据库，不更新缓存
 func (r *RepoImpl) AddVideo(ctx context.Context, video *Video) (err error) {
 	return r.db.AddVideo(video)
 }
@@ -188,4 +193,24 @@ func (r *RepoImpl) RefreshFeed(ctx context.Context, lastTime int64) error {
 	default:
 		return nil
 	}
+}
+
+// AddFavoriteCount 更新视频点赞，删除缓存
+func (r *RepoImpl) AddFavoriteCount(ctx context.Context, videoId int64) error {
+	err := r.db.AddFavoriteCount(videoId)
+	if err != nil {
+		return err
+	}
+	vidStr := strconv.FormatInt(videoId, 10)
+	return r.cache.DelKey(ctx, VideoFavoriteCountPrefix+vidStr)
+}
+
+// DelFavoriteCount 更新视频点赞，删除缓存
+func (r *RepoImpl) DelFavoriteCount(ctx context.Context, videoId int64) error {
+	err := r.db.DelFavoriteCount(videoId)
+	if err != nil {
+		return err
+	}
+	vidStr := strconv.FormatInt(videoId, 10)
+	return r.cache.DelKey(ctx, VideoFavoriteCountPrefix+vidStr)
 }

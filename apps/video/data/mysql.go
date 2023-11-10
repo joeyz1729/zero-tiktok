@@ -9,13 +9,16 @@ import (
 )
 
 type VideoDB interface {
-	AddVideo(*Video) error
+	AddVideo(*Video) error // 视频发布时添加视频信息和视频计数信息到数据库
 	GetVideoById(vid int64) (*Video, error)
 
 	GetVideoByUser(uid int64) ([]*Video, error)
 
 	GetVideoIdsByAuthorId(uid int64) ([]int64, error)
 	GetFeedIds(int64) ([]*VideoWithTime, error)
+
+	AddFavoriteCount(videoId int64) error
+	DelFavoriteCount(videoId int64) error
 }
 
 type MysqlImpl struct {
@@ -28,18 +31,25 @@ func NewMysqlImpl(db *sqlx.DB) *MysqlImpl {
 
 var _ VideoDB = (*MysqlImpl)(nil)
 
+// AddVideo 视频发布时
 func (r *MysqlImpl) AddVideo(v *Video) error {
+	// 视频信息
 	infoStr := `insert into tiktok_video.video(video_id, author_id, title, play_url, cover_url) value (?, ?, ?, ?, ?)`
+	// 视频计数初始化
 	countStr := `insert into tiktok_video.video_count(video_id, favorite_count, comment_count) value(?, ?, ?) `
+	// 开启事务
 	tx, err := r.DB.BeginTx(context.Background(), &sql.TxOptions{})
 	if err != nil {
 		return err
 	}
+	defer tx.Rollback()
+	// info
 	if _, err = tx.Exec(infoStr, v.VideoId, v.AuthorId, v.Title, v.PlayUrl, v.CoverUrl); err != nil {
 		logx.Error("tx insert info failed", err)
 		_ = tx.Rollback()
 		return err
 	}
+	// count
 	if _, err = tx.Exec(countStr, v.VideoId, 0, 0); err != nil {
 		logx.Error("tx insert count failed", err)
 		return err
@@ -91,4 +101,26 @@ func (r *MysqlImpl) GetFeedIds(lastTime int64) ([]*VideoWithTime, error) {
 		return nil, err
 	}
 	return videos, nil
+}
+
+// AddFavoriteCount 点赞操作时更新
+func (r *MysqlImpl) AddFavoriteCount(videoId int64) (err error) {
+	sqlStr1 := `update tiktok_video.video_count set favorite_count = favorite_count + 1 where video_id = ? limit 1`
+	_, err = r.DB.Exec(sqlStr1, videoId)
+	if err != nil {
+		logx.Error("db update favorite count ", err)
+		return err
+	}
+	return nil
+}
+
+// DelFavoriteCount 点赞操作时更新
+func (r *MysqlImpl) DelFavoriteCount(videoId int64) (err error) {
+	sqlStr1 := `update tiktok_video.video_count set favorite_count = favorite_count - 1 where video_id = ? limit 1`
+	_, err = r.DB.Exec(sqlStr1, videoId)
+	if err != nil {
+		logx.Error("db update favorite count ", err)
+		return err
+	}
+	return nil
 }

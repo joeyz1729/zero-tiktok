@@ -8,17 +8,18 @@ import (
 )
 
 var (
-	VideoFeedRefreshKey = "tiktok:video::refresh"
-	VideoFeedKey        = "tiktok:video::feed"    // +nil zset	(vid, timestamp)
-	VideoInfoPrefix     = "tiktok:video:info:"    // +vid, hash	(info)
-	VideoPublishPrefix  = "tiktok:video:publish:" // +uid set (vid)
+	VideoFeedRefreshKey      = "tiktok:video::refresh"
+	VideoFeedKey             = "tiktok:video::feed"     // +nil zset	(vid, timestamp)
+	VideoInfoPrefix          = "tiktok:video:info:"     // +vid, hash	(info)
+	VideoPublishPrefix       = "tiktok:video:publish:"  // +uid set (vid)
+	VideoFavoriteCountPrefix = "tiktok:video:favorite:" // +vid, (favorite count)
+	VideoCommentCountPrefix  = "tiktok:video:comment:"
+	FieldInfoTitle           = "title"
 
-	FieldInfoTitle     = "title"
 	FieldInfoPlayUrl   = "playurl"
 	FieldInfoCoverUrl  = "coverurl"
 	FieldInfoAuthorId  = "authorid"
 	FieldCountFavorite = "favorite"
-	FieldCountComment  = "comment"
 
 	ErrInvalidType = errors.New("invalid type")
 	ErrEmptySet    = errors.New("empty set")
@@ -29,6 +30,8 @@ type VideoCache interface {
 
 	DelVideo(context.Context, string) error
 	AddVideo(context.Context, string, *Video) error
+
+	DelKey(context.Context, string) error
 
 	GetVideoById(ctx context.Context, key string) (*Video, error)
 
@@ -52,6 +55,11 @@ func NewRedisImpl(rdb *redis.Client) *RedisImpl {
 
 var _ VideoCache = (*RedisImpl)(nil)
 
+func (c *RedisImpl) DelKey(ctx context.Context, key string) error {
+	_, err := c.rdb.Del(ctx, key).Result()
+	return err
+}
+
 func (c *RedisImpl) KeyExists(ctx context.Context, key string) (ok bool, err error) {
 	num, err := c.rdb.Exists(ctx, key).Result()
 	return num == 1, err
@@ -74,7 +82,7 @@ func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video,
 	if err != nil {
 		return nil, err
 	}
-	video.CommentCount, err = strconv.ParseInt(cm[FieldCountComment], 10, 64)
+	//video.CommentCount, err = strconv.ParseInt(cm[Field], 10, 64)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +99,7 @@ func (c *RedisImpl) AddVideo(ctx context.Context, key string, video *Video) (err
 		FieldInfoPlayUrl, video.PlayUrl,
 		FieldInfoCoverUrl, video.CoverUrl,
 		FieldCountFavorite, video.FavoriteCount,
-		FieldCountComment, video.CommentCount,
+		//FieldCountComment, video.CommentCount,
 	).Result()
 	return err
 }

@@ -21,20 +21,15 @@ func NewUpdateFavoriteInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 	}
 }
 
+// UpdateFavoriteInfo 点赞操作时，修改用户和视频作者的计数信息
 func (l *UpdateFavoriteInfoLogic) UpdateFavoriteInfo(in *model.UpdateFavoriteInfoRequest) (*model.UpdateFavoriteInfoResponse, error) {
-	// todo: add your logic here and delete this line
-	// 需要更新的内容：uid的点赞数量，aid的被点赞数量，
-	//err := l.svcCtx.UserRepo.UpdateFavoriteCount(in.UserId, in.ActionType)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//err = l.svcCtx.UserRepo.UpdateTotalFavorited(in.AuthorId, in.ActionType)
-	//if err != nil {
-	//	return nil, err
-	//}
-	err := l.svcCtx.UserRepo.UpdateFavorTx(in.UserId, in.VideoId, in.ActionType)
+	var err error
+	if in.ActionType {
+		err = l.svcCtx.UserRepo.AddFollow(in.UserId, in.AuthorId)
+	} else {
+		err = l.svcCtx.UserRepo.DelFollow(in.UserId, in.AuthorId)
+	}
 	if err != nil {
-		logx.Error("update favor tx ", err)
 		return nil, err
 	}
 	return &model.UpdateFavoriteInfoResponse{}, nil

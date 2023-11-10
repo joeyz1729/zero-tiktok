@@ -21,6 +21,7 @@ func NewUpdateFollowInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
+// UpdateFollowInfo 更新
 func (l *UpdateFollowInfoLogic) UpdateFollowInfo(in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
 	var err error
 	if in.ActionType {
