@@ -2,8 +2,8 @@ Name: rpc.rpc
 ListenOn: 0.0.0.0:9094
 Log:
   ServiceName: favorite-rpc
-  Mode: file
-  Path: ./log
+#  Mode: file
+#  Path: ./log
 Telemetry:
   Name: favorite-rpc
   Endpoint: http://127.0.0.1:14268/api/traces
@@ -22,7 +22,7 @@ Mysql:
   DataSource: root:root1234@tcp(localhost:13307)/tiktok_favorite?parseTime=true&charset=utf8
 
 CacheRedis:
-  Addr: 127.0.0.1:6379
+  Addr: 127.0.0.1:16379
 
 
 UserRpc:

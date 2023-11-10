@@ -3,8 +3,10 @@ package data
 import (
 	"context"
 	"fmt"
+	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
 	"github.com/stretchr/testify/assert"
 	"strconv"
+	"sync"
 	"testing"
 )
 
@@ -99,4 +101,33 @@ func TestRepoImpl_IsFavoriteRecordExist(t *testing.T) {
 	for _, p := range pairs {
 		fmt.Println(repo.CheckFavor(context.Background(), p[0], p[1]))
 	}
+}
+
+func TestRepoImpl_CreateFavoriteRecord(t *testing.T) {
+	repo := InitRepo()
+	num := 5 * 5
+	var wg sync.WaitGroup
+	wg.Add(num)
+	for i := 1; i <= 5; i++ {
+		for j := 1; j <= 5; j++ {
+			go func(i, j int) {
+				defer wg.Done()
+				err := repo.CreateFavoriteRecord(context.Background(), &model.Favorite{UserId: int64(i), VideoId: int64(j)})
+				assert.Nil(t, err)
+			}(i, j)
+		}
+	}
+	wg.Wait()
+	wg.Add(num)
+	for i := 1; i <= 5; i++ {
+		for j := 1; j <= 5; j++ {
+			go func(i, j int) {
+				defer wg.Done()
+				err := repo.DeleteFavoriteRecord(context.Background(), &model.Favorite{UserId: int64(i), VideoId: int64(j)})
+				assert.Nil(t, err)
+			}(i, j)
+		}
+	}
+	wg.Wait()
+
 }

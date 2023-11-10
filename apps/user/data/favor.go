@@ -35,7 +35,7 @@ func (r *Repo) AddFavoriteRelation(userId, authorId int64) (err error) {
 }
 
 // DelFavoriteRelation 取消点赞操作的时候，事务更新用户和作者的计数
-func (r *Repo) DelFavoriteRelation(userId, authorId int64, actionType bool) (err error) {
+func (r *Repo) DelFavoriteRelation(userId, authorId int64) (err error) {
 	// 更新数据库， 然后删除缓存
 	var sqlStr1, sqlStr2 string
 	sqlStr1 = `update tiktok_user.user_count set favorite_count = favorite_count - 1 where user_id = ? limit 1`

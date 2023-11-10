@@ -5,6 +5,11 @@ import (
 	"testing"
 )
 
+var (
+	dsn  = "root:root1234@tcp(localhost:13306)/tiktok_user?parseTime=true&charset=utf8"
+	addr = "127.0.0.1:6379"
+)
+
 func TestRepo_GetUserInfo(t *testing.T) {
 	repo := NewRepo(
 		"root:root1234@tcp(localhost:13306)/tiktok_user?parseTime=true&charset=utf8",

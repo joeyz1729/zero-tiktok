@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// Register 注册操作，事务添加用户信息，用户计数，不添加缓存
 func (r *Repo) Register(userId int64, username, password string) error {
 
 	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
@@ -36,21 +37,36 @@ func (r *Repo) Register(userId int64, username, password string) error {
 		return err
 	}
 
+	return nil
+}
+
+// GetCount 获取用户计数信息
+func (r *Repo) GetCount(userId int64, user *UserInfo) (err error) {
 	uidStr := strconv.FormatInt(userId, 10)
-	if _, err = r.rdb.HSet(context.Background(), UserInfoPrefix+uidStr, FieldUsername, username).Result(); err != nil {
+	num, err := r.rdb.Exists(context.Background(), UserCountPrefix+uidStr).Result()
+	if err != nil {
+		logx.Error("check redis exists failed")
 		return err
 	}
-	if _, err = r.rdb.Expire(context.Background(), UserInfoPrefix+uidStr, time.Minute*30).Result(); err != nil {
-		return err
+	if num != 0 {
+		cm, err := r.rdb.HGetAll(context.Background(), UserCountPrefix+uidStr).Result()
+		if err == nil {
+			b, err := json.Marshal(cm)
+			if err != nil {
+				return err
+			}
+			err = json.Unmarshal(b, user)
+			return err
+		}
 	}
 
-	if _, err = r.rdb.HSet(context.Background(), UserCountPrefix+uidStr, countMap).Result(); err != nil {
-		return err
+	sqlStr := `select * from tiktok_user.user_count where user_id = ?`
+	err = r.db.Get(user, sqlStr, userId)
+	if err != nil {
+		return
 	}
-	if _, err = r.rdb.Expire(context.Background(), UserCountPrefix+uidStr, time.Minute*30).Result(); err != nil {
-		return err
-	}
-	return nil
+	return r.AddCountCache(userId, user)
+
 }
 
 func (r *Repo) GetUserInfo(userId int64) (user *UserInfo, err error) {
@@ -118,34 +134,6 @@ func (r *Repo) GetUsername(userId int64) (username string, err error) {
 		return "", err
 	}
 	return username, nil
-}
-
-func (r *Repo) GetCount(userId int64, user *UserInfo) (err error) {
-	uidStr := strconv.FormatInt(userId, 10)
-	num, err := r.rdb.Exists(context.Background(), UserCountPrefix+uidStr).Result()
-	if err != nil {
-		logx.Error("check redis exists failed")
-		return err
-	}
-	if num != 0 {
-		cm, err := r.rdb.HGetAll(context.Background(), UserCountPrefix+uidStr).Result()
-		if err == nil {
-			b, err := json.Marshal(cm)
-			if err != nil {
-				return err
-			}
-			err = json.Unmarshal(b, user)
-			return err
-		}
-	}
-
-	sqlStr := `select * from tiktok_user.user_count where user_id = ?`
-	err = r.db.Get(user, sqlStr, userId)
-	if err != nil {
-		return
-	}
-	return r.AddCountCache(userId, user)
-
 }
 
 func (r *Repo) CheckUserValid(username string) (ok bool, err error) {

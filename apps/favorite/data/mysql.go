@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	FavoriteTable = "favorites"
+	FavoriteTable = "favorite"
 )
 
 type DBImpl struct {
@@ -65,7 +65,7 @@ func (r *DBImpl) IsFavoriteVideo(userId, videoId int64) (bool, error) {
 
 func (r *DBImpl) GetFavoriteIds(userId int64) ([]int64, error) {
 	var favors []model.Favorite
-	err := r.Table("favorites").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
+	err := r.Table("favorite").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
 	if err != nil {
 		return nil, err
 	}

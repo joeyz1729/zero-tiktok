@@ -25,9 +25,9 @@ func NewUpdateFavoriteInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 func (l *UpdateFavoriteInfoLogic) UpdateFavoriteInfo(in *model.UpdateFavoriteInfoRequest) (*model.UpdateFavoriteInfoResponse, error) {
 	var err error
 	if in.ActionType {
-		err = l.svcCtx.UserRepo.AddFollow(in.UserId, in.AuthorId)
+		err = l.svcCtx.UserRepo.AddFavoriteRelation(in.UserId, in.AuthorId)
 	} else {
-		err = l.svcCtx.UserRepo.DelFollow(in.UserId, in.AuthorId)
+		err = l.svcCtx.UserRepo.DelFavoriteRelation(in.UserId, in.AuthorId)
 	}
 	if err != nil {
 		return nil, err

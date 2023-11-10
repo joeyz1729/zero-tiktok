@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"strconv"
+	"time"
 )
 
 const (
@@ -29,11 +30,13 @@ var (
 func (r *Repo) AddCountCache(uid int64, user *UserInfo) (err error) {
 	pipeline := r.rdb.TxPipeline()
 	uidStr := strconv.FormatInt(uid, 10)
-	pipeline.HSet(ctx, UserCountPrefix+uidStr, FieldFollowerCount, user.FollowerCount)
-	pipeline.HSet(ctx, UserCountPrefix+uidStr, FieldFollowedCount, user.FollowedCount)
-	pipeline.HSet(ctx, UserCountPrefix+uidStr, FieldTotalFavorited, user.TotalFavorited)
-	pipeline.HSet(ctx, UserCountPrefix+uidStr, FieldWorkCount, user.WorkCount)
-	pipeline.HSet(ctx, UserCountPrefix+uidStr, FieldFavoriteCount, user.FavoriteCount)
+	key := UserCountPrefix + uidStr
+	pipeline.HSet(ctx, key, FieldFollowerCount, user.FollowerCount)
+	pipeline.HSet(ctx, key, FieldFollowedCount, user.FollowedCount)
+	pipeline.HSet(ctx, key, FieldTotalFavorited, user.TotalFavorited)
+	pipeline.HSet(ctx, key, FieldWorkCount, user.WorkCount)
+	pipeline.HSet(ctx, key, FieldFavoriteCount, user.FavoriteCount)
+	pipeline.Expire(ctx, key, 5*time.Minute)
 	_, err = pipeline.Exec(ctx)
 	return err
 }
@@ -49,6 +52,7 @@ func (r *Repo) AddDetailCache(uid int64, user *UserInfo) (err error) {
 	return err
 }
 
+// DelCountCache 更新计数时，删除对应的缓存，保证一致性
 func (r *Repo) DelCountCache(userId, authorId int64) (err error) {
 	uidStr := strconv.FormatInt(userId, 10)
 	aidStr := strconv.FormatInt(authorId, 10)
