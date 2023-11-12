@@ -21,6 +21,8 @@ type (
 	GetListByAuthorIdResponse   = model.GetListByAuthorIdResponse
 	GetListByUserIdRequest      = model.GetListByUserIdRequest
 	GetListByUserIdResponse     = model.GetListByUserIdResponse
+	GetPublishListRequest       = model.GetPublishListRequest
+	GetPublishListResponse      = model.GetPublishListResponse
 	GetVideoByIdRequest         = model.GetVideoByIdRequest
 	GetVideoByIdResponse        = model.GetVideoByIdResponse
 	GetVideosByIdsRequest       = model.GetVideosByIdsRequest
@@ -42,6 +44,8 @@ type (
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 		// 根据用户id查询发布的所有视频信息，不需要再查询用户信息
 		GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
+		// 根据用户id查询发布的所有视频信息，已经对应用户的点赞信息，不需要查询作者信息
+		GetPublishList(ctx context.Context, in *GetPublishListRequest, opts ...grpc.CallOption) (*GetPublishListResponse, error)
 		// 根据用户id，点赞的视频id，查询视频详细信息和作者信息
 		GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error)
 		// 根据视频id查询视频详细信息，不包括作者详细信息
@@ -83,6 +87,12 @@ func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.C
 func (m *defaultVideo) GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error) {
 	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetListByAuthorId(ctx, in, opts...)
+}
+
+// 根据用户id查询发布的所有视频信息，已经对应用户的点赞信息，不需要查询作者信息
+func (m *defaultVideo) GetPublishList(ctx context.Context, in *GetPublishListRequest, opts ...grpc.CallOption) (*GetPublishListResponse, error) {
+	client := model.NewVideoClient(m.cli.Conn())
+	return client.GetPublishList(ctx, in, opts...)
 }
 
 // 根据用户id，点赞的视频id，查询视频详细信息和作者信息

@@ -135,6 +135,14 @@ user模块需要通过consul服务注册，与redis和mysql交互，在生成use
 
 #### PublishList
 
+获取指定用户发布的视频列表
+
+流程
+1. 在bff层首先接收登陆用户的UserId，以及查询用户的AuthorId
+2. 通过UserRPC验证AuthorId的正确性，如果正确则返回AuthorInfo
+3. 通过FollowRPC查询UserId和AuthorId的关注关系
+4. 通过VideoRPC查询AuthorId发布的所有视频Videos详细信息
+5. 通过FavoriteRPC查询UserId和VideoIds查询点赞情况
 ### Favorite
 
 #### FavoriteList
@@ -147,5 +155,6 @@ favorite rpc查询点赞的id列表，
 
 
 #### Publish
+
 
 bff --> user, video --> bff

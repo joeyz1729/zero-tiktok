@@ -3,9 +3,8 @@ package logic
 import (
 	"context"
 	"errors"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -24,7 +23,7 @@ func NewGetListByAuthorIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 // GetListByAuthorId 根据用户id查询发布的所有视频信息，不需要再查询用户信息
-func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *data.GetListByAuthorIdRequest) (*data.GetListByAuthorIdResponse, error) {
+func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *model.GetListByAuthorIdRequest) (*model.GetListByAuthorIdResponse, error) {
 	videos, err := l.svcCtx.VideoRepo.GetVideosByAuthorId(l.ctx, in.UserId)
 	if err != nil {
 		return nil, err
@@ -32,14 +31,11 @@ func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *data.GetListByAuthorIdReq
 	if len(videos) == 0 {
 		return nil, errors.New("empty set")
 	}
-	if err != nil {
-		return nil, err
-	}
-
-	resp := new(data.GetListByAuthorIdResponse)
-	resp.VideoList = make([]*data.VideoDetail, len(videos))
+	logx.Infof("get %d videos by user %d\n", len(videos), in.UserId)
+	resp := new(model.GetListByAuthorIdResponse)
+	resp.VideoList = make([]*model.VideoDetail, len(videos))
 	for i, v := range videos {
-		resp.VideoList[i] = &data.VideoDetail{
+		resp.VideoList[i] = &model.VideoDetail{
 			Id:            v.VideoId,
 			PlayUrl:       v.PlayUrl,
 			CoverUrl:      v.CoverUrl,

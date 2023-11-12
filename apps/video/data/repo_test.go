@@ -54,7 +54,7 @@ func TestImpl_GetVideoIdsByAuthor(t *testing.T) {
 
 func TestRepoImpl_GetVideosByAuthorId(t *testing.T) {
 	repo := InitRepo()
-	vid := int64(479264886078055299)
+	vid := int64(2)
 	videos, err := repo.GetVideosByAuthorId(context.Background(), vid)
 	if err != nil {
 		panic(err)
@@ -62,17 +62,17 @@ func TestRepoImpl_GetVideosByAuthorId(t *testing.T) {
 	for _, v := range videos {
 		fmt.Println(*v)
 	}
-	for i := 1; i <= 5; i++ {
-		vid := int64(i)
-		videos, err := repo.GetVideosByAuthorId(context.Background(), vid)
-		if err != nil {
-			fmt.Println("err: ", err)
-		} else {
-			for _, v := range videos {
-				fmt.Println(*v)
-			}
-		}
-	}
+	//for i := 1; i <= 5; i++ {
+	//	vid := int64(i)
+	//	videos, err := repo.GetVideosByAuthorId(context.Background(), vid)
+	//	if err != nil {
+	//		fmt.Println("err: ", err)
+	//	} else {
+	//		for _, v := range videos {
+	//			fmt.Println(*v)
+	//		}
+	//	}
+	//}
 }
 
 func TestRepoImpl_FeedIds(t *testing.T) {

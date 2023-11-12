@@ -42,7 +42,7 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 	logx.Infof("PublishList: myUserId: %v, toUserId: %v\n", claims.UserId, req.UserId)
 	// 验证用户id是否正确，这里没有关注关系
 	authorRes, err := l.svcCtx.UserRpc.UserInfo(l.ctx, &user.UserInfoRequest{
-		UserId: claims.UserId,
+		UserId: req.UserId,
 	})
 	if err != nil {
 		logx.Errorw("get author info failed",
@@ -56,6 +56,21 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 	var wg sync.WaitGroup
 	var errChan = make(chan error, 2)
 	wg.Add(2)
+	// 查询视频详细信息列表
+	//videosRes := new(video.GetListByAuthorIdResponse)
+	videosRes := new(video.GetPublishListResponse)
+	go func() {
+		wg.Done()
+		videosRes, err = l.svcCtx.VideoRpc.GetPublishList(l.ctx, &video.GetPublishListRequest{
+			//videosRes, err = l.svcCtx.VideoRpc.GetListByAuthorId(l.ctx, &video.GetListByAuthorIdRequest{
+			UserId:   claims.UserId,
+			AuthorId: req.UserId,
+		})
+		if err != nil {
+			errChan <- err
+			return
+		}
+	}()
 	// 查询关注关系
 	var followRes *follow.GetRelationResponse
 	go func() {
@@ -69,18 +84,7 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 			errChan <- err
 		}
 	}()
-	// 查询视频详细信息列表
-	videosRes := new(video.GetListByAuthorIdResponse)
-	go func() {
-		wg.Done()
-		videosRes, err = l.svcCtx.VideoRpc.GetListByAuthorId(l.ctx, &video.GetListByAuthorIdRequest{
-			UserId: req.UserId,
-		})
-		if err != nil {
-			errChan <- err
-			return
-		}
-	}()
+
 	wg.Wait()
 	select {
 	case err := <-errChan:
@@ -105,6 +109,7 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 		IsFollow:        followRes.IsFollowing,
 	}
 	// 整理返回结果
+
 	resp.VideoList = make([]types.Video, len(videosRes.VideoList))
 	for i, vi := range videosRes.VideoList {
 		v := types.Video{

@@ -23,6 +23,7 @@ const (
 	Video_UpdateFavoriteCount_FullMethodName = "/video.Video/UpdateFavoriteCount"
 	Video_Feed_FullMethodName                = "/video.Video/Feed"
 	Video_GetListByAuthorId_FullMethodName   = "/video.Video/GetListByAuthorId"
+	Video_GetPublishList_FullMethodName      = "/video.Video/GetPublishList"
 	Video_GetFavorList_FullMethodName        = "/video.Video/GetFavorList"
 	Video_GetVideoById_FullMethodName        = "/video.Video/GetVideoById"
 	Video_GetVideosByIds_FullMethodName      = "/video.Video/GetVideosByIds"
@@ -40,6 +41,8 @@ type VideoClient interface {
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 	// 根据用户id查询发布的所有视频信息，不需要再查询用户信息
 	GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
+	// 根据用户id查询发布的所有视频信息，已经对应用户的点赞信息，不需要查询作者信息
+	GetPublishList(ctx context.Context, in *GetPublishListRequest, opts ...grpc.CallOption) (*GetPublishListResponse, error)
 	// 根据用户id，点赞的视频id，查询视频详细信息和作者信息
 	GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error)
 	// 根据视频id查询视频详细信息，不包括作者详细信息
@@ -92,6 +95,15 @@ func (c *videoClient) GetListByAuthorId(ctx context.Context, in *GetListByAuthor
 	return out, nil
 }
 
+func (c *videoClient) GetPublishList(ctx context.Context, in *GetPublishListRequest, opts ...grpc.CallOption) (*GetPublishListResponse, error) {
+	out := new(GetPublishListResponse)
+	err := c.cc.Invoke(ctx, Video_GetPublishList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *videoClient) GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error) {
 	out := new(GetFavorListResponse)
 	err := c.cc.Invoke(ctx, Video_GetFavorList_FullMethodName, in, out, opts...)
@@ -131,6 +143,8 @@ type VideoServer interface {
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
 	// 根据用户id查询发布的所有视频信息，不需要再查询用户信息
 	GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error)
+	// 根据用户id查询发布的所有视频信息，已经对应用户的点赞信息，不需要查询作者信息
+	GetPublishList(context.Context, *GetPublishListRequest) (*GetPublishListResponse, error)
 	// 根据用户id，点赞的视频id，查询视频详细信息和作者信息
 	GetFavorList(context.Context, *GetFavorListRequest) (*GetFavorListResponse, error)
 	// 根据视频id查询视频详细信息，不包括作者详细信息
@@ -155,6 +169,9 @@ func (UnimplementedVideoServer) Feed(context.Context, *FeedRequest) (*FeedRespon
 }
 func (UnimplementedVideoServer) GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListByAuthorId not implemented")
+}
+func (UnimplementedVideoServer) GetPublishList(context.Context, *GetPublishListRequest) (*GetPublishListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublishList not implemented")
 }
 func (UnimplementedVideoServer) GetFavorList(context.Context, *GetFavorListRequest) (*GetFavorListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFavorList not implemented")
@@ -250,6 +267,24 @@ func _Video_GetListByAuthorId_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Video_GetPublishList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublishListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).GetPublishList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Video_GetPublishList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).GetPublishList(ctx, req.(*GetPublishListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Video_GetFavorList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetFavorListRequest)
 	if err := dec(in); err != nil {
@@ -326,6 +361,10 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetListByAuthorId",
 			Handler:    _Video_GetListByAuthorId_Handler,
+		},
+		{
+			MethodName: "GetPublishList",
+			Handler:    _Video_GetPublishList_Handler,
 		},
 		{
 			MethodName: "GetFavorList",

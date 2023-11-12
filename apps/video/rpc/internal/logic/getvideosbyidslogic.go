@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,8 +24,8 @@ func NewGetVideosByIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 // 根据视频id查询视频详细信息，不包括作者详细信息
-func (l *GetVideosByIdsLogic) GetVideosByIds(in *data.GetVideosByIdsRequest) (*data.GetVideosByIdsResponse, error) {
+func (l *GetVideosByIdsLogic) GetVideosByIds(in *model.GetVideosByIdsRequest) (*model.GetVideosByIdsResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &data.GetVideosByIdsResponse{}, nil
+	return &model.GetVideosByIdsResponse{}, nil
 }

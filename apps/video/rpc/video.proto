@@ -12,6 +12,9 @@ service Video {
   rpc Feed(feed_request) returns(feed_response);
   // 根据用户id查询发布的所有视频信息，不需要再查询用户信息
   rpc GetListByAuthorId(get_list_by_author_id_request) returns(get_list_by_author_id_response);
+  // 根据用户id查询发布的所有视频信息，已经对应用户的点赞信息，不需要查询作者信息
+  rpc GetPublishList(get_publish_list_request) returns(get_publish_list_response);
+
   // 根据用户id，点赞的视频id，查询视频详细信息和作者信息
   rpc GetFavorList(get_favor_list_request) returns(get_favor_list_response);
 
@@ -150,6 +153,16 @@ message get_list_by_author_id_request {
 message get_list_by_author_id_response {
   repeated VideoDetail video_list = 1; // 用户发布的视频列表
 }
+
+message get_publish_list_request {
+  int64 user_id = 1; // 用户id
+  int64 author_id = 2;
+}
+
+message get_publish_list_response {
+  repeated VideoDetail video_list = 1; // 用户发布的视频列表
+}
+
 
 message get_favor_list_request {
   int64 user_id = 1;  // 用于查询关注信息

@@ -46,6 +46,12 @@ func (s *VideoServer) GetListByAuthorId(ctx context.Context, in *model.GetListBy
 	return l.GetListByAuthorId(in)
 }
 
+// 根据用户id查询发布的所有视频信息，已经对应用户的点赞信息，不需要查询作者信息
+func (s *VideoServer) GetPublishList(ctx context.Context, in *model.GetPublishListRequest) (*model.GetPublishListResponse, error) {
+	l := logic.NewGetPublishListLogic(ctx, s.svcCtx)
+	return l.GetPublishList(in)
+}
+
 // 根据用户id，点赞的视频id，查询视频详细信息和作者信息
 func (s *VideoServer) GetFavorList(ctx context.Context, in *model.GetFavorListRequest) (*model.GetFavorListResponse, error) {
 	l := logic.NewGetFavorListLogic(ctx, s.svcCtx)
