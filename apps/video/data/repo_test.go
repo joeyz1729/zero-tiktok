@@ -19,7 +19,7 @@ func InitRepo() *RepoImpl {
 		panic(err)
 	}
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr: "127.0.0.1:16379",
 	})
 	return NewRepoImpl(db, rdb)
 }

@@ -116,3 +116,36 @@ user模块需要通过consul服务注册，与redis和mysql交互，在生成use
 1. 启动user模块 `go run user.go`，监听在9091端口，类似启动其他模块。
 3. 启动bff层`go run api.go`，监听8888端口。
 4. 通过postman测试路由 http://127.0.0.1:8888/douyin/user/register 是否能够正常返回
+
+## 接口介绍
+
+### User
+
+#### Register
+
+#### Login
+
+#### UserInfo
+
+### Video
+
+#### Publish
+
+#### Feed
+
+#### PublishList
+
+### Favorite
+
+#### FavoriteList
+
+bff --> favorite --> video --> user,follow --> bff
+检查用户id是否合法
+favorite rpc查询点赞的id列表，
+根据自己的userId，和视频id列表去视频服务中查询，
+并且根据userId和作者id查询详细信息
+
+
+#### Publish
+
+bff --> user, video --> bff

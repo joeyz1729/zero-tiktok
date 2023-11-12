@@ -6,16 +6,19 @@ option go_package="./data";
 service Video {
   // 发布视频
   rpc PublishAction(publish_action_request) returns(publish_action_response);
-  rpc GetListByUserId(get_list_by_user_id_request) returns(get_list_by_user_id_response);
-
+  // 点赞后更新视频计数
+  rpc UpdateFavoriteCount(update_favorite_count_request) returns(update_favorite_count_response);
+  //  查询视频流
+  rpc Feed(feed_request) returns(feed_response);
+  // 根据用户id查询发布的所有视频信息，不需要再查询用户信息
   rpc GetListByAuthorId(get_list_by_author_id_request) returns(get_list_by_author_id_response);
+  // 根据用户id，点赞的视频id，查询视频详细信息和作者信息
   rpc GetFavorList(get_favor_list_request) returns(get_favor_list_response);
 
+  // 根据视频id查询视频详细信息，不包括作者详细信息
   rpc GetVideoById(get_video_by_id_request) returns(get_video_by_id_response);
-//  rpc GetVideosByIds(get_videos_by_ids_request) returns(get_videos_by_ids_response);
-
-  rpc Feed(feed_request) returns(feed_response);
-  rpc UpdateFavoriteCount(update_favorite_count_request) returns(update_favorite_count_response);
+  // 根据视频id查询视频详细信息，不包括作者详细信息
+  rpc GetVideosByIds(get_videos_by_ids_request) returns(get_videos_by_ids_response);
 }
 
 

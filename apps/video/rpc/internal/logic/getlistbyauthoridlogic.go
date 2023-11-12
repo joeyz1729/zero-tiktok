@@ -2,8 +2,9 @@ package logic
 
 import (
 	"context"
+	"errors"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -22,30 +23,31 @@ func NewGetListByAuthorIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 	}
 }
 
-func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *model.GetListByAuthorIdRequest) (*model.GetListByAuthorIdResponse, error) {
-	// todo: add your logic here and delete this line
-	// 根据author id查询发布的视频列表
-	resp := new(model.GetListByAuthorIdResponse)
+// GetListByAuthorId 根据用户id查询发布的所有视频信息，不需要再查询用户信息
+func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *data.GetListByAuthorIdRequest) (*data.GetListByAuthorIdResponse, error) {
 	videos, err := l.svcCtx.VideoRepo.GetVideosByAuthorId(l.ctx, in.UserId)
 	if err != nil {
-		logx.Error("get videos by author id: ", err)
 		return nil, err
 	}
-	videoList := make([]*model.VideoDetail, len(videos))
+	if len(videos) == 0 {
+		return nil, errors.New("empty set")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(data.GetListByAuthorIdResponse)
+	resp.VideoList = make([]*data.VideoDetail, len(videos))
 	for i, v := range videos {
-		//go func(i int, v *data.Video) {
-		videoList[i] = &model.VideoDetail{
-			Id: v.VideoId,
-			// author 不需要
+		resp.VideoList[i] = &data.VideoDetail{
+			Id:            v.VideoId,
 			PlayUrl:       v.PlayUrl,
 			CoverUrl:      v.CoverUrl,
 			Title:         v.Title,
 			FavoriteCount: v.FavoriteCount,
 			CommentCount:  v.CommentCount,
-			IsFavorite:    false,
+			//IsFavorite:    false,
 		}
-		//}(i, v)
 	}
-	resp.VideoList = videoList
 	return resp, nil
 }

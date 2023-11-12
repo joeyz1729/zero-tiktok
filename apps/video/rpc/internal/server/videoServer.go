@@ -6,14 +6,14 @@ package server
 import (
 	"context"
 
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/data"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/logic"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 )
 
 type VideoServer struct {
 	svcCtx *svc.ServiceContext
-	model.UnimplementedVideoServer
+	data.UnimplementedVideoServer
 }
 
 func NewVideoServer(svcCtx *svc.ServiceContext) *VideoServer {
@@ -22,37 +22,44 @@ func NewVideoServer(svcCtx *svc.ServiceContext) *VideoServer {
 	}
 }
 
-func (s *VideoServer) PublishAction(ctx context.Context, in *model.PublishActionRequest) (*model.PublishActionResponse, error) {
+// 发布视频
+func (s *VideoServer) PublishAction(ctx context.Context, in *data.PublishActionRequest) (*data.PublishActionResponse, error) {
 	l := logic.NewPublishActionLogic(ctx, s.svcCtx)
 	return l.PublishAction(in)
 }
 
-func (s *VideoServer) GetListByUserId(ctx context.Context, in *model.GetListByUserIdRequest) (*model.GetListByUserIdResponse, error) {
-	l := logic.NewGetListByUserIdLogic(ctx, s.svcCtx)
-	return l.GetListByUserId(in)
+// 点赞后更新视频计数
+func (s *VideoServer) UpdateFavoriteCount(ctx context.Context, in *data.UpdateFavoriteCountRequest) (*data.UpdateFavoriteCountResponse, error) {
+	l := logic.NewUpdateFavoriteCountLogic(ctx, s.svcCtx)
+	return l.UpdateFavoriteCount(in)
 }
 
-func (s *VideoServer) GetListByAuthorId(ctx context.Context, in *model.GetListByAuthorIdRequest) (*model.GetListByAuthorIdResponse, error) {
-	l := logic.NewGetListByAuthorIdLogic(ctx, s.svcCtx)
-	return l.GetListByAuthorId(in)
-}
-
-func (s *VideoServer) GetFavorList(ctx context.Context, in *model.GetFavorListRequest) (*model.GetFavorListResponse, error) {
-	l := logic.NewGetFavorListLogic(ctx, s.svcCtx)
-	return l.GetFavorList(in)
-}
-
-func (s *VideoServer) GetVideoById(ctx context.Context, in *model.GetVideoByIdRequest) (*model.GetVideoByIdResponse, error) {
-	l := logic.NewGetVideoByIdLogic(ctx, s.svcCtx)
-	return l.GetVideoById(in)
-}
-
-func (s *VideoServer) Feed(ctx context.Context, in *model.FeedRequest) (*model.FeedResponse, error) {
+// 查询视频流
+func (s *VideoServer) Feed(ctx context.Context, in *data.FeedRequest) (*data.FeedResponse, error) {
 	l := logic.NewFeedLogic(ctx, s.svcCtx)
 	return l.Feed(in)
 }
 
-func (s *VideoServer) UpdateFavoriteCount(ctx context.Context, in *model.UpdateFavoriteCountRequest) (*model.UpdateFavoriteCountResponse, error) {
-	l := logic.NewUpdateFavoriteCountLogic(ctx, s.svcCtx)
-	return l.UpdateFavoriteCount(in)
+// 根据用户id查询发布的所有视频信息，不需要再查询用户信息
+func (s *VideoServer) GetListByAuthorId(ctx context.Context, in *data.GetListByAuthorIdRequest) (*data.GetListByAuthorIdResponse, error) {
+	l := logic.NewGetListByAuthorIdLogic(ctx, s.svcCtx)
+	return l.GetListByAuthorId(in)
+}
+
+// 根据用户id，点赞的视频id，查询视频详细信息和作者信息
+func (s *VideoServer) GetFavorList(ctx context.Context, in *data.GetFavorListRequest) (*data.GetFavorListResponse, error) {
+	l := logic.NewGetFavorListLogic(ctx, s.svcCtx)
+	return l.GetFavorList(in)
+}
+
+// 根据视频id查询视频详细信息，不包括作者详细信息
+func (s *VideoServer) GetVideoById(ctx context.Context, in *data.GetVideoByIdRequest) (*data.GetVideoByIdResponse, error) {
+	l := logic.NewGetVideoByIdLogic(ctx, s.svcCtx)
+	return l.GetVideoById(in)
+}
+
+// 根据视频id查询视频详细信息，不包括作者详细信息
+func (s *VideoServer) GetVideosByIds(ctx context.Context, in *data.GetVideosByIdsRequest) (*data.GetVideosByIdsResponse, error) {
+	l := logic.NewGetVideosByIdsLogic(ctx, s.svcCtx)
+	return l.GetVideosByIds(in)
 }
