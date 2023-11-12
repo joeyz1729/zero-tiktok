@@ -13,21 +13,19 @@ import (
 )
 
 type (
-	ActionRequest            = model.ActionRequest
-	ActionResponse           = model.ActionResponse
-	GetFavoriteCountRequest  = model.GetFavoriteCountRequest
-	GetFavoriteCountResponse = model.GetFavoriteCountResponse
-	GetFavoriteRequest       = model.GetFavoriteRequest
-	GetFavoriteResponse      = model.GetFavoriteResponse
-	GetVideoIdsRequest       = model.GetVideoIdsRequest
-	GetVideoIdsResponse      = model.GetVideoIdsResponse
+	ActionRequest       = model.ActionRequest
+	ActionResponse      = model.ActionResponse
+	GetFavoriteRequest  = model.GetFavoriteRequest
+	GetFavoriteResponse = model.GetFavoriteResponse
+	GetVideoIdsRequest  = model.GetVideoIdsRequest
+	GetVideoIdsResponse = model.GetVideoIdsResponse
 
 	Favorite interface {
+		// 添加点赞操作
 		Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
-		AddAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
-		DelAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
+		// 获取用户点赞的视频id
 		GetVideoIds(ctx context.Context, in *GetVideoIdsRequest, opts ...grpc.CallOption) (*GetVideoIdsResponse, error)
-		GetFavoriteCount(ctx context.Context, in *GetFavoriteCountRequest, opts ...grpc.CallOption) (*GetFavoriteCountResponse, error)
+		// 检查用户对视频是否点过赞
 		GetFavorite(ctx context.Context, in *GetFavoriteRequest, opts ...grpc.CallOption) (*GetFavoriteResponse, error)
 	}
 
@@ -42,31 +40,19 @@ func NewFavorite(cli zrpc.Client) Favorite {
 	}
 }
 
+// 添加点赞操作
 func (m *defaultFavorite) Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
 	client := model.NewFavoriteClient(m.cli.Conn())
 	return client.Action(ctx, in, opts...)
 }
 
-func (m *defaultFavorite) AddAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
-	client := model.NewFavoriteClient(m.cli.Conn())
-	return client.AddAction(ctx, in, opts...)
-}
-
-func (m *defaultFavorite) DelAction(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error) {
-	client := model.NewFavoriteClient(m.cli.Conn())
-	return client.DelAction(ctx, in, opts...)
-}
-
+// 获取用户点赞的视频id
 func (m *defaultFavorite) GetVideoIds(ctx context.Context, in *GetVideoIdsRequest, opts ...grpc.CallOption) (*GetVideoIdsResponse, error) {
 	client := model.NewFavoriteClient(m.cli.Conn())
 	return client.GetVideoIds(ctx, in, opts...)
 }
 
-func (m *defaultFavorite) GetFavoriteCount(ctx context.Context, in *GetFavoriteCountRequest, opts ...grpc.CallOption) (*GetFavoriteCountResponse, error) {
-	client := model.NewFavoriteClient(m.cli.Conn())
-	return client.GetFavoriteCount(ctx, in, opts...)
-}
-
+// 检查用户对视频是否点过赞
 func (m *defaultFavorite) GetFavorite(ctx context.Context, in *GetFavoriteRequest, opts ...grpc.CallOption) (*GetFavoriteResponse, error) {
 	client := model.NewFavoriteClient(m.cli.Conn())
 	return client.GetFavorite(ctx, in, opts...)

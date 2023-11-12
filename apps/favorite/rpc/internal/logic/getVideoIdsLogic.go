@@ -23,11 +23,9 @@ func NewGetVideoIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetVi
 	}
 }
 
+// GetVideoIds 获取用户点赞的视频id
 func (l *GetVideoIdsLogic) GetVideoIds(in *model.GetVideoIdsRequest) (*model.GetVideoIdsResponse, error) {
-	// todo: add your logic here and delete this line
 	resp := new(model.GetVideoIdsResponse)
-	//var videoIds []int64
-	//
 	ids, err := l.svcCtx.FavorRepo.GetFavorIds(l.ctx, in.UserId)
 	if err != nil {
 		return nil, err

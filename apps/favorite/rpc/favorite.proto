@@ -6,13 +6,12 @@ option go_package="./model";
 
 
 service Favorite {
+  // 添加点赞操作
   rpc Action(action_request) returns(action_response);
-  rpc AddAction(action_request) returns(action_response);
-  rpc DelAction(action_request) returns(action_response);
+  // 获取用户点赞的视频id
   rpc GetVideoIds(get_video_ids_request) returns (get_video_ids_response);
-//  rpc GetFavoriteCount(get_favorite_count_request) returns (get_favorite_count_response);
+  // 检查用户对视频是否点过赞
   rpc GetFavorite(get_favorite_request) returns(get_favorite_response);
-
 }
 
 message action_request {
@@ -36,17 +35,6 @@ message get_video_ids_response {
   int64 video_num = 1;
   repeated int64 video_ids = 2;
 }
-
-
-message get_favorite_count_request {
-  int64 user_id = 1;
-}
-
-message get_favorite_count_response{
-  int64 favorite_count = 1;
-  int64 total_favorited = 2;
-}
-
 
 message get_favorite_request {
   int64 user_id = 1;

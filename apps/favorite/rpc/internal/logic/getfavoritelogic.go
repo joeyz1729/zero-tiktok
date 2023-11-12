@@ -23,9 +23,8 @@ func NewGetFavoriteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFa
 	}
 }
 
+// GetFavorite 检查用户和视频的点赞关系
 func (l *GetFavoriteLogic) GetFavorite(in *model.GetFavoriteRequest) (*model.GetFavoriteResponse, error) {
-	// todo: add your logic here and delete this line
-	// 根据uid， vid查询favor
 	exist, err := l.svcCtx.FavorRepo.CheckFavor(l.ctx, in.UserId, in.VideoId)
 	if err != nil {
 		return nil, err
