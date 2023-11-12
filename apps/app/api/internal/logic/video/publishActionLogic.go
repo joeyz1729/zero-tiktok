@@ -37,7 +37,6 @@ func NewPublishActionLogic(r *http.Request, ctx context.Context, svcCtx *svc.Ser
 }
 
 func (l *PublishActionLogic) PublishAction() (resp *types.PublishActionResponse, err error) {
-	// todo: add your logic here and delete this line
 	resp = new(types.PublishActionResponse)
 	err = l.r.ParseMultipartForm(maxSize)
 	if err != nil {
@@ -46,7 +45,6 @@ func (l *PublishActionLogic) PublishAction() (resp *types.PublishActionResponse,
 		return resp, err
 	}
 
-	// get user_id from jwt token
 	token := l.r.FormValue("token")
 	title := l.r.FormValue("title")
 	logx.Infof("token: %s, title: %s", token, title)

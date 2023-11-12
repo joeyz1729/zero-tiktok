@@ -4,7 +4,7 @@ package video;
 option go_package="./data";
 
 service Video {
-
+  // 发布视频
   rpc PublishAction(publish_action_request) returns(publish_action_response);
   rpc GetListByUserId(get_list_by_user_id_request) returns(get_list_by_user_id_response);
 

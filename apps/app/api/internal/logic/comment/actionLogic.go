@@ -27,9 +27,6 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 }
 
 func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.CommentActionResponse, err error) {
-	// todo: add your logic here and delete this line
-	// uid, vid, action type, cid, context
-	// 1. parse user id from jwt token
 	resp = new(types.CommentActionResponse)
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
@@ -41,9 +38,7 @@ func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.Comme
 		return resp, nil
 	}
 
-	// 2. add or del comment
 	if req.ActionType == int32(1) {
-		// add comment
 		addRes := new(comment.AddCommentResponse)
 		addRes, err = l.svcCtx.CommentRpc.AddComment(l.ctx, &comment.AddCommentRequest{
 			UserId:      claims.UserId,

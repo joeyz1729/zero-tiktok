@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
+	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/follow"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
+	"github.com/zeromicro/go-zero/core/logx"
 	"net/http"
 	"sync"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type PublishListLogic struct {
@@ -28,9 +28,8 @@ func NewPublishListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publi
 }
 
 func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *types.PublishListResponse, err error) {
-	// todo: add your logic here and delete this line
 	resp = new(types.PublishListResponse)
-
+	// token校验
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
 		logx.Errorw("parse token failed",
@@ -40,26 +39,37 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 		resp.StatusMsg = "internal server error"
 		return resp, nil
 	}
-	//myId := claims.UserId
-	//loginUserId := claims.UserId
-
+	logx.Infof("PublishList: myUserId: %v, toUserId: %v\n", claims.UserId, req.UserId)
+	// 验证用户id是否正确，这里没有关注关系
+	authorRes, err := l.svcCtx.UserRpc.UserInfo(l.ctx, &user.UserInfoRequest{
+		UserId: claims.UserId,
+	})
+	if err != nil {
+		logx.Errorw("get author info failed",
+			logx.Field("err", err),
+		)
+		resp.StatusCode = http.StatusInternalServerError
+		resp.StatusMsg = "internal server error"
+		return resp, nil
+	}
+	// 用户合法，查询关注关系和视频列表
 	var wg sync.WaitGroup
+	var errChan = make(chan error, 2)
 	wg.Add(2)
-	errCh := make(chan error, 2)
-	// 1. 获取user信息
-	authorRes := new(user.GetAuthorResponse)
+	// 查询关注关系
+	var followRes *follow.GetRelationResponse
 	go func() {
 		defer wg.Done()
-		authorRes, err = l.svcCtx.UserRpc.GetAuthor(l.ctx, &user.GetAuthorRequest{
+		var err error
+		followRes, err = l.svcCtx.FollowRpc.GetRelation(l.ctx, &follow.GetRelationRequest{
 			UserId:   claims.UserId,
-			AuthorId: req.UserId,
+			ToUserId: req.UserId,
 		})
 		if err != nil {
-			errCh <- err
-			return
+			errChan <- err
 		}
 	}()
-	// 查询videos基础信息，以及点赞信息
+	// 查询视频详细信息列表
 	videosRes := new(video.GetListByAuthorIdResponse)
 	go func() {
 		wg.Done()
@@ -67,40 +77,39 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 			UserId: req.UserId,
 		})
 		if err != nil {
-			errCh <- err
+			errChan <- err
 			return
 		}
 	}()
 	wg.Wait()
 	select {
-	case err := <-errCh:
-		logx.Error("concurrency rpc ", err)
+	case err := <-errChan:
+		logx.Error("get follow relation, or get video list failed ", err)
 		resp.StatusCode = http.StatusInternalServerError
 		resp.StatusMsg = err.Error()
 		return resp, nil
 	default:
 	}
-
-	videoList := make([]types.Video, len(videosRes.VideoList))
-	// TODO 拼接结果
+	// 整理作者信息
+	author := types.Author{
+		Id:              authorRes.User.Id,
+		Name:            authorRes.User.Name,
+		Avatar:          authorRes.User.Avatar,
+		BackgroundImage: authorRes.User.BackgroundImage,
+		Signature:       authorRes.User.Signature,
+		FollowCount:     authorRes.User.FollowCount,
+		FollowerCount:   authorRes.User.FollowerCount,
+		FavoriteCount:   authorRes.User.FavoriteCount,
+		TotalFavorited:  authorRes.User.TotalFavorited,
+		WorkCount:       authorRes.User.WorkCount,
+		IsFollow:        followRes.IsFollowing,
+	}
+	// 整理返回结果
+	resp.VideoList = make([]types.Video, len(videosRes.VideoList))
 	for i, vi := range videosRes.VideoList {
 		v := types.Video{
-			Id: vi.Id,
-			Author: types.Author{
-				Id:              authorRes.Id,
-				Name:            authorRes.Name,
-				Avatar:          authorRes.Avatar,
-				BackgroundImage: authorRes.BackgroundImage,
-				Signature:       authorRes.Signature,
-
-				FollowCount:   authorRes.FollowCount,
-				FollowerCount: authorRes.FollowerCount,
-				IsFollow:      authorRes.IsFollow,
-
-				FavoriteCount:  authorRes.FavoriteCount,
-				TotalFavorited: authorRes.TotalFavorited,
-				WorkCount:      authorRes.WorkCount,
-			},
+			Id:            vi.Id,
+			Author:        author,
 			Title:         vi.Title,
 			CoverUrl:      vi.CoverUrl,
 			PlayUrl:       vi.PlayUrl,
@@ -108,9 +117,8 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 			CommentCount:  vi.CommentCount,
 			IsFavorite:    vi.IsFavorite,
 		}
-		videoList[i] = v
+		resp.VideoList[i] = v
 	}
-	resp.VideoList = videoList
 
 	resp.StatusCode = http.StatusOK
 	resp.StatusMsg = "success"

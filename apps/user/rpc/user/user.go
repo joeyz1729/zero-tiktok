@@ -5,6 +5,7 @@ package user
 
 import (
 	"context"
+
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 
 	"github.com/zeromicro/go-zero/zrpc"
@@ -39,15 +40,23 @@ type (
 	UserInfoResponse           = model.UserInfoResponse
 
 	User interface {
-		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
+		// 用户注册
 		Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+		// 用户登陆
 		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-		GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
-		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
-		GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+		// 查询用户信息
+		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
+		// 关注后更新用户计数
 		UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
+		// 点赞后更新用户计数
 		UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
+		// 发布视频后更新用户计数
 		UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
+		// 关注等操作检查用户id是否合法
+		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
+		// 根据id列表批量获取用户信息
+		GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+		GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 		GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error)
 		GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
 		FollowPrepare(ctx context.Context, in *FollowPrepareRequest, opts ...grpc.CallOption) (*FollowPrepareRequest, error)
@@ -64,49 +73,57 @@ func NewUser(cli zrpc.Client) User {
 	}
 }
 
-func (m *defaultUser) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
-	return client.UserInfo(ctx, in, opts...)
-}
-
+// 用户注册
 func (m *defaultUser) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.Register(ctx, in, opts...)
 }
 
+// 用户登陆
 func (m *defaultUser) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.Login(ctx, in, opts...)
 }
 
-func (m *defaultUser) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
+// 查询用户信息
+func (m *defaultUser) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
-	return client.GetIdByName(ctx, in, opts...)
+	return client.UserInfo(ctx, in, opts...)
 }
 
-func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
-	return client.GetUserById(ctx, in, opts...)
-}
-
-func (m *defaultUser) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
-	client := model.NewUserClient(m.cli.Conn())
-	return client.GetUsers(ctx, in, opts...)
-}
-
+// 关注后更新用户计数
 func (m *defaultUser) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.UpdateFollowInfo(ctx, in, opts...)
 }
 
+// 点赞后更新用户计数
 func (m *defaultUser) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.UpdateFavoriteInfo(ctx, in, opts...)
 }
 
+// 发布视频后更新用户计数
 func (m *defaultUser) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error) {
 	client := model.NewUserClient(m.cli.Conn())
 	return client.UpdateWorkInfo(ctx, in, opts...)
+}
+
+// 关注等操作检查用户id是否合法
+func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.GetUserById(ctx, in, opts...)
+}
+
+// 根据id列表批量获取用户信息
+func (m *defaultUser) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.GetUsers(ctx, in, opts...)
+}
+
+func (m *defaultUser) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
+	client := model.NewUserClient(m.cli.Conn())
+	return client.GetIdByName(ctx, in, opts...)
 }
 
 func (m *defaultUser) GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error) {

@@ -5,9 +5,10 @@ package server
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
+
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/logic"
 	"github.com/YiZou89/zero-tiktok/apps/user/rpc/internal/svc"
+	"github.com/YiZou89/zero-tiktok/apps/user/rpc/model"
 )
 
 type UserServer struct {
@@ -21,49 +22,57 @@ func NewUserServer(svcCtx *svc.ServiceContext) *UserServer {
 	}
 }
 
-func (s *UserServer) UserInfo(ctx context.Context, in *model.UserInfoRequest) (*model.UserInfoResponse, error) {
-	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
-	return l.UserInfo(in)
-}
-
+// 用户注册
 func (s *UserServer) Register(ctx context.Context, in *model.RegisterRequest) (*model.RegisterResponse, error) {
 	l := logic.NewRegisterLogic(ctx, s.svcCtx)
 	return l.Register(in)
 }
 
+// 用户登陆
 func (s *UserServer) Login(ctx context.Context, in *model.LoginRequest) (*model.LoginResponse, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)
 }
 
-func (s *UserServer) GetIdByName(ctx context.Context, in *model.GetIdByNameRequest) (*model.GetIdByNameResponse, error) {
-	l := logic.NewGetIdByNameLogic(ctx, s.svcCtx)
-	return l.GetIdByName(in)
+// 查询用户信息
+func (s *UserServer) UserInfo(ctx context.Context, in *model.UserInfoRequest) (*model.UserInfoResponse, error) {
+	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
+	return l.UserInfo(in)
 }
 
-func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
-	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
-	return l.GetUserById(in)
-}
-
-func (s *UserServer) GetUsers(ctx context.Context, in *model.GetUsersRequest) (*model.GetUsersResponse, error) {
-	l := logic.NewGetUsersLogic(ctx, s.svcCtx)
-	return l.GetUsers(in)
-}
-
+// 关注后更新用户计数
 func (s *UserServer) UpdateFollowInfo(ctx context.Context, in *model.UpdateFollowInfoRequest) (*model.UpdateFollowInfoResponse, error) {
 	l := logic.NewUpdateFollowInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFollowInfo(in)
 }
 
+// 点赞后更新用户计数
 func (s *UserServer) UpdateFavoriteInfo(ctx context.Context, in *model.UpdateFavoriteInfoRequest) (*model.UpdateFavoriteInfoResponse, error) {
 	l := logic.NewUpdateFavoriteInfoLogic(ctx, s.svcCtx)
 	return l.UpdateFavoriteInfo(in)
 }
 
+// 发布视频后更新用户计数
 func (s *UserServer) UpdateWorkInfo(ctx context.Context, in *model.UpdateWorkInfoRequest) (*model.UpdateWorkInfoResponse, error) {
 	l := logic.NewUpdateWorkInfoLogic(ctx, s.svcCtx)
 	return l.UpdateWorkInfo(in)
+}
+
+// 关注等操作检查用户id是否合法
+func (s *UserServer) GetUserById(ctx context.Context, in *model.GetUserByIdRequest) (*model.GetUserByIdResponse, error) {
+	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
+	return l.GetUserById(in)
+}
+
+// 根据id列表批量获取用户信息
+func (s *UserServer) GetUsers(ctx context.Context, in *model.GetUsersRequest) (*model.GetUsersResponse, error) {
+	l := logic.NewGetUsersLogic(ctx, s.svcCtx)
+	return l.GetUsers(in)
+}
+
+func (s *UserServer) GetIdByName(ctx context.Context, in *model.GetIdByNameRequest) (*model.GetIdByNameResponse, error) {
+	l := logic.NewGetIdByNameLogic(ctx, s.svcCtx)
+	return l.GetIdByName(in)
 }
 
 func (s *UserServer) GetAuthor(ctx context.Context, in *model.GetAuthorRequest) (*model.GetAuthorResponse, error) {
