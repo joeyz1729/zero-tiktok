@@ -6,32 +6,32 @@ package video
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/data"
+	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
 
 type (
-	FeedRequest                 = data.FeedRequest
-	FeedResponse                = data.FeedResponse
-	GetFavorListRequest         = data.GetFavorListRequest
-	GetFavorListResponse        = data.GetFavorListResponse
-	GetListByAuthorIdRequest    = data.GetListByAuthorIdRequest
-	GetListByAuthorIdResponse   = data.GetListByAuthorIdResponse
-	GetListByUserIdRequest      = data.GetListByUserIdRequest
-	GetListByUserIdResponse     = data.GetListByUserIdResponse
-	GetVideoByIdRequest         = data.GetVideoByIdRequest
-	GetVideoByIdResponse        = data.GetVideoByIdResponse
-	GetVideosByIdsRequest       = data.GetVideosByIdsRequest
-	GetVideosByIdsResponse      = data.GetVideosByIdsResponse
-	PublishActionRequest        = data.PublishActionRequest
-	PublishActionResponse       = data.PublishActionResponse
-	UpdateFavoriteCountRequest  = data.UpdateFavoriteCountRequest
-	UpdateFavoriteCountResponse = data.UpdateFavoriteCountResponse
-	UserInfo                    = data.UserInfo
-	VideoDetail                 = data.VideoDetail
-	VideoInfo                   = data.VideoInfo
+	FeedRequest                 = model.FeedRequest
+	FeedResponse                = model.FeedResponse
+	GetFavorListRequest         = model.GetFavorListRequest
+	GetFavorListResponse        = model.GetFavorListResponse
+	GetListByAuthorIdRequest    = model.GetListByAuthorIdRequest
+	GetListByAuthorIdResponse   = model.GetListByAuthorIdResponse
+	GetListByUserIdRequest      = model.GetListByUserIdRequest
+	GetListByUserIdResponse     = model.GetListByUserIdResponse
+	GetVideoByIdRequest         = model.GetVideoByIdRequest
+	GetVideoByIdResponse        = model.GetVideoByIdResponse
+	GetVideosByIdsRequest       = model.GetVideosByIdsRequest
+	GetVideosByIdsResponse      = model.GetVideosByIdsResponse
+	PublishActionRequest        = model.PublishActionRequest
+	PublishActionResponse       = model.PublishActionResponse
+	UpdateFavoriteCountRequest  = model.UpdateFavoriteCountRequest
+	UpdateFavoriteCountResponse = model.UpdateFavoriteCountResponse
+	UserInfo                    = model.UserInfo
+	VideoDetail                 = model.VideoDetail
+	VideoInfo                   = model.VideoInfo
 
 	Video interface {
 		// 发布视频
@@ -63,42 +63,42 @@ func NewVideo(cli zrpc.Client) Video {
 
 // 发布视频
 func (m *defaultVideo) PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.PublishAction(ctx, in, opts...)
 }
 
 // 点赞后更新视频计数
 func (m *defaultVideo) UpdateFavoriteCount(ctx context.Context, in *UpdateFavoriteCountRequest, opts ...grpc.CallOption) (*UpdateFavoriteCountResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.UpdateFavoriteCount(ctx, in, opts...)
 }
 
 // 查询视频流
 func (m *defaultVideo) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.Feed(ctx, in, opts...)
 }
 
 // 根据用户id查询发布的所有视频信息，不需要再查询用户信息
 func (m *defaultVideo) GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetListByAuthorId(ctx, in, opts...)
 }
 
 // 根据用户id，点赞的视频id，查询视频详细信息和作者信息
 func (m *defaultVideo) GetFavorList(ctx context.Context, in *GetFavorListRequest, opts ...grpc.CallOption) (*GetFavorListResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetFavorList(ctx, in, opts...)
 }
 
 // 根据视频id查询视频详细信息，不包括作者详细信息
 func (m *defaultVideo) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetVideoById(ctx, in, opts...)
 }
 
 // 根据视频id查询视频详细信息，不包括作者详细信息
 func (m *defaultVideo) GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error) {
-	client := data.NewVideoClient(m.cli.Conn())
+	client := model.NewVideoClient(m.cli.Conn())
 	return client.GetVideosByIds(ctx, in, opts...)
 }
