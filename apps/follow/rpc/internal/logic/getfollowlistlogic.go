@@ -23,6 +23,7 @@ func NewGetFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 	}
 }
 
+// GetFollowList 获取点赞列表，并检查对方是否关注自己
 func (l *GetFollowListLogic) GetFollowList(in *model.GetFollowListRequest) (*model.GetFollowListResponse, error) {
 	resp := new(model.GetFollowListResponse)
 	ids, err := l.svcCtx.FollowRepo.GetFollowedIds(in.UserId)

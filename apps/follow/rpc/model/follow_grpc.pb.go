@@ -34,8 +34,9 @@ type FollowClient interface {
 	Action(ctx context.Context, in *ActionRequest, opts ...grpc.CallOption) (*ActionResponse, error)
 	// 获取粉丝列表
 	GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error)
-	// 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+	// 获取关注者列表
 	GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error)
+	// 获取关注者列表，并查看是否关注自己
 	GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListResponse, error)
 	// 查询关系
 	GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
@@ -102,8 +103,9 @@ type FollowServer interface {
 	Action(context.Context, *ActionRequest) (*ActionResponse, error)
 	// 获取粉丝列表
 	GetFollowerIds(context.Context, *GetFollowerIdsRequest) (*GetFollowerIdsResponse, error)
-	// 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+	// 获取关注者列表
 	GetFollowIds(context.Context, *GetFollowIdsRequest) (*GetFollowIdsResponse, error)
+	// 获取关注者列表，并查看是否关注自己
 	GetFollowList(context.Context, *GetFollowListRequest) (*GetFollowListResponse, error)
 	// 查询关系
 	GetRelation(context.Context, *GetRelationRequest) (*GetRelationResponse, error)

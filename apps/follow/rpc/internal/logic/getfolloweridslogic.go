@@ -23,7 +23,7 @@ func NewGetFollowerIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 	}
 }
 
-// 获取粉丝列表
+// GetFollowerIds 获取粉丝列表
 func (l *GetFollowerIdsLogic) GetFollowerIds(in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
 	resp := new(model.GetFollowerIdsResponse)
 	ids, err := l.svcCtx.FollowRepo.GetFollowerIds(in.UserId)

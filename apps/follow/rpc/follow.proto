@@ -16,8 +16,9 @@ service Follow {
   rpc Action(action_request) returns(action_response);
   // 获取粉丝列表
   rpc GetFollowerIds(get_follower_ids_request) returns(get_follower_ids_response);
-  // 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+  // 获取关注者列表
   rpc GetFollowIds(get_follow_ids_request) returns(get_follow_ids_response);
+  // 获取关注者列表，并查看是否关注自己
   rpc GetFollowList(get_follow_list_request) returns(get_follow_list_response);
   // 查询关系
   rpc GetRelation(get_relation_request) returns(get_relation_response);

@@ -34,12 +34,13 @@ func (s *FollowServer) GetFollowerIds(ctx context.Context, in *model.GetFollower
 	return l.GetFollowerIds(in)
 }
 
-// 获取列表，以及对方是否关注自己，或许可以把follow表中添加state？
+// 获取关注者列表
 func (s *FollowServer) GetFollowIds(ctx context.Context, in *model.GetFollowIdsRequest) (*model.GetFollowIdsResponse, error) {
 	l := logic.NewGetFollowIdsLogic(ctx, s.svcCtx)
 	return l.GetFollowIds(in)
 }
 
+// 获取关注者列表，并查看是否关注自己
 func (s *FollowServer) GetFollowList(ctx context.Context, in *model.GetFollowListRequest) (*model.GetFollowListResponse, error) {
 	l := logic.NewGetFollowListLogic(ctx, s.svcCtx)
 	return l.GetFollowList(in)
