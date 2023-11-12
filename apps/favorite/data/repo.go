@@ -7,8 +7,8 @@ import (
 )
 
 type RepoImpl struct {
-	db    FavorDB
-	cache FavorCache
+	db    *DBImpl
+	cache *CacheImpl
 }
 
 func NewRepo(dataSource, addr string) (*RepoImpl, error) {
@@ -83,7 +83,7 @@ func (r *RepoImpl) GetFavorIds(c context.Context, userId int64) ([]int64, error)
 	if err == nil && hit {
 		// cache
 		ids, err := r.cache.GetFavoriteVideoIds(c, key)
-		if err == nil {
+		if err == nil && len(ids) != 0 {
 			return ids, nil
 		}
 	}
@@ -111,4 +111,17 @@ func (r *RepoImpl) AddCacheFromDB(userId int64) error {
 	// 添加到数据
 	key := FavoriteSetPrefix + strconv.FormatInt(userId, 10)
 	return r.cache.AddFavorites(context.Background(), key, ids...)
+}
+
+func (r *RepoImpl) GetFavoriteIdsFromDB(userId int64) ([]int64, error) {
+	favors := []*model.Favorite{}
+	err := r.db.Table("favorite").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]int64, len(favors))
+	for i, f := range favors {
+		ids[i] = f.VideoId
+	}
+	return ids, nil
 }

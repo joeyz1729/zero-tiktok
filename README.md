@@ -147,11 +147,14 @@ user模块需要通过consul服务注册，与redis和mysql交互，在生成use
 
 #### FavoriteList
 
-bff --> favorite --> video --> user,follow --> bff
-检查用户id是否合法
-favorite rpc查询点赞的id列表，
-根据自己的userId，和视频id列表去视频服务中查询，
-并且根据userId和作者id查询详细信息
+获取用户点赞的视频列表
+
+流程
+1. 在bff层首先接收登陆用户的UserId
+2. 通过FollowRPC查询UserId所有点赞的视频VideoIds
+3. 通过VideoRPC查询VideoIds对应的视频Videos详细信息
+4. 通过UserRpc查询AuthorIds的详细信息
+5. 通过FollowRpc查询AuthorIds与UserId的关注关系
 
 
 #### Publish

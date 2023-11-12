@@ -12,7 +12,7 @@ import (
 
 var (
 	dsn       = "root:root1234@tcp(localhost:13307)/tiktok_favorite?parseTime=true&charset=utf8"
-	redisAddr = "127.0.0.1:6379"
+	redisAddr = "127.0.0.1:16379"
 )
 
 func InitRepo() *RepoImpl {
@@ -32,19 +32,53 @@ func Test_Connect(t *testing.T) {
 
 func TestDBImpl_GetFavoriteIds(t *testing.T) {
 	repo := InitRepo()
-	ids, err := repo.db.GetFavoriteIds(int64(482313611805467523))
+	userId := 486525991745758083
+	ids, err := repo.GetFavoriteIdsFromDB(int64(userId))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(ids)
 
-	for i := 1; i <= 5; i++ {
-		ids, err := repo.db.GetFavoriteIds(int64(i))
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(ids)
+	ids, err = repo.db.GetFavoriteIds(486525991745758083)
+	if err != nil {
+		panic(err)
 	}
+	fmt.Println(ids)
+
+}
+func TestRepoImpl_GetFavorIds(t *testing.T) {
+	repo := InitRepo()
+	userId := 482313611805467523
+	ids, err := repo.GetFavorIds(context.Background(), int64(userId))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(ids)
+
+	ids, err = repo.db.GetFavoriteIds(int64(482313611805467523))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(ids)
+
+}
+
+func TestDBGet(t *testing.T) {
+	db, err := NewDBImpl(dsn)
+	if err != nil {
+		panic(err)
+	}
+	userId := 486525991745758083
+	var favors []*model.Favorite
+	err = db.Table("favorite").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
+	if err != nil {
+		t.Log(err)
+	}
+	ids := make([]int64, len(favors))
+	for i, f := range favors {
+		ids[i] = f.VideoId
+	}
+	t.Log(ids)
 }
 
 func TestCacheImpl_GetFavoriteIds(t *testing.T) {
@@ -61,23 +95,6 @@ func TestCacheImpl_GetFavoriteIds(t *testing.T) {
 	for i := 1; i <= 5; i++ {
 		uid := strconv.FormatInt(int64(i), 10)
 		ids, err := repo.cache.GetFavoriteVideoIds(context.Background(), FavoriteSetPrefix+uid)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(ids)
-	}
-}
-
-func TestRepoImpl_GetFavorIds(t *testing.T) {
-	repo := InitRepo()
-	ids, err := repo.GetFavorIds(context.Background(), int64(482313611805467523))
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(ids)
-
-	for i := 1; i <= 5; i++ {
-		ids, err := repo.GetFavorIds(context.Background(), int64(i))
 		if err != nil {
 			fmt.Println(err)
 		}

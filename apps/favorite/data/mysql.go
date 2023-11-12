@@ -64,8 +64,8 @@ func (r *DBImpl) IsFavoriteVideo(userId, videoId int64) (bool, error) {
 }
 
 func (r *DBImpl) GetFavoriteIds(userId int64) ([]int64, error) {
-	var favors []model.Favorite
-	err := r.Table("favorite").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
+	favors := []*model.Favorite{}
+	err := r.DB.Table("favorite").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
 	if err != nil {
 		return nil, err
 	}
