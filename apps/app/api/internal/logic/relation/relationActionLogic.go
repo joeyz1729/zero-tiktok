@@ -75,27 +75,3 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 	return resp, nil
 
 }
-
-//if req.ActionType == int32(1) {
-//	res := new(follow.AddResponse)
-//	res, err = l.svcCtx.FollowRpc.Add(l.ctx, &follow.AddRequest{
-//		UserId:   userId,
-//		ToUserId: req.ToUserId,
-//	})
-//	if res != nil {
-//		msg = res.Msg
-//	}
-//
-//} else {
-//	res := new(follow.DelResponse)
-//	res, err = l.svcCtx.FollowRpc.Del(l.ctx, &follow.DelRequest{
-//		UserId:   userId,
-//		ToUserId: req.ToUserId,
-//	})
-//	if res != nil {
-//		msg = res.Msg
-//	}
-//
-//}
-//var followRes = new(follow.ActionResponse)
-//followRes, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{UserId: userId, ToUserId: req.ToUserId, ActionType: req.ActionType})

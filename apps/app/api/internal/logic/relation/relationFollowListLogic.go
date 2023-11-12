@@ -27,11 +27,8 @@ func NewRelationFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListRequest) (resp *types.FollowListResponse, err error) {
-	// todo: add your logic here and delete this line
 	resp = new(types.FollowListResponse)
-	//followRes, err := l.svcCtx.FollowRpc.GetFollowIds(l.ctx, &follow.GetFollowIdsRequest{
-	//	UserId: req.UserId,
-	//})
+	// 获取列表
 	followRes, err := l.svcCtx.FollowRpc.GetFollowList(l.ctx, &follow.GetFollowListRequest{
 		UserId: req.UserId,
 	})
@@ -40,7 +37,7 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 		resp.StatusMsg = err.Error()
 		return resp, nil
 	}
-
+	// 获取用户详细信息
 	usersRes := new(user.GetUsersResponse)
 	usersRes, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &user.GetUsersRequest{
 		UserIds: followRes.FollowedIds,
@@ -48,6 +45,7 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 	if err != nil {
 		return nil, err
 	}
+	// 拼接结果
 	userList := make([]types.UserInfo, len(followRes.FollowedIds))
 	for i, userInfo := range usersRes.UserList {
 		userList[i] = types.UserInfo{

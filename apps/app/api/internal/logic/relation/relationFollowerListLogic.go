@@ -70,7 +70,6 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.FollowerList
 }
 
 //func (l *RelationFollowerListLogic) RelationFollowerListByPage(req *types.FollowerListRequest) (resp *types.FollowerListResponse, err error) {
-//	// todo: add your logic here and delete this line
 //	resp = new(types.FollowerListResponse)
 //
 //	var page = pagination.PageToken(req.PageToken).Decode()
@@ -126,7 +125,6 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.FollowerList
 //			BackgroundImage: userRes.BackgroundImage,
 //			Signature:       userRes.Signature,
 //		}
-//		//TODO, comprehensive user info
 //		userList[i] = userInfo
 //	}
 //	//fmt.Println(userList)
@@ -165,7 +163,6 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.FollowerList
 //		BackgroundImage: userRes.BackgroundImage,
 //		Signature:       userRes.Signature,
 //	}
-//	//TODO, comprehensive user info
 //}
 
 //fmt.Println(userList)
