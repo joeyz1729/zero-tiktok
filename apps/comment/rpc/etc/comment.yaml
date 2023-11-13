@@ -2,19 +2,19 @@ Name: data.rpc
 ListenOn: 0.0.0.0:9095
 Log:
   ServiceName: comment-rpc
-  Mode: file
-  Path: ./log
+#  Mode: file
+#  Path: ./log
 Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: comment.rpc
 
 Mysql:
-  DataSource: root:root@tcp(localhost:3306)/tiktok_comment?parseTime=true&charset=utf8
+  DataSource: root:root1234@tcp(localhost:13306)/tiktok_comment?parseTime=true&charset=utf8
 
 
 CacheRedis:
-  Addr: 127.0.0.1:6379
+  Addr: 127.0.0.1:16379
 
 Snowflake:
   StartTime: 2023-08-21

@@ -22,22 +22,26 @@ func NewCommentServer(svcCtx *svc.ServiceContext) *CommentServer {
 	}
 }
 
-func (s *CommentServer) GetComment(ctx context.Context, in *model.GetCommentRequest) (*model.GetCommentResponse, error) {
-	l := logic.NewGetCommentLogic(ctx, s.svcCtx)
-	return l.GetComment(in)
-}
-
-func (s *CommentServer) GetCommentList(ctx context.Context, in *model.GetCommentListRequest) (*model.GetCommentListResponse, error) {
-	l := logic.NewGetCommentListLogic(ctx, s.svcCtx)
-	return l.GetCommentList(in)
-}
-
+// 添加评论，根据user，video，comment_text
 func (s *CommentServer) AddComment(ctx context.Context, in *model.AddCommentRequest) (*model.AddCommentResponse, error) {
 	l := logic.NewAddCommentLogic(ctx, s.svcCtx)
 	return l.AddComment(in)
 }
 
+// 删除评论，根据user，video，comment
 func (s *CommentServer) DelComment(ctx context.Context, in *model.DelCommentRequest) (*model.DelCommentResponse, error) {
 	l := logic.NewDelCommentLogic(ctx, s.svcCtx)
 	return l.DelComment(in)
+}
+
+// 查询视频的评论列表
+func (s *CommentServer) GetCommentList(ctx context.Context, in *model.GetCommentListRequest) (*model.GetCommentListResponse, error) {
+	l := logic.NewGetCommentListLogic(ctx, s.svcCtx)
+	return l.GetCommentList(in)
+}
+
+// 查询单条记录
+func (s *CommentServer) GetComment(ctx context.Context, in *model.GetCommentRequest) (*model.GetCommentResponse, error) {
+	l := logic.NewGetCommentLogic(ctx, s.svcCtx)
+	return l.GetComment(in)
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 type DelCommentLogic struct {
@@ -27,49 +26,42 @@ func NewDelCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DelCom
 }
 
 func (l *DelCommentLogic) DelComment(in *model.DelCommentRequest) (*model.DelCommentResponse, error) {
-	// todo: add your logic here and delete this line
 	resp := new(model.DelCommentResponse)
 	var err error
-
-	getStr := `select id from tiktok_comment.comment where video_id = ? and user_id = ? and comment_id = ?`
-	_, err = l.svcCtx.CommentDB.Query(getStr, in.VideoId, in.UserId, in.CommentId)
-
-	// 1. query failed
-	if err != nil && err != sqlx.ErrNotFound {
-		logx.Errorw("get comment record failed",
-			logx.Field("err", err),
-		)
-		resp.Msg = err.Error()
-		return resp, err
+	// 1. 检查要删除的comment是否存在
+	var count = 0
+	getStr := `select count(*) from tiktok_comment.comment where video_id = ?  and comment_id = ? and user_id = ? limit 1`
+	err = l.svcCtx.CommentDB.Get(&count, getStr, in.VideoId, in.CommentId, in.UserId)
+	if err != nil {
+		logx.Error("get comment record ", err)
+		return nil, err
 	}
 
 	// 2. no comment record
-	if err != nil && err == sqlx.ErrNotFound {
-		resp.Msg = "no comment record"
-		return resp, nil
+	if count == 0 {
+		logx.Error("no record")
+		return nil, err
 	}
-
+	// 3. 添加到消息队列
 	kafkaData := kmq.KafkaData{
 		ActionType: false,
 		UserId:     in.UserId,
 		VideoId:    in.VideoId,
 		CommentId:  in.CommentId,
 	}
+	logx.Info("kafka message ", kafkaData)
 	kafkaBytes, err := json.Marshal(kafkaData)
 	if err != nil {
-		logx.Errorw("encode kafka data failed",
-			logx.Field("err", err))
+		logx.Error("encode message ", err)
 		return resp, err
 	}
-	//kq.NewPusher()
+
+	// 暂时使用默认的pusher，kq.NewPusher()
 	if err = l.svcCtx.KafkaPusher.Push(string(kafkaBytes)); err != nil {
-		logx.Errorw("push add comment to kafka failed",
-			logx.Field("err", err))
+		logx.Error("push DelComment ", err)
 		return resp, err
 	}
 
 	// 3. query success
-
-	resp.Msg = "push kafka mq success"
 	return resp, nil
 }

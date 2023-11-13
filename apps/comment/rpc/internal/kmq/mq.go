@@ -25,15 +25,11 @@ const (
 )
 
 type Kmq struct {
-	c      kq.KqConf
-	db     *sqlx.DB
-	rdb    *redis.Client
-	waiter sync.WaitGroup
-	//addWaiter sync.WaitGroup
-	//delWaiter sync.WaitGroup
+	c        kq.KqConf
+	db       *sqlx.DB
+	rdb      *redis.Client
+	waiter   sync.WaitGroup
 	dataChan []chan *KafkaData
-	//addChan   []chan *AddData
-	//delChan   []chan *DelData
 }
 
 type KafkaData struct {
@@ -44,26 +40,12 @@ type KafkaData struct {
 	CommentId   int64  `json:"comment_id"`
 }
 
-//type AddData struct {
-//	UserId      int64  `json:"user_id"`
-//	VideoId     int64  `json:"video_id"`
-//	CommentText string `json:"comment_text"`
-//}
-//
-//type DelData struct {
-//	UserId    int64 `json:"user_id"`
-//	VideoId   int64 `json:"video_id"`
-//	CommentId int64 `json:"comment_id"`
-//}
-
 func NewMq(c kq.KqConf, db *sqlx.DB, rdb *redis.Client) *Kmq {
 	s := &Kmq{
 		c:        c,
 		dataChan: make([]chan *KafkaData, chanCount*2),
 		db:       db,
 		rdb:      rdb,
-		//addChan: make([]chan *AddData, chanCount),
-		//delChan: make([]chan *DelData, chanCount),
 	}
 
 	for i := 0; i < chanCount*2; i++ {
@@ -71,14 +53,6 @@ func NewMq(c kq.KqConf, db *sqlx.DB, rdb *redis.Client) *Kmq {
 		s.dataChan[i] = ch
 		s.waiter.Add(1)
 		go s.consume(ch)
-		//ch1 := make(chan *AddData, bufferCount)
-		//ch2 := make(chan *DelData, bufferCount)
-		//s.addChan[i] = ch1
-		//s.delChan[i] = ch2
-		//s.addWaiter.Add(1)
-		//s.delWaiter.Add(1)
-		//go s.consumeAdd(ch1)
-		//go s.consumeDel(ch2)
 	}
 	logx.Info("init kafka mq success")
 	return s

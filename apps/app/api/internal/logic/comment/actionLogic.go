@@ -27,6 +27,8 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 }
 
 func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.CommentActionResponse, err error) {
+	// 需要返回评价内容和作者信息
+	// 使用UserRpc和CommentRpc
 	resp = new(types.CommentActionResponse)
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
@@ -39,8 +41,7 @@ func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.Comme
 	}
 
 	if req.ActionType == int32(1) {
-		addRes := new(comment.AddCommentResponse)
-		addRes, err = l.svcCtx.CommentRpc.AddComment(l.ctx, &comment.AddCommentRequest{
+		_, err = l.svcCtx.CommentRpc.AddComment(l.ctx, &comment.AddCommentRequest{
 			UserId:      claims.UserId,
 			VideoId:     req.VideoId,
 			CommentText: req.CommentText,
@@ -50,7 +51,7 @@ func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.Comme
 				logx.Field("err", err),
 			)
 			resp.StatusCode = http.StatusInternalServerError
-			resp.StatusMsg = addRes.Msg
+			resp.StatusMsg = err.Error()
 			return resp, nil
 		}
 		resp.StatusCode = http.StatusOK
@@ -59,8 +60,7 @@ func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.Comme
 	}
 
 	// delete comment
-	delRes := new(comment.DelCommentResponse)
-	delRes, err = l.svcCtx.CommentRpc.DelComment(l.ctx, &comment.DelCommentRequest{
+	_, err = l.svcCtx.CommentRpc.DelComment(l.ctx, &comment.DelCommentRequest{
 		UserId:    claims.UserId,
 		VideoId:   req.VideoId,
 		CommentId: req.CommentId,
@@ -70,7 +70,7 @@ func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.Comme
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = delRes.Msg
+		resp.StatusMsg = err.Error()
 		return resp, nil
 	}
 	resp.StatusCode = http.StatusOK

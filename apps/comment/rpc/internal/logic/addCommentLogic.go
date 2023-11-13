@@ -25,21 +25,16 @@ func NewAddCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddCom
 }
 
 func (l *AddCommentLogic) AddComment(in *model.AddCommentRequest) (*model.AddCommentResponse, error) {
-	// todo: add your logic here and delete this line
-
 	resp := new(model.AddCommentResponse)
 	var err error
-
+	// 生成commentId
 	cid, err := snowflake.GenID()
 	if err != nil {
-		logx.Errorw("snowflake gen comment id failed",
-			logx.Field("err", err),
-		)
-		resp.Msg = err.Error()
-		return resp, err
+		logx.Error("snowflake gen comment id ", err)
+		return nil, err
 	}
 
-	// push kafka mq
+	// 包装消息并序列化
 	kafkaData := kmq.KafkaData{
 		ActionType:  true,
 		UserId:      in.UserId,
@@ -47,21 +42,19 @@ func (l *AddCommentLogic) AddComment(in *model.AddCommentRequest) (*model.AddCom
 		CommentId:   int64(cid),
 		CommentText: in.CommentText,
 	}
-	logx.Info(kafkaData)
+	logx.Info("prepare to send msg ", kafkaData)
 	kafkaBytes, err := json.Marshal(kafkaData)
 	if err != nil {
-		logx.Errorw("encode kafka data failed",
-			logx.Field("err", err))
-		return resp, err
+		logx.Error("encode message ", err)
+		return nil, err
 	}
 
+	// 发送消息，go-zero包装的kafka-go好像只能设置时间作为key
 	if err = l.svcCtx.KafkaPusher.Push(string(kafkaBytes)); err != nil {
-		logx.Errorw("push add comment to kafka failed",
-			logx.Field("err", err))
+		logx.Error("push AddComment ", err)
 		return resp, err
 	}
-	logx.Info("push add comment success")
 
-	resp.Msg = "push kafka mq success"
+	logx.Info("push message success")
 	return resp, nil
 }

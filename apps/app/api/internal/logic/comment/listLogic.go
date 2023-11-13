@@ -5,7 +5,7 @@ import (
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/svc"
 	"github.com/YiZou89/zero-tiktok/apps/app/api/internal/types"
 	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/comment"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
+	"github.com/YiZou89/zero-tiktok/pkg/jwtx"
 	"net/http"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -26,22 +26,23 @@ func NewListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListLogic {
 }
 
 func (l *ListLogic) List(req *types.CommentListRequest) (resp *types.CommentListResponse, err error) {
-	// todo: add your logic here and delete this line
+	// jwt鉴权
+	claims, err := jwtx.ParseToken(req.Token)
+	if err != nil {
+		logx.Errorw("parse jwt token failed",
+			logx.Field("err", err),
+		)
+		resp.StatusCode = http.StatusUnauthorized
+		resp.StatusMsg = "invalid token"
+		resp.CommentList = []types.Comment{}
+		return resp, nil
+	}
+	uid := claims.UserId // 查找评论时，还需要查找作者信息，以及是否关注，这时需要uid
 	resp = new(types.CommentListResponse)
-	//claims, err := jwtx.ParseToken(req.Token)
-	//if err != nil {
-	//	logx.Errorw("parse jwt token failed",
-	//		logx.Field("err", err),
-	//	)
-	//	resp.StatusCode = http.StatusUnauthorized
-	//	resp.StatusMsg = "invalid token"
-	//	resp.CommentList = []types.Comment{}
-	//	return resp, nil
-	//}
-	//uid := claims.UserId
 	commentListRes := new(comment.GetCommentListResponse)
 	commentListRes, err = l.svcCtx.CommentRpc.GetCommentList(l.ctx, &comment.GetCommentListRequest{
 		VideoId: req.VideoId,
+		UserId:  uid,
 	})
 
 	if err != nil {
@@ -53,23 +54,15 @@ func (l *ListLogic) List(req *types.CommentListRequest) (resp *types.CommentList
 		resp.CommentList = []types.Comment{}
 		return resp, nil
 	}
-	if commentListRes.CommentLen == 0 {
-		resp.StatusCode = http.StatusOK
-		resp.StatusMsg = "empty list"
-		resp.CommentList = []types.Comment{}
-		return resp, nil
-	}
 
-	resp.CommentList = make([]types.Comment, commentListRes.CommentLen)
+	resp.CommentList = make([]types.Comment, len(commentListRes.CommentList))
 	for i, c := range commentListRes.CommentList {
 		cmt := types.Comment{
 			Id:         c.CommentId,
 			Content:    c.Content,
 			CreateDate: c.CreateTime,
 		}
-		userRes, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
-			UserId: c.AuthorId,
-		})
+
 		if err != nil {
 			logx.Errorw("get user by id failed",
 				logx.Field("err", err),
@@ -78,13 +71,6 @@ func (l *ListLogic) List(req *types.CommentListRequest) (resp *types.CommentList
 			resp.StatusMsg = "user rpc err"
 			resp.CommentList = []types.Comment{}
 			return resp, nil
-		}
-		cmt.UserInfo = types.User{
-			Id:              c.AuthorId,
-			Name:            userRes.Name,
-			Avatar:          userRes.Avatar,
-			BackgroundImage: userRes.BackgroundImage,
-			Signature:       userRes.Signature,
 		}
 		resp.CommentList[i] = cmt
 	}

@@ -2,13 +2,12 @@ package svc
 
 import (
 	"context"
+	"github.com/YiZou89/zero-tiktok/apps/comment/data"
 
 	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/config"
 	"github.com/go-redis/redis/v8"
 	"github.com/zeromicro/go-queue/kq"
 
-	//"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/kmq"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/model"
 	"github.com/jmoiron/sqlx"
 	sqlz "github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -16,7 +15,7 @@ import (
 type ServiceContext struct {
 	Config config.Config
 
-	CommentModel model.CommentModel
+	CommentModel data.CommentModel
 
 	CommentDB *sqlx.DB
 
@@ -42,7 +41,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
 		Config:       c,
-		CommentModel: model.NewCommentModel(sqlConn),
+		CommentModel: data.NewCommentModel(sqlConn),
 		CommentDB:    db,
 		CommentCache: rdb,
 		KafkaPusher:  kq.NewPusher(c.KafkaMq.Brokers, c.KafkaMq.Topic),

@@ -22,12 +22,17 @@ type (
 	GetCommentListResponse = model.GetCommentListResponse
 	GetCommentRequest      = model.GetCommentRequest
 	GetCommentResponse     = model.GetCommentResponse
+	User                   = model.User
 
 	Comment interface {
-		GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
-		GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error)
+		// 添加评论，根据user，video，comment_text
 		AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error)
+		// 删除评论，根据user，video，comment
 		DelComment(ctx context.Context, in *DelCommentRequest, opts ...grpc.CallOption) (*DelCommentResponse, error)
+		// 查询视频的评论列表
+		GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error)
+		// 查询单条记录
+		GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
 	}
 
 	defaultComment struct {
@@ -41,22 +46,26 @@ func NewComment(cli zrpc.Client) Comment {
 	}
 }
 
-func (m *defaultComment) GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error) {
-	client := model.NewCommentClient(m.cli.Conn())
-	return client.GetComment(ctx, in, opts...)
-}
-
-func (m *defaultComment) GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error) {
-	client := model.NewCommentClient(m.cli.Conn())
-	return client.GetCommentList(ctx, in, opts...)
-}
-
+// 添加评论，根据user，video，comment_text
 func (m *defaultComment) AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error) {
 	client := model.NewCommentClient(m.cli.Conn())
 	return client.AddComment(ctx, in, opts...)
 }
 
+// 删除评论，根据user，video，comment
 func (m *defaultComment) DelComment(ctx context.Context, in *DelCommentRequest, opts ...grpc.CallOption) (*DelCommentResponse, error) {
 	client := model.NewCommentClient(m.cli.Conn())
 	return client.DelComment(ctx, in, opts...)
+}
+
+// 查询视频的评论列表
+func (m *defaultComment) GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error) {
+	client := model.NewCommentClient(m.cli.Conn())
+	return client.GetCommentList(ctx, in, opts...)
+}
+
+// 查询单条记录
+func (m *defaultComment) GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error) {
+	client := model.NewCommentClient(m.cli.Conn())
+	return client.GetComment(ctx, in, opts...)
 }
