@@ -6,9 +6,9 @@ package server
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/logic"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/logic"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
 )
 
 type FavoriteServer struct {

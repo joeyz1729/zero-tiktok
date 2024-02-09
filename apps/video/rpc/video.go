@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/server"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
-	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
-	"github.com/YiZou89/zero-tiktok/pkg/tool"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/mw/minio"
+	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
+	"github.com/joeyz1729/zero-tiktok/pkg/tool"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -47,6 +47,6 @@ func main() {
 
 	tool.NewSalt(c.Salt)
 
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }

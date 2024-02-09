@@ -23,15 +23,16 @@ func NewGetUserByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserByIdLogic) GetUserById(in *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
 	// todo: add your logic here and delete this line
-	user, err := l.svcCtx.UserRepo.GetUserInfo(in.UserId)
-	if err != nil {
-		return nil, err
-	}
-	resp := new(pb.GetUserByIdResponse)
-	resp.Id = in.UserId
-	resp.Name = user.Username
-	resp.Avatar = "no avatar"
-	resp.BackgroundImage = "no background image"
-	resp.Signature = "no signature"
-	return resp, nil
+	//user, err := l.svcCtx.UserRepo.GetUserInfo(in.UserId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//resp := new(pb.GetUserByIdResponse)
+	//resp.Id = in.UserId
+	//resp.Name = user.Username
+	//resp.Avatar = "no avatar"
+	//resp.BackgroundImage = "no background image"
+	//resp.Signature = "no signature"
+	//return resp, nil
+	return nil, nil
 }

@@ -2,10 +2,10 @@ package svc
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/comment/data"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/data"
 
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/config"
 	"github.com/go-redis/redis/v8"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/config"
 	"github.com/zeromicro/go-queue/kq"
 
 	"github.com/jmoiron/sqlx"

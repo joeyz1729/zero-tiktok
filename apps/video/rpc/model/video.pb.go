@@ -375,7 +375,7 @@ type PublishActionRequest struct {
 
 	UserId int64  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Title  string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"` // 视频标题
-	Data   []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`   // 视频数据
+	Data   []byte `protobuf:"bytes,3,opt,name=repository,proto3" json:"repository,omitempty"`   // 视频数据
 	Type   string `protobuf:"bytes,4,opt,name=type,proto3" json:"type,omitempty"`
 }
 

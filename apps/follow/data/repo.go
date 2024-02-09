@@ -2,10 +2,10 @@ package data
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/follow/data/cache"
-	"github.com/YiZou89/zero-tiktok/apps/follow/data/db"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/data/cache"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/data/db"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

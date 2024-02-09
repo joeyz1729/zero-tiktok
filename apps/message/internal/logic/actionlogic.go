@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/message/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/message/model"
+	"github.com/joeyz1729/zero-tiktok/apps/message/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/message/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

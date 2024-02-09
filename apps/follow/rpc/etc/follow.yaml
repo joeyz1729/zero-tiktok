@@ -1,11 +1,11 @@
-Name: follow.rpc
+Name: follow.tiktok-user
 ListenOn: 0.0.0.0:9093
 Log:
-  ServiceName: follow-rpc
+  ServiceName: follow-tiktok-user
 #  Mode: file
 #  Path: ./log
 Telemetry:
-  Name: follow-rpc
+  Name: follow-tiktok-user
   Endpoint: http://127.0.0.1:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger
@@ -17,7 +17,7 @@ Prometheus:
 Etcd:
   Hosts:
     - 127.0.0.1:2379
-  Key: follow.rpc
+  Key: follow.tiktok-user
 
 Mysql:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_follow?parseTime=true&charset=utf8
@@ -35,7 +35,7 @@ KafkaMq:
   Brokers:
     - 127.0.0.1:9092
   Group: tiktok
-  Topic: follow-rpc
+  Topic: follow-tiktok-user
   Offset: first
   Consumer: 1
 
@@ -44,7 +44,7 @@ UserRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: user.rpc
+    Key: tiktok-user.tiktok-user
   NonBlock: true
 
 

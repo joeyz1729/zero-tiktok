@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

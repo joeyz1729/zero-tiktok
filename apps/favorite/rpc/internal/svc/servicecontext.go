@@ -2,11 +2,11 @@ package svc
 
 import (
 	"database/sql"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
 
-	"github.com/YiZou89/zero-tiktok/apps/favorite/data"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/data"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	_ "gorm.io/driver/mysql"

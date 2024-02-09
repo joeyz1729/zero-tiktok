@@ -3,8 +3,8 @@ package logic
 import (
 	"context"
 	"errors"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -31,7 +31,7 @@ func (l *GetListByAuthorIdLogic) GetListByAuthorId(in *model.GetListByAuthorIdRe
 	if len(videos) == 0 {
 		return nil, errors.New("empty set")
 	}
-	logx.Infof("get %d videos by user %d\n", len(videos), in.UserId)
+	logx.Infof("get %d videos by tiktok-user %d\n", len(videos), in.UserId)
 	resp := new(model.GetListByAuthorIdResponse)
 	resp.VideoList = make([]*model.VideoDetail, len(videos))
 	for i, v := range videos {

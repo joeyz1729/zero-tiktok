@@ -3,7 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/mw/minio"
 	"github.com/zeromicro/go-zero/core/logx"
 	"strings"
 )

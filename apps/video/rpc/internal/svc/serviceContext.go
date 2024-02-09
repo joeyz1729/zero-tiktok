@@ -2,19 +2,19 @@ package svc
 
 import (
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
-	"github.com/YiZou89/zero-tiktok/apps/video/data"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/config"
 	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/data"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type ServiceContext struct {
 	Config config.Config
 
-	//VideoModel data.VideoModel
+	//VideoModel repository.VideoModel
 	VideoCache *redis.Client
 	VideoRepo  data.VideoRepo
 	VideoDB    *sqlx.DB
@@ -39,7 +39,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
 		Config: c,
-		//VideoModel: data.NewVideoModel(sqlConn, c.CacheRedis),
+		//VideoModel: repository.NewVideoModel(sqlConn, c.CacheRedis),
 		VideoDB:    db,
 		VideoCache: rdb,
 		VideoRepo:  data.NewRepoImpl(db, rdb),

@@ -3,9 +3,9 @@ package logic
 import (
 	"context"
 	"errors"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/favorite"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -32,7 +32,7 @@ func (l *GetPublishListLogic) GetPublishList(in *model.GetPublishListRequest) (*
 	if len(videos) == 0 {
 		return nil, errors.New("empty set")
 	}
-	logx.Infof("get %d videos by user %d\n", len(videos), in.AuthorId)
+	logx.Infof("get %d videos by tiktok-user %d\n", len(videos), in.AuthorId)
 	resp := new(model.GetPublishListResponse)
 	resp.VideoList = make([]*model.VideoDetail, len(videos))
 

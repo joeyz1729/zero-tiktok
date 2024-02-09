@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/server"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -33,6 +33,6 @@ func main() {
 	})
 	defer s.Stop()
 
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }

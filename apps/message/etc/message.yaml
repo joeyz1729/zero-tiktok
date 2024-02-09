@@ -1,11 +1,11 @@
-Name: message.rpc
+Name: message.tiktok-user
 ListenOn: 0.0.0.0:9096
 Log:
-  ServiceName: message-rpc
+  ServiceName: message-tiktok-user
   Mode: file
   Path: ./log
 Telemetry:
-  Name: message-rpc
+  Name: message-tiktok-user
   Endpoint: http://127.0.0.1:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger
@@ -16,7 +16,7 @@ Prometheus:
 #Etcd:
 #  Hosts:
 #  - 127.0.0.1:2379
-#  Key: data.rpc
+#  Key: repository.tiktok-user
 
 Mysql:
   DataSource: root:root@(localhost:3306)/tiktok_message?parseTime=true&charset=utf8
@@ -26,6 +26,6 @@ CacheRedis:
 
 Consul:
   Host: 127.0.0.1:8500
-  Key: consul-message.rpc
+  Key: consul-message.tiktok-user
 
 

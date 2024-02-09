@@ -3,15 +3,15 @@ package logic
 import (
 	"bytes"
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/video/data"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/ffmpeg"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/mw/minio"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/data"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/mw/ffmpeg"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/mw/minio"
 	"time"
 
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/model"
-	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
-	"github.com/YiZou89/zero-tiktok/pkg/utils"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
+	"github.com/joeyz1729/zero-tiktok/pkg/utils"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

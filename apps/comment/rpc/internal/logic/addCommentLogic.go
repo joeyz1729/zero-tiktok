@@ -3,10 +3,10 @@ package logic
 import (
 	"context"
 	"encoding/json"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/kmq"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/model"
-	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/kmq"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 

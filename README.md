@@ -5,28 +5,28 @@ tiktok
 ├─ README.md
 ├─ apps
 │    ├─ app
-│    │    └─ api
+│    │    └─ tiktok-api
 │    ├─ comment
-│    │    └─ rpc
+│    │    └─ tiktok-user
 │    ├─ favorite
-│    │    └─ rpc
+│    │    └─ tiktok-user
 │    ├─ follow
 │    │    ├─ admin
-│    │    └─ rpc
+│    │    └─ tiktok-user
 │    ├─ message
 │    │    ├─ etc
 │    │    ├─ internal
 │    │    ├─ message
 │    │    ├─ message.go
 │    │    ├─ message.proto
-│    │    └─ data
-│    ├─ user
+│    │    └─ repository
+│    ├─ tiktok-user
 │    │    ├─ admin
-│    │    ├─ data
-│    │    └─ rpc
+│    │    ├─ repository
+│    │    └─ tiktok-user
 │    └─ video
 │           ├─ admin
-│           └─ rpc
+│           └─ tiktok-user
 ├─ doc
 │    ├─ first.proto
 │    └─ second.proto

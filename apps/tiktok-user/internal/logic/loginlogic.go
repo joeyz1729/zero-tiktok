@@ -24,7 +24,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 func (l *LoginLogic) Login(in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	resp := new(pb.LoginResponse)
-	userId, err := l.svcCtx.UserRepo.CheckLogin(in.Username, tool.Encrypt(in.Password))
+	userId, err := l.svcCtx.UserRepo.Login(in.Username, tool.Encrypt(in.Password))
 	if err != nil {
 		return resp, err
 	}

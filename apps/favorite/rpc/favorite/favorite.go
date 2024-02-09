@@ -6,7 +6,7 @@ package favorite
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

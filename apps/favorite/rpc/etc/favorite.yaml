@@ -1,11 +1,11 @@
-Name: rpc.rpc
+Name: tiktok-user.tiktok-user
 ListenOn: 0.0.0.0:9094
 Log:
-  ServiceName: favorite-rpc
+  ServiceName: favorite-tiktok-user
 #  Mode: file
 #  Path: ./log
 Telemetry:
-  Name: favorite-rpc
+  Name: favorite-tiktok-user
   Endpoint: http://127.0.0.1:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger
@@ -16,7 +16,7 @@ Prometheus:
 Etcd:
   Hosts:
   - 127.0.0.1:2379
-  Key: favorite.rpc
+  Key: favorite.tiktok-user
 
 Mysql:
   DataSource: root:root1234@tcp(localhost:13307)/tiktok_favorite?parseTime=true&charset=utf8
@@ -26,19 +26,19 @@ CacheRedis:
 
 
 UserRpc:
-  #  Target: consul://127.0.0.1:8500/consul-user.rpc?wait=14s
+  #  Target: consul://127.0.0.1:8500/consul-tiktok-user.tiktok-user?wait=14s
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: user.rpc
+    Key: tiktok-user.tiktok-user
   NonBlock: true
 
 VideoRpc:
-  #  Target: consul://127.0.0.1:8500/consul-video.rpc?wait=14s
+  #  Target: consul://127.0.0.1:8500/consul-video.tiktok-user?wait=14s
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: video.rpc
+    Key: video.tiktok-user
   NonBlock: true
 
 

@@ -5,12 +5,12 @@ services:
     image: "mysql:latest"
     ports:
       - "13306:3306"
-    command: "--default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql"
+    command: "--default-authentication-plugin=mysql_native_password --init-file /repository/application/init.sql"
     environment:
       MYSQL_ROOT_PASSWORD: "root1234"
       MYSQL_PASSWORD: "root1234"
     volumes:
-      - ./init.sql:/data/application/init.sql
+      - ./init.sql:/repository/application/init.sql
   
   redis507:
     image: "redis:5.0.7"

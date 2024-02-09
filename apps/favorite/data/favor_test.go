@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"sync"

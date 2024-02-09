@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
 	"github.com/dtm-labs/dtm/client/dtmgrpc"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -53,13 +53,13 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 		return nil, err
 	}
 	gid := dtmgrpc.MustGenGid(l.svcCtx.DtmServer)
-	msg := dtmgrpc.NewMsgGrpc(l.svcCtx.DtmServer, gid).Add(userServer+"/user.User/UpdateFollowInfo", &user.UpdateFollowInfoRequest{
+	msg := dtmgrpc.NewMsgGrpc(l.svcCtx.DtmServer, gid).Add(userServer+"/tiktok-user.User/UpdateFollowInfo", &user.UpdateFollowInfoRequest{
 		UserId:     in.UserId,
 		ToUserId:   in.ToUserId,
 		ActionType: in.ActionType == int32(1),
 	})
 
-	err = msg.DoAndSubmitDB(userServer+"/user.User/FollowPrepare", l.svcCtx.BarrierDB, func(tx *sql.Tx) error {
+	err = msg.DoAndSubmitDB(userServer+"/tiktok-user.User/FollowPrepare", l.svcCtx.BarrierDB, func(tx *sql.Tx) error {
 		var e error
 		if in.ActionType == int32(1) {
 			e = l.svcCtx.FollowRepo.AddRelation(in.UserId, in.ToUserId)

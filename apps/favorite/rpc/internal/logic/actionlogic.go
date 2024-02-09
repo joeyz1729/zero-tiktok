@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/favorite/rpc/model"
-	"github.com/YiZou89/zero-tiktok/apps/user/rpc/user"
-	"github.com/YiZou89/zero-tiktok/apps/video/rpc/video"
 	"github.com/dtm-labs/dtm/client/dtmgrpc"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
+	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
 	"github.com/zeromicro/go-zero/core/logx"
 	"net/http"
 )
@@ -68,10 +68,10 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	gid := dtmgrpc.MustGenGid(DtmServer)
 	// 添加分布式事务中的调用
 	msg := dtmgrpc.NewMsgGrpc(DtmServer, gid).
-		Add(userServer+"/user.User/UpdateFavoriteInfo", userReq).
+		Add(userServer+"/tiktok-user.User/UpdateFavoriteInfo", userReq).
 		Add(videoServer+"/video.Video/UpdateFavoriteCount", videoReq)
 	// 本地调用
-	err = msg.DoAndSubmitDB(userServer+"/user.User/FollowPrepare", l.svcCtx.BarrierDB, func(tx *sql.Tx) error {
+	err = msg.DoAndSubmitDB(userServer+"/tiktok-user.User/FollowPrepare", l.svcCtx.BarrierDB, func(tx *sql.Tx) error {
 		var e error
 		if in.ActionType == int32(1) {
 			e = l.svcCtx.FavorRepo.CreateFavoriteRecord(l.ctx, &model.Favorite{UserId: in.UserId, VideoId: in.VideoId})

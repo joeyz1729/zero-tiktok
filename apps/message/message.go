@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 
-	"github.com/YiZou89/zero-tiktok/apps/message/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/message/internal/server"
-	"github.com/YiZou89/zero-tiktok/apps/message/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/message/model"
+	"github.com/joeyz1729/zero-tiktok/apps/message/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/message/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/message/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/message/model"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -37,6 +37,6 @@ func main() {
 
 	_ = consul.RegisterService(c.ListenOn, c.Consul)
 
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }

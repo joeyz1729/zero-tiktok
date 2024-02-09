@@ -3,7 +3,7 @@ package svc
 import (
 	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/data"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -14,7 +14,7 @@ type ServiceContext struct {
 
 	FollowRpc follow.Follow
 
-	UserRepo *data.Repo
+	UserRepo *repository.Repo
 	//UserDB   *sqlx.DB
 }
 
@@ -28,7 +28,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config: c,
 		//UserModel: model2.NewUserModel(sqlConn),
 		FollowRpc: follow.NewFollow(zrpc.MustNewClient(c.FollowRpc)),
-		UserRepo:  data.NewRepo(c.Repo.DataSource, c.Repo.RedisAddr),
+		UserRepo:  repository.NewRepo(c.Repo.DataSource, c.Repo.RedisAddr),
 		//UserDB:    db,
 	}
 }

@@ -78,19 +78,19 @@ func (s *Kmq) Consume(_ string, value string) error {
 	logx.Infof("Consume value: %s\n", value)
 	var data KafkaData
 	if err := json.Unmarshal([]byte(value), &data); err != nil {
-		logx.Errorw("unmarshal kafka data failed",
+		logx.Errorw("unmarshal kafka repository failed",
 			logx.Field("err", err))
 		return err
 	}
 	logx.Info("json unmarshal success")
-	//for _, d := range data {
+	//for _, d := range repository {
 
 	select {
 	case s.dataChan[data.CommentId&chanCount] <- &data:
-		logx.Info("add kafka data to comment chan success")
+		logx.Info("add kafka repository to comment chan success")
 		return nil
 	case <-time.After(time.Second):
-		logx.Errorf("add kafka data timeout, channel len: %d\n", len(s.dataChan[data.CommentId&chanCount]))
+		logx.Errorf("add kafka repository timeout, channel len: %d\n", len(s.dataChan[data.CommentId&chanCount]))
 		return errors.New("add mq timeout")
 	}
 

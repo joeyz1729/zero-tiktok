@@ -1,13 +1,13 @@
-Name: data.rpc
+Name: repository.tiktok-user
 ListenOn: 0.0.0.0:9095
 Log:
-  ServiceName: comment-rpc
+  ServiceName: comment-tiktok-user
 #  Mode: file
 #  Path: ./log
 Etcd:
   Hosts:
   - 127.0.0.1:2379
-  Key: comment.rpc
+  Key: comment.tiktok-user
 
 Mysql:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_comment?parseTime=true&charset=utf8
@@ -30,7 +30,7 @@ KafkaMq:
   Consumer: 1
 
 Telemetry:
-  Name: comment-rpc
+  Name: comment-tiktok-user
   Endpoint: http://127.0.0.1:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger

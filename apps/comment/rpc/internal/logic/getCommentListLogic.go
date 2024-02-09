@@ -2,8 +2,8 @@ package logic
 
 import (
 	"context"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/model"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -26,25 +26,25 @@ func (l *GetCommentListLogic) GetCommentList(in *model.GetCommentListRequest) (*
 	resp := new(model.GetCommentListResponse)
 	//var err error
 	//
-	//var cl []*data.Comment
+	//var cl []*repository.Comment
 	//getStr := `select * from tiktok_comment.comment where video_id = ? order by create_time desc`
 	//err = l.svcCtx.CommentDB.Select(&cl, getStr, in.VideoId)
 	//if err != nil {
 	//	logx.Errorw("mysql get comment list failed",
 	//		logx.Field("err", err),
 	//	)
-	//	resp.CommentList = []*model.CommentInfo{}
+	//	resp.CommentList = []*pb.CommentInfo{}
 	//	return resp, err
 	//}
 	//if len(cl) == 0 {
-	//	resp.CommentList = []*model.CommentInfo{}
+	//	resp.CommentList = []*pb.CommentInfo{}
 	//	return resp, nil
 	//}
 	//
-	//resp.CommentList = make([]*model.CommentInfo, len(cl))
+	//resp.CommentList = make([]*pb.CommentInfo, len(cl))
 	//for i, c := range cl {
 	//	_, m, d := c.CreateTime.Date()
-	//	resp.CommentList[i] = &model.CommentInfo{
+	//	resp.CommentList[i] = &pb.CommentInfo{
 	//		CommentId:  c.CommentId,
 	//		Content:    c.Content,
 	//		CreateTime: fmt.Sprintf("%s-%s", m.String(), strconv.Itoa(d)),

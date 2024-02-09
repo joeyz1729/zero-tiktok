@@ -1,22 +1,22 @@
-Name: tiktok-user.tiktok-user
-ListenOn: 0.0.0.0:9091
+Name: tiktok-user
+ListenOn: 0.0.0.0:9010
 Log:
-  ServiceName: tiktok-user-tiktok-user
+  ServiceName: user-rpc
 #  Mode: file
 #  Path: ./log
-Telemetry:
-  Name: tiktok-user-tiktok-user
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger
-Prometheus:
-  Host: 127.0.0.1
-  Port: 9081
-  Path: /metrics
+#Telemetry:
+#  Name: user-rpc
+#  Endpoint: http://127.0.0.1:14268/api/traces
+#  Sampler: 1.0
+#  Batcher: jaeger
+#Prometheus:
+#  Host: 127.0.0.1
+#  Port: 9081
+#  Path: /metrics
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
-  Key: tiktok-user.tiktok-user
+    - 127.0.0.1:2379
+  Key: tiktok-user
 
 Repo:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_user?parseTime=true&charset=utf8
@@ -36,5 +36,5 @@ FollowRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: follow.tiktok-user
+    Key: follow.rpc
   NonBlock: true

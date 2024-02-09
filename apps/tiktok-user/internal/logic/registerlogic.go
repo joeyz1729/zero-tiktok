@@ -6,6 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
 	"github.com/joeyz1729/zero-tiktok/pkg/tool"
+	"gorm.io/gorm"
 
 	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -26,18 +27,15 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	// todo: add your logic here and delete this line
 	resp := new(pb.RegisterResponse)
 
-	exist, err := l.svcCtx.UserRepo.CheckUserValid(in.Username)
-	if err != nil {
-		return resp, err
+	_, err := l.svcCtx.UserRepo.GetUserByName(in.Username)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
 	}
-	if exist {
-		// username already exists.
-		return resp, errors.New("username already exists")
+	if err == nil {
+		return resp, errors.New("user already exists")
 	}
-	// !exist, generate tiktok-user id
 	uid, err := snowflake.GenID()
 	if err != nil {
 		return resp, errors.New("generate tiktok-user id failed")

@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"github.com/YiZou89/zero-tiktok/apps/message/internal/config"
 	"github.com/jmoiron/sqlx"
+	"github.com/joeyz1729/zero-tiktok/apps/message/internal/config"
 )
 
 type ServiceContext struct {

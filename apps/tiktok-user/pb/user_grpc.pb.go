@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.24.0--rc2
-// source: tiktok-user.proto
+// source: user.proto
 
 package pb
 
@@ -19,514 +19,290 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	User_Register_FullMethodName           = "/tiktok-user.User/Register"
-	User_Login_FullMethodName              = "/tiktok-user.User/Login"
-	User_UserInfo_FullMethodName           = "/tiktok-user.User/UserInfo"
-	User_UpdateFollowInfo_FullMethodName   = "/tiktok-user.User/UpdateFollowInfo"
-	User_UpdateFavoriteInfo_FullMethodName = "/tiktok-user.User/UpdateFavoriteInfo"
-	User_UpdateWorkInfo_FullMethodName     = "/tiktok-user.User/UpdateWorkInfo"
-	User_GetUserById_FullMethodName        = "/tiktok-user.User/GetUserById"
-	User_GetUsers_FullMethodName           = "/tiktok-user.User/GetUsers"
-	User_GetIdByName_FullMethodName        = "/tiktok-user.User/GetIdByName"
-	User_GetAuthor_FullMethodName          = "/tiktok-user.User/GetAuthor"
-	User_GetAuthors_FullMethodName         = "/tiktok-user.User/GetAuthors"
-	User_FollowPrepare_FullMethodName      = "/tiktok-user.User/FollowPrepare"
+	UserService_Register_FullMethodName    = "/user.UserService/Register"
+	UserService_Login_FullMethodName       = "/user.UserService/Login"
+	UserService_UserInfo_FullMethodName    = "/user.UserService/UserInfo"
+	UserService_GetUserById_FullMethodName = "/user.UserService/GetUserById"
+	UserService_GetUsers_FullMethodName    = "/user.UserService/GetUsers"
+	UserService_GetIdByName_FullMethodName = "/user.UserService/GetIdByName"
 )
 
-// UserClient is the client API for User service.
+// UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UserClient interface {
+type UserServiceClient interface {
+	// http api
 	// 用户注册
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	// 用户登陆
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 查询用户信息
 	UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
-	// 关注后更新用户计数
-	UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error)
-	// 点赞后更新用户计数
-	UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error)
-	// 发布视频后更新用户计数
-	UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error)
+	// rpc
 	// 关注等操作检查用户id是否合法
 	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 	// 根据id列表批量获取用户信息
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
-	GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error)
-	GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
-	FollowPrepare(ctx context.Context, in *FollowPrepareRequest, opts ...grpc.CallOption) (*FollowPrepareRequest, error)
 }
 
-type userClient struct {
+type userServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUserClient(cc grpc.ClientConnInterface) UserClient {
-	return &userClient{cc}
+func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
+	return &userServiceClient{cc}
 }
 
-func (c *userClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+func (c *userServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, User_Register_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_Register_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+func (c *userServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, User_Login_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_Login_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userClient) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
+func (c *userServiceClient) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
 	out := new(UserInfoResponse)
-	err := c.cc.Invoke(ctx, User_UserInfo_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_UserInfo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userClient) UpdateFollowInfo(ctx context.Context, in *UpdateFollowInfoRequest, opts ...grpc.CallOption) (*UpdateFollowInfoResponse, error) {
-	out := new(UpdateFollowInfoResponse)
-	err := c.cc.Invoke(ctx, User_UpdateFollowInfo_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) UpdateFavoriteInfo(ctx context.Context, in *UpdateFavoriteInfoRequest, opts ...grpc.CallOption) (*UpdateFavoriteInfoResponse, error) {
-	out := new(UpdateFavoriteInfoResponse)
-	err := c.cc.Invoke(ctx, User_UpdateFavoriteInfo_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) UpdateWorkInfo(ctx context.Context, in *UpdateWorkInfoRequest, opts ...grpc.CallOption) (*UpdateWorkInfoResponse, error) {
-	out := new(UpdateWorkInfoResponse)
-	err := c.cc.Invoke(ctx, User_UpdateWorkInfo_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
+func (c *userServiceClient) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
 	out := new(GetUserByIdResponse)
-	err := c.cc.Invoke(ctx, User_GetUserById_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_GetUserById_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+func (c *userServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
 	out := new(GetUsersResponse)
-	err := c.cc.Invoke(ctx, User_GetUsers_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_GetUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userClient) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
+func (c *userServiceClient) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
 	out := new(GetIdByNameResponse)
-	err := c.cc.Invoke(ctx, User_GetIdByName_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, UserService_GetIdByName_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userClient) GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*GetAuthorResponse, error) {
-	out := new(GetAuthorResponse)
-	err := c.cc.Invoke(ctx, User_GetAuthor_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error) {
-	out := new(GetAuthorsResponse)
-	err := c.cc.Invoke(ctx, User_GetAuthors_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) FollowPrepare(ctx context.Context, in *FollowPrepareRequest, opts ...grpc.CallOption) (*FollowPrepareRequest, error) {
-	out := new(FollowPrepareRequest)
-	err := c.cc.Invoke(ctx, User_FollowPrepare_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// UserServer is the server API for User service.
-// All implementations must embed UnimplementedUserServer
+// UserServiceServer is the server API for UserService service.
+// All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
-type UserServer interface {
+type UserServiceServer interface {
+	// http api
 	// 用户注册
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	// 用户登陆
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	// 查询用户信息
 	UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error)
-	// 关注后更新用户计数
-	UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error)
-	// 点赞后更新用户计数
-	UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error)
-	// 发布视频后更新用户计数
-	UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error)
+	// rpc
 	// 关注等操作检查用户id是否合法
 	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error)
 	// 根据id列表批量获取用户信息
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error)
-	GetAuthor(context.Context, *GetAuthorRequest) (*GetAuthorResponse, error)
-	GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
-	FollowPrepare(context.Context, *FollowPrepareRequest) (*FollowPrepareRequest, error)
-	mustEmbedUnimplementedUserServer()
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-// UnimplementedUserServer must be embedded to have forward compatible implementations.
-type UnimplementedUserServer struct {
+// UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+func (UnimplementedUserServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedUserServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+func (UnimplementedUserServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedUserServer) UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error) {
+func (UnimplementedUserServiceServer) UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
 }
-func (UnimplementedUserServer) UpdateFollowInfo(context.Context, *UpdateFollowInfoRequest) (*UpdateFollowInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateFollowInfo not implemented")
-}
-func (UnimplementedUserServer) UpdateFavoriteInfo(context.Context, *UpdateFavoriteInfoRequest) (*UpdateFavoriteInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateFavoriteInfo not implemented")
-}
-func (UnimplementedUserServer) UpdateWorkInfo(context.Context, *UpdateWorkInfoRequest) (*UpdateWorkInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateWorkInfo not implemented")
-}
-func (UnimplementedUserServer) GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error) {
+func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
 }
-func (UnimplementedUserServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
+func (UnimplementedUserServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
-func (UnimplementedUserServer) GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error) {
+func (UnimplementedUserServiceServer) GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIdByName not implemented")
 }
-func (UnimplementedUserServer) GetAuthor(context.Context, *GetAuthorRequest) (*GetAuthorResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAuthor not implemented")
-}
-func (UnimplementedUserServer) GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAuthors not implemented")
-}
-func (UnimplementedUserServer) FollowPrepare(context.Context, *FollowPrepareRequest) (*FollowPrepareRequest, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FollowPrepare not implemented")
-}
-func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
+func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
-// UnsafeUserServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UserServer will
+// UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServiceServer will
 // result in compilation errors.
-type UnsafeUserServer interface {
-	mustEmbedUnimplementedUserServer()
+type UnsafeUserServiceServer interface {
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
-	s.RegisterService(&User_ServiceDesc, srv)
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
+	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _User_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).Register(ctx, in)
+		return srv.(UserServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_Register_FullMethodName,
+		FullMethod: UserService_Register_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Register(ctx, req.(*RegisterRequest))
+		return srv.(UserServiceServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).Login(ctx, in)
+		return srv.(UserServiceServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_Login_FullMethodName,
+		FullMethod: UserService_Login_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Login(ctx, req.(*LoginRequest))
+		return srv.(UserServiceServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).UserInfo(ctx, in)
+		return srv.(UserServiceServer).UserInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_UserInfo_FullMethodName,
+		FullMethod: UserService_UserInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).UserInfo(ctx, req.(*UserInfoRequest))
+		return srv.(UserServiceServer).UserInfo(ctx, req.(*UserInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_UpdateFollowInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateFollowInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).UpdateFollowInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_UpdateFollowInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).UpdateFollowInfo(ctx, req.(*UpdateFollowInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_UpdateFavoriteInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateFavoriteInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).UpdateFavoriteInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_UpdateFavoriteInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).UpdateFavoriteInfo(ctx, req.(*UpdateFavoriteInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_UpdateWorkInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateWorkInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).UpdateWorkInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_UpdateWorkInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).UpdateWorkInfo(ctx, req.(*UpdateWorkInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).GetUserById(ctx, in)
+		return srv.(UserServiceServer).GetUserById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_GetUserById_FullMethodName,
+		FullMethod: UserService_GetUserById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetUserById(ctx, req.(*GetUserByIdRequest))
+		return srv.(UserServiceServer).GetUserById(ctx, req.(*GetUserByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUsersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).GetUsers(ctx, in)
+		return srv.(UserServiceServer).GetUsers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_GetUsers_FullMethodName,
+		FullMethod: UserService_GetUsers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetUsers(ctx, req.(*GetUsersRequest))
+		return srv.(UserServiceServer).GetUsers(ctx, req.(*GetUsersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_GetIdByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_GetIdByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetIdByNameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).GetIdByName(ctx, in)
+		return srv.(UserServiceServer).GetIdByName(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_GetIdByName_FullMethodName,
+		FullMethod: UserService_GetIdByName_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetIdByName(ctx, req.(*GetIdByNameRequest))
+		return srv.(UserServiceServer).GetIdByName(ctx, req.(*GetIdByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_GetAuthor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAuthorRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).GetAuthor(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_GetAuthor_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetAuthor(ctx, req.(*GetAuthorRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_GetAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAuthorsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).GetAuthors(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_GetAuthors_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetAuthors(ctx, req.(*GetAuthorsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _User_FollowPrepare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FollowPrepareRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).FollowPrepare(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_FollowPrepare_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).FollowPrepare(ctx, req.(*FollowPrepareRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// User_ServiceDesc is the grpc.ServiceDesc for User service.
+// UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "tiktok-user.User",
-	HandlerType: (*UserServer)(nil),
+var UserService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "user.UserService",
+	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Register",
-			Handler:    _User_Register_Handler,
+			Handler:    _UserService_Register_Handler,
 		},
 		{
 			MethodName: "Login",
-			Handler:    _User_Login_Handler,
+			Handler:    _UserService_Login_Handler,
 		},
 		{
 			MethodName: "UserInfo",
-			Handler:    _User_UserInfo_Handler,
-		},
-		{
-			MethodName: "UpdateFollowInfo",
-			Handler:    _User_UpdateFollowInfo_Handler,
-		},
-		{
-			MethodName: "UpdateFavoriteInfo",
-			Handler:    _User_UpdateFavoriteInfo_Handler,
-		},
-		{
-			MethodName: "UpdateWorkInfo",
-			Handler:    _User_UpdateWorkInfo_Handler,
+			Handler:    _UserService_UserInfo_Handler,
 		},
 		{
 			MethodName: "GetUserById",
-			Handler:    _User_GetUserById_Handler,
+			Handler:    _UserService_GetUserById_Handler,
 		},
 		{
 			MethodName: "GetUsers",
-			Handler:    _User_GetUsers_Handler,
+			Handler:    _UserService_GetUsers_Handler,
 		},
 		{
 			MethodName: "GetIdByName",
-			Handler:    _User_GetIdByName_Handler,
-		},
-		{
-			MethodName: "GetAuthor",
-			Handler:    _User_GetAuthor_Handler,
-		},
-		{
-			MethodName: "GetAuthors",
-			Handler:    _User_GetAuthors_Handler,
-		},
-		{
-			MethodName: "FollowPrepare",
-			Handler:    _User_FollowPrepare_Handler,
+			Handler:    _UserService_GetIdByName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "tiktok-user.proto",
+	Metadata: "user.proto",
 }

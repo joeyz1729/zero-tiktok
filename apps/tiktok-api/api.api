@@ -1,0 +1,130 @@
+syntax = "v1"
+
+info(
+	title: "zero-tiktok"
+	desc: ""
+	author: ""
+	email: ""
+	version: "v1"
+)
+
+import (
+	"apis/tiktok-user.tiktok-api"
+	"apis/video.tiktok-api"
+	"apis/comment.tiktok-api"
+	"apis/relation.tiktok-api"
+	"apis/message.tiktok-api"
+)
+
+// video模块
+@server(
+
+	prefix: /douyin
+	group: video
+)
+service api-api {
+	@doc (
+		summary:"视频流"
+	)
+	@handler FeedHandler
+	get /feed (FeedRequest) returns (FeedResponse)
+}
+
+@server(
+	prefix: /douyin
+	group: video
+	jwt: Auth
+)
+service api-api {
+	@handler PublishActionHandler
+	post /publish/action returns (PublishActionResponse)
+
+	@handler PublishListHandler
+	get /publish/list (PublishListRequest) returns (PublishListResponse)
+}
+
+// user模块
+@server (
+	prefix: /douyin/user
+	group: user
+)
+service api-api {
+	@doc (
+		summary:"用户注册"
+	)
+	@handler RegisterHandler
+	post /register (UserRegisterRequest) returns (UserRegisterResponse)
+
+	@doc (
+		summary:"用户登陆"
+	)
+	@handler LoginHandler
+	post /login (UserLoginRequest) returns (UserLoginResponse)
+}
+
+@server (
+	prefix: /douyin/user
+	group: user
+	jwt: Auth
+)
+service api-api {
+	@handler InfoHandler
+	get /info (UserInfoRequest) returns (UserInfoResponse)
+}
+
+// favorite模块
+@server (
+	prefix: /douyin/favorite
+	group: favorite
+)
+service api-api {
+	@handler FavoriteActionHandler
+	post /action (FavoriteActionRequest) returns (FavoriteActionResponse);
+
+	@handler FavoriteListHandler
+	get /list (FavoriteListRequest) returns (FavoriteListResponse);
+}
+
+// comment模块
+@server (
+	prefix: /douyin/comment
+	group: comment
+)
+service api-api {
+	@handler ActionHandler
+	post /action (CommentActionRequest) returns (CommentActionResponse);
+
+	@handler ListHandler
+	get /list (CommentListRequest) returns (CommentListResponse);
+}
+
+// relation模块
+@server (
+	prefix: /douyin/relation
+	group: relation
+)
+service api-api {
+	@handler RelationActionHandler
+	post /action (RelationActionRequest) returns(RelationActionResponse)
+
+	@handler RelationFollowListHandler
+	get /follow/list (FollowListRequest) returns (FollowListResponse)
+
+	@handler RelationFollowerListHandler
+	get /follower/list (FollowerListRequest) returns(FollowerListResponse)
+
+}
+
+// message模块
+@server (
+	prefix: /douyin/message
+	group: message
+)
+
+service api-api {
+	@handler MessageActionHandler
+	post /action (MessageActionRequest) returns (MessageActionResponse);
+
+	@handler MessageChatHandler
+	get /chat (MessageChatRequest) returns (MessageChatResponse);
+}

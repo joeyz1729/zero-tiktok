@@ -3,12 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/config"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/kmq"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/server"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/comment/rpc/model"
-	"github.com/YiZou89/zero-tiktok/pkg/snowflake"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/kmq"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 
 	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/core/conf"
@@ -42,7 +42,7 @@ func main() {
 
 	go initMq(c, ctx)
 
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }
 

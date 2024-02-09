@@ -23,8 +23,8 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 
 func (l *UserInfoLogic) UserInfo(in *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
 	resp := new(pb.UserInfoResponse)
-	resp.User = new(pb.UserInfo)
-	user, err := l.svcCtx.UserRepo.GetUserInfo(in.UserId)
+	resp.User = new(pb.User)
+	user, err := l.svcCtx.UserRepo.GetUserById(in.UserId)
 	if err != nil {
 		logx.Errorw("get tiktok-user info failed",
 			logx.Field("err", err))
@@ -35,12 +35,5 @@ func (l *UserInfoLogic) UserInfo(in *pb.UserInfoRequest) (*pb.UserInfoResponse, 
 	resp.User.Avatar = user.Avatar
 	resp.User.BackgroundImage = user.BackgroundImage
 	resp.User.Signature = user.Signature
-
-	resp.User.FollowCount = user.FollowedCount
-	resp.User.FollowerCount = user.FollowerCount
-
-	resp.User.TotalFavorited = user.TotalFavorited
-	resp.User.WorkCount = user.WorkCount
-	resp.User.FavoriteCount = user.FavoriteCount
 	return resp, nil
 }

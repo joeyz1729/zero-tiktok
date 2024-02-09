@@ -6,9 +6,9 @@ package server
 import (
 	"context"
 
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/logic"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/internal/svc"
-	"github.com/YiZou89/zero-tiktok/apps/follow/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/logic"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/model"
 )
 
 type FollowServer struct {

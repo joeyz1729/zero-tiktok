@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/tiktok.iml" filepath="$PROJECT_DIR$/.idea/tiktok.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/zero-tiktok.iml" filepath="$PROJECT_DIR$/.idea/zero-tiktok.iml" />
     </modules>
   </component>
 </project>
