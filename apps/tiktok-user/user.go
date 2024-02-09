@@ -1,0 +1,48 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
+	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
+	"github.com/joeyz1729/zero-tiktok/pkg/tool"
+
+	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/service"
+	"github.com/zeromicro/go-zero/zrpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+)
+
+var configFile = flag.String("f", "etc/tiktok-user.yaml", "the config file")
+
+func main() {
+	flag.Parse()
+
+	var c config.Config
+	conf.MustLoad(*configFile, &c)
+	ctx := svc.NewServiceContext(c)
+
+	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
+		pb.RegisterUserServer(grpcServer, server.NewUserServer(ctx))
+
+		if c.Mode == service.DevMode || c.Mode == service.TestMode {
+			reflection.Register(grpcServer)
+		}
+	})
+	defer s.Stop()
+
+	//_ = consul.RegisterService(c.ListenOn, c.Consul)
+
+	err := snowflake.Init(c.Snowflake.StartTime, c.Snowflake.MachineId)
+	if err != nil {
+		panic("snowflake initialization failed")
+	}
+	tool.NewSalt(c.Salt)
+
+	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
+	s.Start()
+}
