@@ -24,7 +24,7 @@ tiktok
 │    │    ├─ admin
 │    │    ├─ repository
 │    │    └─ tiktok-user
-│    └─ video
+│    └─ videoservice
 │           ├─ admin
 │           └─ tiktok-user
 ├─ doc

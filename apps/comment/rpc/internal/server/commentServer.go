@@ -22,13 +22,13 @@ func NewCommentServer(svcCtx *svc.ServiceContext) *CommentServer {
 	}
 }
 
-// 添加评论，根据user，video，comment_text
+// 添加评论，根据user，videoservice，comment_text
 func (s *CommentServer) AddComment(ctx context.Context, in *model.AddCommentRequest) (*model.AddCommentResponse, error) {
 	l := logic.NewAddCommentLogic(ctx, s.svcCtx)
 	return l.AddComment(in)
 }
 
-// 删除评论，根据user，video，comment
+// 删除评论，根据user，videoservice，comment
 func (s *CommentServer) DelComment(ctx context.Context, in *model.DelCommentRequest) (*model.DelCommentResponse, error) {
 	l := logic.NewDelCommentLogic(ctx, s.svcCtx)
 	return l.DelComment(in)

@@ -6,7 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"github.com/zeromicro/go-zero/core/logx"
 	"net/http"
@@ -57,12 +57,11 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 	var errChan = make(chan error, 2)
 	wg.Add(2)
 	// 查询视频详细信息列表
-	//videosRes := new(video.GetListByAuthorIdResponse)
-	videosRes := new(video.GetPublishListResponse)
+	videosRes := new(videoservice.PublishListResponse)
 	go func() {
 		wg.Done()
-		videosRes, err = l.svcCtx.VideoRpc.GetPublishList(l.ctx, &video.GetPublishListRequest{
-			//videosRes, err = l.svcCtx.VideoRpc.GetListByAuthorId(l.ctx, &video.GetListByAuthorIdRequest{
+		videosRes, err = l.svcCtx.VideoRpc.PublishList(l.ctx, &videoservice.PublishListRequest{
+			//videosRes, err = l.svcCtx.VideoRpc.GetListByAuthorId(l.ctx, &videoservice.GetListByAuthorIdRequest{
 			UserId:   claims.UserId,
 			AuthorId: req.UserId,
 		})
@@ -88,7 +87,7 @@ func (l *PublishListLogic) PublishList(req *types.PublishListRequest) (resp *typ
 	wg.Wait()
 	select {
 	case err := <-errChan:
-		logx.Error("get follow relation, or get video list failed ", err)
+		logx.Error("get follow relation, or get videoservice list failed ", err)
 		resp.StatusCode = http.StatusInternalServerError
 		resp.StatusMsg = err.Error()
 		return resp, nil

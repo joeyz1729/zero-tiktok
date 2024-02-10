@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"net/http"
 	"time"
@@ -27,7 +27,6 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 }
 
 func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err error) {
-	// todo: add your logic here and delete this line
 	resp = new(types.FeedResponse)
 	resp.VideoList = []types.Video{}
 
@@ -42,13 +41,14 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 		return resp, nil
 	}
 	uid := claims.UserId
-	var feedRes *video.FeedResponse
-	feedRes, err = l.svcCtx.VideoRpc.Feed(l.ctx, &video.FeedRequest{
+	var feedRes *videoservice.FeedResponse
+
+	feedRes, err = l.svcCtx.VideoRpc.Feed(l.ctx, &videoservice.FeedRequest{
 		UserId:     uid,
 		LatestTime: req.LatestTime,
 	})
 	if err != nil {
-		logx.Errorw("video tiktok-user failed",
+		logx.Errorw("videoservice tiktok-user failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
@@ -56,14 +56,8 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 		resp.NextTime = time.Now().Unix()
 		return resp, nil
 	}
-	if feedRes.VideoLen == 0 {
-		resp.StatusMsg = "empty list"
-		resp.NextTime = time.Now().Unix()
-		resp.StatusCode = http.StatusOK
-		return resp, nil
-	}
 
-	resp.VideoList = make([]types.Video, feedRes.VideoLen)
+	resp.VideoList = make([]types.Video, len(feedRes.VideoList))
 	for i, v := range feedRes.VideoList {
 		vi := types.Video{
 			Id: v.Id,

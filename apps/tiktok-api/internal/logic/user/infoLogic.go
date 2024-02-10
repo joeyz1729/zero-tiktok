@@ -46,9 +46,10 @@ func (l *InfoLogic) Info(req *types.UserInfoRequest) (resp *types.UserInfoRespon
 	resp.UserInfo.Avatar = userRes.User.Avatar
 	resp.UserInfo.BackgroundImage = userRes.User.BackgroundImage
 	resp.UserInfo.Signature = userRes.User.Signature
-	resp.UserInfo.FollowCount = userRes.User.FollowCount
-	resp.UserInfo.FollowerCount = userRes.User.FollowerCount
-	resp.UserInfo.TotalFavorited = userRes.User.TotalFavorited
-	resp.UserInfo.FavoriteCount = userRes.User.FavoriteCount
+
+	//resp.UserInfo.FollowCount = userRes.User.FollowCount
+	//resp.UserInfo.FollowerCount = userRes.User.FollowerCount
+	//resp.UserInfo.TotalFavorited = userRes.User.TotalFavorited
+	//resp.UserInfo.FavoriteCount = userRes.User.FavoriteCount
 	return resp, nil
 }

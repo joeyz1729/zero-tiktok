@@ -1,11 +1,11 @@
 Name: tiktok-user
 ListenOn: 0.0.0.0:9010
 Log:
-  ServiceName: user-rpc
+  ServiceName: user-tiktok-videoservice
 #  Mode: file
 #  Path: ./log
 #Telemetry:
-#  Name: user-rpc
+#  Name: user-tiktok-videoservice
 #  Endpoint: http://127.0.0.1:14268/api/traces
 #  Sampler: 1.0
 #  Batcher: jaeger
@@ -36,5 +36,5 @@ FollowRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: follow.rpc
+    Key: follow.tiktok-videoservice
   NonBlock: true

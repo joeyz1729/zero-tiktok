@@ -7,7 +7,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/message/message"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -15,7 +15,7 @@ type ServiceContext struct {
 	Config config.Config
 
 	UserRpc     userservice.UserService
-	VideoRpc    video.Video
+	VideoRpc    videoservice.VideoService
 	FollowRpc   follow.Follow
 	FavoriteRpc favorite.Favorite
 	CommentRpc  comment.Comment
@@ -26,7 +26,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:      c,
 		UserRpc:     userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
-		VideoRpc:    video.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
+		VideoRpc:    videoservice.NewVideoService(zrpc.MustNewClient(c.VideoRpc)),
 		FollowRpc:   follow.NewFollow(zrpc.MustNewClient(c.FollowRpc)),
 		FavoriteRpc: favorite.NewFavorite(zrpc.MustNewClient(c.FavoriteRpc)),
 		CommentRpc:  comment.NewComment(zrpc.MustNewClient(c.CommentRpc)),

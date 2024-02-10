@@ -8,7 +8,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/model"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/zeromicro/go-zero/core/logx"
 	"net/http"
 )
@@ -38,7 +38,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	// 检查关系是否存在
 	exist, err := l.svcCtx.FavorRepo.CheckFavor(l.ctx, in.UserId, in.VideoId)
 	if err != nil {
-		logx.Error("is favorite video failed: " + err.Error())
+		logx.Error("is favorite videoservice failed: " + err.Error())
 		return nil, err
 	}
 	// 是否重复
@@ -59,7 +59,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 		ActionType: in.ActionType == int32(1),
 		AuthorId:   in.AuthorId,
 	}
-	videoReq := &video.UpdateFavoriteCountRequest{
+	videoReq := &videoservice.UpdateFavoriteCountRequest{
 		UserId:     in.UserId,
 		VideoId:    in.VideoId,
 		ActionType: in.ActionType == int32(1),
@@ -69,7 +69,7 @@ func (l *ActionLogic) Action(in *model.ActionRequest) (*model.ActionResponse, er
 	// 添加分布式事务中的调用
 	msg := dtmgrpc.NewMsgGrpc(DtmServer, gid).
 		Add(userServer+"/tiktok-user.User/UpdateFavoriteInfo", userReq).
-		Add(videoServer+"/video.Video/UpdateFavoriteCount", videoReq)
+		Add(videoServer+"/videoservice.Video/UpdateFavoriteCount", videoReq)
 	// 本地调用
 	err = msg.DoAndSubmitDB(userServer+"/tiktok-user.User/FollowPrepare", l.svcCtx.BarrierDB, func(tx *sql.Tx) error {
 		var e error

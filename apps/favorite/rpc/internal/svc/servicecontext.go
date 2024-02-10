@@ -3,11 +3,10 @@ package svc
 import (
 	"database/sql"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/data"
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
-
 	"github.com/zeromicro/go-zero/zrpc"
 	_ "gorm.io/driver/mysql"
 )
@@ -19,7 +18,7 @@ type ServiceContext struct {
 
 	UserRpc user.User
 
-	VideoRpc video.Video
+	VideoRpc videoservice.Video
 
 	BarrierDB *sql.DB
 
@@ -39,7 +38,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:    c,
 		FavorRepo: r,
 		UserRpc:   user.NewUser(zrpc.MustNewClient(c.UserRpc)),
-		VideoRpc:  video.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
+		VideoRpc:  videoservice.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
 		BarrierDB: db,
 	}
 }

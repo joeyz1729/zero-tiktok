@@ -38,7 +38,7 @@ type UserServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 查询用户信息
 	UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
-	// rpc
+	// tiktok-videoservice
 	// 关注等操作检查用户id是否合法
 	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 	// 根据id列表批量获取用户信息
@@ -119,7 +119,7 @@ type UserServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	// 查询用户信息
 	UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error)
-	// rpc
+	// tiktok-videoservice
 	// 关注等操作检查用户id是否合法
 	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error)
 	// 根据id列表批量获取用户信息

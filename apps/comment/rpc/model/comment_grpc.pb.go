@@ -29,9 +29,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommentClient interface {
-	// 添加评论，根据user，video，comment_text
+	// 添加评论，根据user，videoservice，comment_text
 	AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error)
-	// 删除评论，根据user，video，comment
+	// 删除评论，根据user，videoservice，comment
 	DelComment(ctx context.Context, in *DelCommentRequest, opts ...grpc.CallOption) (*DelCommentResponse, error)
 	// 查询视频的评论列表
 	GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error)
@@ -87,9 +87,9 @@ func (c *commentClient) GetComment(ctx context.Context, in *GetCommentRequest, o
 // All implementations must embed UnimplementedCommentServer
 // for forward compatibility
 type CommentServer interface {
-	// 添加评论，根据user，video，comment_text
+	// 添加评论，根据user，videoservice，comment_text
 	AddComment(context.Context, *AddCommentRequest) (*AddCommentResponse, error)
-	// 删除评论，根据user，video，comment
+	// 删除评论，根据user，videoservice，comment
 	DelComment(context.Context, *DelCommentRequest) (*DelCommentResponse, error)
 	// 查询视频的评论列表
 	GetCommentList(context.Context, *GetCommentListRequest) (*GetCommentListResponse, error)

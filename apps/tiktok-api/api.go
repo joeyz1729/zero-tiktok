@@ -6,6 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/handler"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/pkg/mw/minio"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
 	_ "github.com/zeromicro/zero-contrib/zrpc/registry/consul"
@@ -31,6 +32,8 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
+
+	minio.Init()
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

@@ -25,9 +25,9 @@ type (
 	User                   = model.User
 
 	Comment interface {
-		// 添加评论，根据user，video，comment_text
+		// 添加评论，根据user，videoservice，comment_text
 		AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error)
-		// 删除评论，根据user，video，comment
+		// 删除评论，根据user，videoservice，comment
 		DelComment(ctx context.Context, in *DelCommentRequest, opts ...grpc.CallOption) (*DelCommentResponse, error)
 		// 查询视频的评论列表
 		GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error)
@@ -46,13 +46,13 @@ func NewComment(cli zrpc.Client) Comment {
 	}
 }
 
-// 添加评论，根据user，video，comment_text
+// 添加评论，根据user，videoservice，comment_text
 func (m *defaultComment) AddComment(ctx context.Context, in *AddCommentRequest, opts ...grpc.CallOption) (*AddCommentResponse, error) {
 	client := model.NewCommentClient(m.cli.Conn())
 	return client.AddComment(ctx, in, opts...)
 }
 
-// 删除评论，根据user，video，comment
+// 删除评论，根据user，videoservice，comment
 func (m *defaultComment) DelComment(ctx context.Context, in *DelCommentRequest, opts ...grpc.CallOption) (*DelCommentResponse, error) {
 	client := model.NewCommentClient(m.cli.Conn())
 	return client.DelComment(ctx, in, opts...)

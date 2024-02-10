@@ -5,7 +5,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"net/http"
 
@@ -45,16 +45,16 @@ func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (
 		return resp, nil
 	}
 	uid := claims.UserId
-	// video id
-	videoRes := new(video.GetVideoByIdResponse)
-	videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &video.GetVideoByIdRequest{
+	// videoservice id
+	videoRes := new(videoservice.GetVideoByIdResponse)
+	videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &videoservice.GetVideoByIdRequest{
 		VideoId: req.VideoId,
 	})
 	if err != nil {
-		logx.Errorw("invalid video id",
+		logx.Errorw("invalid videoservice id",
 			logx.Field("err", err))
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "check video id failed: " + err.Error()
+		resp.StatusMsg = "check videoservice id failed: " + err.Error()
 		return resp, nil
 	}
 	authorId := videoRes.VideoInfo.AuthorId

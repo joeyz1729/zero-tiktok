@@ -40,7 +40,7 @@ func (s *UserServiceServer) UserInfo(ctx context.Context, in *pb.UserInfoRequest
 	return l.UserInfo(in)
 }
 
-// rpc
+// tiktok-videoservice
 func (s *UserServiceServer) GetUserById(ctx context.Context, in *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
 	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
 	return l.GetUserById(in)

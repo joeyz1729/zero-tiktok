@@ -10,7 +10,7 @@ info(
 
 import (
 	"apis/tiktok-user.tiktok-api"
-	"apis/video.tiktok-api"
+	"apis/videoservice.tiktok-api"
 	"apis/comment.tiktok-api"
 	"apis/relation.tiktok-api"
 	"apis/message.tiktok-api"

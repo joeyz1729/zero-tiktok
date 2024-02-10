@@ -23,38 +23,26 @@ func (*Video) TableName() string {
 	return TableNameVideo
 }
 
-type VideoDao struct {
-	db *gorm.DB
+var globalDB *gorm.DB
+
+func AddVideo(v *Video) error {
+	return globalDB.Create(v).Error
 }
 
-func NewVideoDao(db *gorm.DB) *VideoDao {
-	return &VideoDao{db: db}
-}
-
-var globalDBClient *gorm.DB
-
-func GlobalClient() *gorm.DB {
-	return globalDBClient
-}
-
-func (s *VideoDao) AddVideo(v *Video) error {
-	return s.db.Create(v).Error
-}
-
-func (s *VideoDao) GetVideoById(vid int64) (*Video, error) {
+func GetVideoById(vid int64) (*Video, error) {
 	var v Video
-	err := s.db.Where("id = ?", vid).First(&v).Error
+	err := globalDB.Where("id = ?", vid).First(&v).Error
 	return &v, err
 }
 
-func (s *VideoDao) GetVideosByAuthorId(uid int64) ([]*Video, error) {
+func GetVideosByAuthorId(uid int64) ([]*Video, error) {
 	var videoList []*Video
-	err := s.db.Where("author_id = ?", uid).Find(&videoList).Error
+	err := globalDB.Where("author_id = ?", uid).Find(&videoList).Error
 	return videoList, err
 }
 
-func (s *VideoDao) Feeds(lastTime int64) ([]*Video, error) {
+func Feeds(lastTime int64) ([]*Video, error) {
 	var videoList []*Video
-	err := s.db.Where("create_time <= ?", lastTime).Find(videoList).Error
+	err := globalDB.Where("create_time <= ?", lastTime).Find(videoList).Error
 	return videoList, err
 }

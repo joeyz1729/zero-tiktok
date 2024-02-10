@@ -6,7 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/video"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"net/http"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -30,20 +30,20 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	// 1. 用户信息
 	resp = new(types.FavoriteListResponse)
 	resp.VideoList = []types.Video{}
-	// 2. favorite tiktok-user 根据 user_id 查询点赞 video ids 列表
+	// 2. favorite tiktok-user 根据 user_id 查询点赞 videoservice ids 列表
 	idsRes := new(favorite.GetVideoIdsResponse)
 	idsRes, err = l.svcCtx.FavoriteRpc.GetVideoIds(l.ctx, &favorite.GetVideoIdsRequest{
 		UserId: req.UserId,
 	})
 	length := len(idsRes.VideoIds)
-	logx.Info("get favorite video ids: ", idsRes.VideoIds)
+	logx.Info("get favorite videoservice ids: ", idsRes.VideoIds)
 	// 出错或者没有数据
 	if err != nil {
 		logx.Errorw("favorite tiktok-user failed",
 			logx.Field("err", err),
 		)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "favorite tiktok-user get video ids: " + err.Error()
+		resp.StatusMsg = "favorite tiktok-user get videoservice ids: " + err.Error()
 		return resp, nil
 	}
 	if length == 0 {
@@ -52,9 +52,9 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 		return resp, nil
 	}
 
-	// 3. video tiktok-user 根据 video ids 列表获取详细的视频信息
-	videosRes := new(video.GetFavorListResponse)
-	videosRes, err = l.svcCtx.VideoRpc.GetFavorList(l.ctx, &video.GetFavorListRequest{
+	// 3. videoservice tiktok-user 根据 videoservice ids 列表获取详细的视频信息
+	videosRes := new(videoservice.GetFavorListResponse)
+	videosRes, err = l.svcCtx.VideoRpc.GetFavorList(l.ctx, &videoservice.GetFavorListRequest{
 		UserId:   req.UserId,
 		VideoIds: idsRes.VideoIds,
 	})
@@ -62,7 +62,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	if err != nil || length != len(videosRes.VideoList) {
 		logx.Error("get videos by ids: ", err)
 		resp.StatusCode = http.StatusInternalServerError
-		resp.StatusMsg = "video tiktok-user get videos by ids: " + err.Error()
+		resp.StatusMsg = "videoservice tiktok-user get videos by ids: " + err.Error()
 		return resp, nil
 	}
 	resp.VideoList = make([]types.Video, length)
@@ -70,13 +70,13 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 		b, err := json.Marshal(vi)
 		if err != nil {
 			resp.StatusCode = http.StatusInternalServerError
-			resp.StatusMsg = "marshal video info: " + err.Error()
+			resp.StatusMsg = "marshal videoservice info: " + err.Error()
 			return resp, nil
 		}
 		videoInfo := types.Video{}
 		if err = json.Unmarshal(b, &videoInfo); err != nil {
 			resp.StatusCode = http.StatusInternalServerError
-			resp.StatusMsg = "unmarshal video info: " + err.Error()
+			resp.StatusMsg = "unmarshal videoservice info: " + err.Error()
 			return resp, nil
 		}
 		resp.VideoList[i] = videoInfo
@@ -89,17 +89,17 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 //resp.VideoList = make([]types.Video, idsRes.VideoNum)
 //for i, vid := range idsRes.VideoIds {
 //
-//var videoRes = new(video.GetVideoByIdResponse)
-//videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &video.GetVideoByIdRequest{
+//var videoRes = new(videoservice.GetVideoByIdResponse)
+//videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &videoservice.GetVideoByIdRequest{
 //VideoId: vid,
 //})
 //if err != nil {
-//logx.Errorw("video tiktok-user failed",
+//logx.Errorw("videoservice tiktok-user failed",
 //logx.Field("err", err),
 //)
 //resp.VideoList = []types.Video{}
 //resp.StatusCode = http.StatusInternalServerError
-//resp.StatusMsg = "video tiktok-user failed"
+//resp.StatusMsg = "videoservice tiktok-user failed"
 //return resp, nil
 //}
 //if videoRes.VideoInfo == nil {

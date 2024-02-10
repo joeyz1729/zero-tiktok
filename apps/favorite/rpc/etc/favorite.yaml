@@ -34,11 +34,11 @@ UserRpc:
   NonBlock: true
 
 VideoRpc:
-  #  Target: consul://127.0.0.1:8500/consul-video.tiktok-user?wait=14s
+  #  Target: consul://127.0.0.1:8500/consul-videoservice.tiktok-user?wait=14s
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: video.tiktok-user
+    Key: videoservice.tiktok-user
   NonBlock: true
 
 

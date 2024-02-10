@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-redis/redis/v8"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"strconv"
 )
 
@@ -26,101 +26,64 @@ var (
 	ErrEmptySet    = errors.New("empty set")
 )
 
-type VideoCache interface {
-	KeyExists(context.Context, string) (bool, error)
+var globalRdb *redis.Client
 
-	DelVideo(context.Context, string) error
-	AddVideo(context.Context, string, *repository.Video) error
-
-	DelKey(context.Context, string) error
-
-	GetVideoById(ctx context.Context, key string) (*repository.Video, error)
-
-	GetVideosByUser(ctx context.Context, key string) ([]*repository.Video, error)
-
-	AddPublishList(context.Context, string, []int64) error
-	DelPublishList(context.Context, string) error
-	AddFeedVideo(context.Context, int64, int64) error
-
-	GetVideoIdsByAuthor(context.Context, string) ([]int64, error)
-	GetFeedIds(context.Context, int64) ([]int64, int64, error)
-}
-
-type RedisImpl struct {
-	rdb *redis.Client
-}
-
-func NewRedisImpl(rdb *redis.Client) *RedisImpl {
-	return &RedisImpl{rdb}
-}
-
-var _ VideoCache = (*RedisImpl)(nil)
-
-func (c *RedisImpl) DelKey(ctx context.Context, key string) error {
-	_, err := c.rdb.Del(ctx, key).Result()
+func DelKey(ctx context.Context, key string) error {
+	_, err := globalRdb.Del(ctx, key).Result()
 	return err
 }
 
-func (c *RedisImpl) KeyExists(ctx context.Context, key string) (ok bool, err error) {
-	num, err := c.rdb.Exists(ctx, key).Result()
+func KeyExists(ctx context.Context, key string) (ok bool, err error) {
+	num, err := globalRdb.Exists(ctx, key).Result()
 	return num == 1, err
 }
 
-func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *repository.Video, err error) {
-	cm, err := c.rdb.HGetAll(ctx, key).Result()
+func GetVideoById(ctx context.Context, key string) (video *db.Video, err error) {
+	cm, err := globalRdb.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
 	if len(cm) != 6 {
 		return nil, ErrInvalidType
 	}
-	video = new(repository.Video)
-	video.AuthorId, err = strconv.ParseInt(cm[FieldInfoAuthorId], 10, 64)
+	video = new(db.Video)
+	video.AuthorID, err = strconv.ParseInt(cm[FieldInfoAuthorId], 10, 64)
 	if err != nil {
 		return nil, err
 	}
-	video.FavoriteCount, err = strconv.ParseInt(cm[FieldCountFavorite], 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	//videoservice.CommentCount, err = strconv.ParseInt(cm[Field], 10, 64)
-	if err != nil {
-		return nil, err
-	}
+
 	video.Title = cm[FieldInfoTitle]
-	video.CoverUrl = cm[FieldInfoCoverUrl]
-	video.PlayUrl = cm[FieldInfoPlayUrl]
+	video.CoverURL = cm[FieldInfoCoverUrl]
+	video.PlayURL = cm[FieldInfoPlayUrl]
 	return video, nil
 }
 
-func (c *RedisImpl) AddVideo(ctx context.Context, key string, video *repository.Video) (err error) {
-	_, err = c.rdb.HSet(ctx, key,
-		FieldInfoAuthorId, video.AuthorId,
+func AddVideo(ctx context.Context, key string, video *db.Video) (err error) {
+	_, err = globalRdb.HSet(ctx, key,
+		FieldInfoAuthorId, video.AuthorID,
 		FieldInfoTitle, video.Title,
-		FieldInfoPlayUrl, video.PlayUrl,
-		FieldInfoCoverUrl, video.CoverUrl,
-		FieldCountFavorite, video.FavoriteCount,
-		//FieldCountComment, videoservice.CommentCount,
+		FieldInfoPlayUrl, video.PlayURL,
+		FieldInfoCoverUrl, video.CoverURL,
 	).Result()
 	return err
 }
 
-func (c *RedisImpl) DelVideo(ctx context.Context, key string) (err error) {
-	_, err = c.rdb.Del(ctx, key).Result()
+func DelVideo(ctx context.Context, key string) (err error) {
+	_, err = globalRdb.Del(ctx, key).Result()
 	return err
 }
 
-func (c *RedisImpl) GetVideosByUser(ctx context.Context, key string) ([]*repository.Video, error) {
-	return []*repository.Video{}, nil
+func GetVideosByUser(ctx context.Context, key string) ([]*db.Video, error) {
+	return []*db.Video{}, nil
 }
 
-func (c *RedisImpl) DelPublishList(context.Context, string) error {
+func DelPublishList(context.Context, string) error {
 	return nil
 }
 
 // GetVideoIdsByAuthor 根据作者id获取video id列表
-func (c *RedisImpl) GetVideoIdsByAuthor(ctx context.Context, key string) ([]int64, error) {
-	ids, err := c.rdb.SMembers(ctx, key).Result()
+func GetVideoIdsByAuthor(ctx context.Context, key string) ([]int64, error) {
+	ids, err := globalRdb.SMembers(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -135,14 +98,14 @@ func (c *RedisImpl) GetVideoIdsByAuthor(ctx context.Context, key string) ([]int6
 	return res, nil
 }
 
-func (c *RedisImpl) AddPublishList(ctx context.Context, uidStr string, videoIds []int64) error {
+func AddPublishList(ctx context.Context, uidStr string, videoIds []int64) error {
 	return nil
 }
 
 // GetFeedIds 通过cache获取vid列表，
-func (c *RedisImpl) GetFeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
+func GetFeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
 	// limit 30，以及获取结果中最小的时间戳
-	zs, err := c.rdb.ZRevRangeByScoreWithScores(ctx, VideoFeedKey,
+	zs, err := globalRdb.ZRevRangeByScoreWithScores(ctx, VideoFeedKey,
 		&redis.ZRangeBy{
 			Max:    strconv.FormatInt(lastTime, 10),
 			Offset: 0,
@@ -169,8 +132,7 @@ func (c *RedisImpl) GetFeedIds(ctx context.Context, lastTime int64) ([]int64, in
 	return vids, int64(nextTime), nil
 }
 
-func (r *RedisImpl) AddFeedVideo(ctx context.Context, vid int64, stamp int64) error {
-	//TODO
-	_, err := r.rdb.ZAdd(ctx, VideoFeedKey, &redis.Z{Member: strconv.FormatInt(vid, 10), Score: float64(stamp)}).Result()
+func AddFeedVideo(ctx context.Context, vid int64, stamp int64) error {
+	_, err := globalRdb.ZAdd(ctx, VideoFeedKey, &redis.Z{Member: strconv.FormatInt(vid, 10), Score: float64(stamp)}).Result()
 	return err
 }

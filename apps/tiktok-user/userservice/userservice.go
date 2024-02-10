@@ -46,7 +46,7 @@ type (
 		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 		// 查询用户信息
 		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
-		// rpc
+		// tiktok-videoservice
 		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 		// 根据id列表批量获取用户信息
 		GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
@@ -82,7 +82,7 @@ func (m *defaultUserService) UserInfo(ctx context.Context, in *UserInfoRequest, 
 	return client.UserInfo(ctx, in, opts...)
 }
 
-// rpc
+// tiktok-videoservice
 func (m *defaultUserService) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
 	client := pb.NewUserServiceClient(m.cli.Conn())
 	return client.GetUserById(ctx, in, opts...)

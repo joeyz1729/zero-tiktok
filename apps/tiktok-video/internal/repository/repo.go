@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
-	cache2 "github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/zeromicro/go-zero/core/logx"
 	"gorm.io/driver/mysql"
@@ -40,27 +40,27 @@ func NewRepo(datasource, redisAddr string) *Repo {
 }
 
 func AddVideo(ctx context.Context, video *db.Video) (err error) {
-	return db.NewVideoDao(db.GlobalClient()).AddVideo(video)
+	return db.AddVideo(video)
 }
 
 func GetVideoById(ctx context.Context, vid int64) (*db.Video, error) {
 	// 1. 检查缓存
-	key := cache2.VideoInfoPrefix + strconv.FormatInt(vid, 10)
-	hit, err := r.cache.KeyExists(ctx, key)
+	key := cache.VideoInfoPrefix + strconv.FormatInt(vid, 10)
+	hit, err := cache.KeyExists(ctx, key)
 	if err == nil && hit {
 		// cache hit
-		if v, err := r.cache.GetVideoById(ctx, key); err == nil {
-			v.VideoId = vid
+		if v, err := cache.GetVideoById(ctx, key); err == nil {
+			v.ID = vid
 			return v, nil
 		}
 	}
 	// 缓存命中，或者获取失败
 	// 2. 从数据库读取
-	v, err := r.db.GetVideoById(vid)
+	v, err := db.GetVideoById(vid)
 	if err != nil {
 		return nil, err
 	}
-	_ = r.cache.AddVideo(ctx, key, v)
+	_ = cache.AddVideo(ctx, key, v)
 	return v, nil
 }
 
@@ -73,7 +73,7 @@ func GetFavorLists(ctx context.Context, ids []int64) ([]*db.Video, error) {
 	for i := range videos {
 		go func(i int) {
 			defer wg.Done()
-			video, err := r.GetVideoById(ctx, ids[i])
+			video, err := cache.GetVideoById(ctx, "")
 			if err != nil {
 				errCh <- err
 				return
@@ -93,99 +93,45 @@ func GetFavorLists(ctx context.Context, ids []int64) ([]*db.Video, error) {
 
 // GetVideosByAuthorId 根据author id获取video列表
 func GetVideosByAuthorId(ctx context.Context, uid int64) ([]*db.Video, error) {
-	// 获取video ids
-	videoIds, err := r.GetVideoIdsByAuthorId(ctx, uid)
-	if err != nil {
-		return nil, err
-	}
-	// 根据video ids获取详细信息
-	videos, err := r.GetFavorLists(ctx, videoIds)
-	if err != nil {
-		return nil, err
-	}
-	return videos, nil
+	//// 获取video ids
+	//videoIds, err := cache.GetVideoIdsByAuthor(ctx, "")
+	//if err != nil {
+	//	return nil, err
+	//}
+	//// 根据video ids获取详细信息
+	////videos, err := cache.GetFavorLists(ctx, videoIds)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return videos, nil
+	return nil, nil
 }
 
 // GetVideoIdsByAuthorId 根据author id获取video id列表
 func GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int64, error) {
 	uidStr := strconv.FormatInt(uid, 10)
-	key := cache2.VideoPublishPrefix + uidStr
-	hit, err := r.cache.KeyExists(ctx, key)
+	key := cache.VideoPublishPrefix + uidStr
+	hit, err := cache.KeyExists(ctx, key)
 	if err == nil && hit {
-		ids, err := r.cache.GetVideoIdsByAuthor(ctx, key)
+		ids, err := cache.GetVideoIdsByAuthor(ctx, key)
 		if err == nil {
 			return ids, err
 		}
 	}
 	// 从数据库查询
-	videoIds, err := r.db.GetVideoIdsByAuthorId(uid)
+	videos, err := db.GetVideosByAuthorId(uid)
 	if err != nil {
 		return nil, err
 	}
 	// 添加缓存
-	err = r.cache.AddPublishList(ctx, key, videoIds)
+	var videoIds []int64
+	for _, v := range videos {
+		videoIds = append(videoIds, v.ID)
+	}
+
+	err = cache.AddPublishList(ctx, key, videoIds)
 	if err != nil {
 		return nil, err
 	}
 	return videoIds, nil
-}
-
-func FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
-	// TODO
-	// 查询cache是否存在
-
-	hit, err := r.cache.KeyExists(ctx, cache2.VideoFeedKey)
-	if err == nil && hit {
-		ids, nextTime, err := r.cache.GetFeedIds(ctx, lastTime)
-		if err == nil {
-			return ids, nextTime, nil
-		}
-	}
-	// 如果不存在或者出错则走database
-	videos, err := r.db.GetFeedIds(lastTime)
-	if err != nil {
-		return nil, 0, err
-	}
-	// 将查询结果添加到cache中
-	nextTime := lastTime
-	videoIds := make([]int64, len(videos))
-	for i, v := range videos {
-		videoIds[i] = v.VideoId
-		vt := v.PublishTime.Unix()
-		if vt < nextTime {
-			nextTime = vt
-		}
-		if err := r.cache.AddFeedVideo(ctx, v.VideoId, vt); err != nil {
-			return nil, 0, err
-		}
-	}
-	return videoIds, nextTime, nil
-
-}
-
-func RefreshFeed(ctx context.Context, lastTime int64) error {
-	// 可以换成查询refreshTime之后的，添加一个limit，然后返回下一个游标，更新refreshTime
-	vs, err := r.db.GetFeedIds(lastTime)
-	if err != nil {
-		return err
-	}
-	var wg sync.WaitGroup
-	wg.Add(len(vs))
-	errCh := make(chan error, len(vs))
-	for _, v := range vs {
-		go func(vid int64, publishTime int64) {
-			defer wg.Done()
-			if err := r.cache.AddFeedVideo(ctx, vid, publishTime); err != nil {
-				errCh <- err
-				return
-			}
-		}(v.VideoId, v.PublishTime.Unix())
-	}
-	wg.Wait()
-	select {
-	case err := <-errCh:
-		return err
-	default:
-		return nil
-	}
 }
