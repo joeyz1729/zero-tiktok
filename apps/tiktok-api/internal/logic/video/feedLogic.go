@@ -28,8 +28,7 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 
 func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err error) {
 	resp = new(types.FeedResponse)
-	resp.VideoList = []types.Video{}
-
+	// 1. jwt
 	claims, err := jwtx.ParseToken(req.Token)
 	if err != nil {
 		logx.Errorw("jwt parse token failed",
@@ -40,11 +39,9 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 		resp.NextTime = time.Now().Unix()
 		return resp, nil
 	}
-	uid := claims.UserId
-	var feedRes *videoservice.FeedResponse
-
-	feedRes, err = l.svcCtx.VideoRpc.Feed(l.ctx, &videoservice.FeedRequest{
-		UserId:     uid,
+	// 2. logic
+	feedRes, err := l.svcCtx.VideoRpc.Feed(l.ctx, &videoservice.FeedRequest{
+		UserId:     claims.UserId,
 		LatestTime: req.LatestTime,
 	})
 	if err != nil {
@@ -56,10 +53,10 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 		resp.NextTime = time.Now().Unix()
 		return resp, nil
 	}
-
+	// 3. return
 	resp.VideoList = make([]types.Video, len(feedRes.VideoList))
 	for i, v := range feedRes.VideoList {
-		vi := types.Video{
+		resp.VideoList[i] = types.Video{
 			Id: v.Id,
 			Author: types.Author{
 				Id:              v.Author.Id,
@@ -81,7 +78,6 @@ func (l *FeedLogic) Feed(req *types.FeedRequest) (resp *types.FeedResponse, err 
 			CommentCount:  v.CommentCount,
 			IsFavorite:    v.IsFavorite,
 		}
-		resp.VideoList[i] = vi
 	}
 	resp.NextTime = feedRes.NextTime
 	resp.StatusCode = http.StatusOK

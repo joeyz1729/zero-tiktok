@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/joeyz1729/zero-tiktok/pkg/mw/ffmpeg"
+	"github.com/joeyz1729/zero-tiktok/pkg/utils"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"log"
 	"mime/multipart"
@@ -14,6 +16,7 @@ import (
 )
 
 var (
+	ImageTypeSuffix      = ".png"
 	MinioVideoBucketName = "tiktokvideo"
 	MinioImgBucketName   = "tiktokimage"
 
@@ -22,18 +25,21 @@ var (
 	secretAccessKey      = "minio@123"
 	useSSL          bool = false
 
-	Client *minio.Client
-	err    error
+	globalClient *minio.Client
 )
 
+func GetClient() *minio.Client {
+	return globalClient
+}
+
 func MakeBucket(ctx context.Context, bucketName string) {
-	exists, err := Client.BucketExists(ctx, bucketName)
+	exists, err := globalClient.BucketExists(ctx, bucketName)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	if !exists {
-		err = Client.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+		err = globalClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -45,32 +51,32 @@ func MakeBucket(ctx context.Context, bucketName string) {
 func PutToBucket(ctx context.Context, bucketName string, file *multipart.FileHeader) (info minio.UploadInfo, err error) {
 	fileObj, _ := file.Open()
 	defer fileObj.Close()
-	info, err = Client.PutObject(ctx, bucketName, file.Filename, fileObj, file.Size, minio.PutObjectOptions{})
+	info, err = globalClient.PutObject(ctx, bucketName, file.Filename, fileObj, file.Size, minio.PutObjectOptions{})
 	return info, err
 }
 
 func GetObjURL(ctx context.Context, bucketName, filename string) (u *url.URL, err error) {
 	exp := time.Hour * 24
 	reqParams := make(url.Values)
-	u, err = Client.PresignedGetObject(ctx, bucketName, filename, exp, reqParams)
+	u, err = globalClient.PresignedGetObject(ctx, bucketName, filename, exp, reqParams)
 	return u, err
 }
 
 func PutToBucketByBuf(ctx context.Context, bucketName, filename string, buf *bytes.Buffer) (info minio.UploadInfo, err error) {
-	info, err = Client.PutObject(ctx, bucketName, filename, buf, int64(buf.Len()), minio.PutObjectOptions{})
+	info, err = globalClient.PutObject(ctx, bucketName, filename, buf, int64(buf.Len()), minio.PutObjectOptions{})
 	return info, err
 }
 
 func PutToBucketByFilePath(ctx context.Context, bucketName, filename, filepath string) (info minio.UploadInfo, err error) {
 	// 是否需要加options：contentType？
-	info, err = Client.FPutObject(ctx, bucketName, filename, filepath, minio.PutObjectOptions{})
+	info, err = globalClient.FPutObject(ctx, bucketName, filename, filepath, minio.PutObjectOptions{})
 	return info, err
 }
 
 func Init() {
 	ctx := context.Background()
 	var err error
-	Client, err = minio.New(endpoint, &minio.Options{
+	globalClient, err = minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyId, secretAccessKey, ""),
 		Secure: useSSL,
 	})
@@ -79,8 +85,44 @@ func Init() {
 		log.Fatalln(err)
 	}
 	log.Println("minio client connect success")
-	log.Printf("%#v\n", Client)
+	log.Printf("%#v\n", globalClient)
 
 	MakeBucket(ctx, MinioVideoBucketName)
 	MakeBucket(ctx, MinioImgBucketName)
+}
+
+func UploadVideo(ctx context.Context, userId int64, fileType string, data []byte) (string, string, error) {
+	// 视频文件提交到minio
+	timeNow := time.Now()
+	filename := utils.NewFileName(userId, timeNow.Unix()) + fileType
+	_, err := PutToBucketByBuf(
+		ctx,
+		MinioVideoBucketName,
+		filename,
+		bytes.NewBuffer(data),
+	)
+	if err != nil {
+		return "", "", err
+	}
+
+	// 获取视频路径，并截取视频帧作为封面
+	filepath, err := globalClient.PresignedGetObject(ctx, MinioVideoBucketName, filename, time.Minute*1, nil)
+	if err != nil {
+		return "", "", err
+	}
+
+	buf, err := ffmpeg.GetSnapshot(filepath.String())
+	if err != nil {
+		return "", "", err
+	}
+
+	// 将封面文件上传至minio
+	_, err = PutToBucketByBuf(ctx, MinioImgBucketName, filename+".png", buf)
+	if err != nil {
+		return "", "", err
+	}
+
+	playURL := MinioVideoBucketName + "/" + filename + fileType
+	coverURL := MinioImgBucketName + "/" + filename + ImageTypeSuffix
+	return playURL, coverURL, nil
 }

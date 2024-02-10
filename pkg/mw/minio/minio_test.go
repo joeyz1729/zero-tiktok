@@ -23,7 +23,7 @@ func TestGetObjURL(t *testing.T) {
 
 func TestBuckMake(t *testing.T) {
 	ctx := context.Background()
-	exists, err := Client.BucketExists(ctx, MinioVideoBucketName)
+	exists, err := globalClient.BucketExists(ctx, MinioVideoBucketName)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -31,7 +31,7 @@ func TestBuckMake(t *testing.T) {
 	if exists {
 		fmt.Printf("%v found\n", MinioVideoBucketName)
 	} else {
-		err = Client.MakeBucket(ctx, MinioVideoBucketName, minio.MakeBucketOptions{})
+		err = globalClient.MakeBucket(ctx, MinioVideoBucketName, minio.MakeBucketOptions{})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -42,7 +42,7 @@ func TestBuckMake(t *testing.T) {
 
 func TestBucketExist(t *testing.T) {
 	ctx := context.Background()
-	exists, err := Client.BucketExists(ctx, MinioVideoBucketName)
+	exists, err := globalClient.BucketExists(ctx, MinioVideoBucketName)
 	if err != nil {
 		fmt.Println(err)
 		return

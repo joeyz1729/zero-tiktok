@@ -27,7 +27,6 @@ func NewPublishActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pub
 func (l *PublishActionLogic) PublishAction(in *pb.PublishActionRequest) (*pb.PublishActionResponse, error) {
 	resp := new(pb.PublishActionResponse)
 	var err error
-	// snowflake gen videoservice id
 	vid, err := snowflake.GenID()
 
 	err = repository.AddVideo(l.ctx, &db.Video{
@@ -39,7 +38,7 @@ func (l *PublishActionLogic) PublishAction(in *pb.PublishActionRequest) (*pb.Pub
 	})
 
 	if err != nil {
-		logx.Errorw("[mysql] add videoservice failed",
+		logx.Errorw("[PublishAction] repo add video failed",
 			logx.Field("err", err))
 		return nil, err
 	}
