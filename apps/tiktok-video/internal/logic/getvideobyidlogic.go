@@ -2,10 +2,8 @@ package logic
 
 import (
 	"context"
-
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
-
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -23,9 +21,9 @@ func NewGetVideoByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetV
 	}
 }
 
-func (l *GetVideoByIdLogic) GetVideoById(in *model.GetVideoByIdRequest) (*model.GetVideoByIdResponse, error) {
+func (l *GetVideoByIdLogic) GetVideoById(in *pb.GetVideoByIdRequest) (*pb.GetVideoByIdResponse, error) {
 	// todo: add your logic here and delete this line
-	resp := new(model.GetVideoByIdResponse)
+	resp := new(pb.GetVideoByIdResponse)
 	vi, err := l.svcCtx.VideoRepo.GetVideoById(l.ctx, in.VideoId)
 	//vi, err := l.svcCtx.VideoModel.FindOneByVideoId(l.ctx, in.VideoId)
 	if err != nil {
@@ -35,9 +33,9 @@ func (l *GetVideoByIdLogic) GetVideoById(in *model.GetVideoByIdRequest) (*model.
 		return resp, err
 	}
 
-	resp.VideoInfo = &model.VideoInfo{
-		VideoId:  in.VideoId,
-		AuthorId: vi.AuthorId,
+	resp.VideoInfo = &pb.Video{
+		Id:       in.VideoId,
+		Author:   nil,
 		PlayUrl:  vi.PlayUrl,
 		CoverUrl: vi.CoverUrl,
 		Title:    vi.Title,

@@ -1,56 +1,51 @@
-package data
+package repository
 
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
-	"github.com/jmoiron/sqlx"
+	cache2 "github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/zeromicro/go-zero/core/logx"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"strconv"
 	"sync"
 )
 
-type VideoRepo interface {
-	AddVideo(ctx context.Context, video *Video) error // 视频发布时添加视频
-
-	AddFavoriteCount(ctx context.Context, videoId int64) error // 点赞操作后更新计数
-	DelFavoriteCount(ctx context.Context, videoId int64) error // 点赞操作后更新计数
-
-	GetVideoById(ctx context.Context, vid int64) (*Video, error)
-
-	GetVideosByAuthorId(context.Context, int64) ([]*Video, error)
-	GetVideoIdsByAuthorId(context.Context, int64) ([]int64, error)
-
-	//GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error)
-	//GetVideosByUserId(ctx context.Context, uid int64) ([]Video, error)
-	//AddVideoInfo(ctx context.Context, video *repository.Video) error
-
-	FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error)
-	RefreshFeed(ctx context.Context, lastTime int64) error
+type Repo struct {
+	db  *gorm.DB
+	rdb *redis.Client
 }
 
-type RepoImpl struct {
-	db    VideoDB
-	cache VideoCache
-}
+var repo *Repo
 
-func NewRepoImpl(db *sqlx.DB, rdb *redis.Client) *RepoImpl {
-	return &RepoImpl{
-		NewMysqlImpl(db),
-		NewRedisImpl(rdb),
+func NewRepo(datasource, redisAddr string) *Repo {
+	database, err := gorm.Open(mysql.Open(datasource), &gorm.Config{})
+	if err != nil {
+		panic(err)
 	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+	rdb.Ping(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	repo = &Repo{
+		db:  database,
+		rdb: rdb,
+	}
+	return repo
 }
 
-var _ VideoRepo = (*RepoImpl)(nil)
-
-// AddVideo 添加数据库，不更新缓存
-func (r *RepoImpl) AddVideo(ctx context.Context, video *Video) (err error) {
-	return r.db.AddVideo(video)
+func AddVideo(ctx context.Context, video *db.Video) (err error) {
+	return db.NewVideoDao(db.GlobalClient()).AddVideo(video)
 }
 
-// GetVideoById 根据video  id查询
-func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) {
+func GetVideoById(ctx context.Context, vid int64) (*db.Video, error) {
 	// 1. 检查缓存
-	key := VideoInfoPrefix + strconv.FormatInt(vid, 10)
+	key := cache2.VideoInfoPrefix + strconv.FormatInt(vid, 10)
 	hit, err := r.cache.KeyExists(ctx, key)
 	if err == nil && hit {
 		// cache hit
@@ -70,8 +65,8 @@ func (r *RepoImpl) GetVideoById(ctx context.Context, vid int64) (*Video, error) 
 }
 
 // GetFavorLists 根据用户点赞的video id列表获取详细信息，不查询is favorite
-func (r *RepoImpl) GetFavorLists(ctx context.Context, ids []int64) ([]*Video, error) {
-	videos := make([]*Video, len(ids))
+func GetFavorLists(ctx context.Context, ids []int64) ([]*db.Video, error) {
+	videos := make([]*db.Video, len(ids))
 	var wg sync.WaitGroup
 	var errCh = make(chan error, len(ids))
 	wg.Add(len(ids))
@@ -89,7 +84,7 @@ func (r *RepoImpl) GetFavorLists(ctx context.Context, ids []int64) ([]*Video, er
 	wg.Wait()
 	select {
 	case err := <-errCh:
-		logx.Error("get video concurrency ", err)
+		logx.Error("get videoservice concurrency ", err)
 		return nil, err
 	default:
 	}
@@ -97,7 +92,7 @@ func (r *RepoImpl) GetFavorLists(ctx context.Context, ids []int64) ([]*Video, er
 }
 
 // GetVideosByAuthorId 根据author id获取video列表
-func (r *RepoImpl) GetVideosByAuthorId(ctx context.Context, uid int64) ([]*Video, error) {
+func GetVideosByAuthorId(ctx context.Context, uid int64) ([]*db.Video, error) {
 	// 获取video ids
 	videoIds, err := r.GetVideoIdsByAuthorId(ctx, uid)
 	if err != nil {
@@ -112,9 +107,9 @@ func (r *RepoImpl) GetVideosByAuthorId(ctx context.Context, uid int64) ([]*Video
 }
 
 // GetVideoIdsByAuthorId 根据author id获取video id列表
-func (r *RepoImpl) GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int64, error) {
+func GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int64, error) {
 	uidStr := strconv.FormatInt(uid, 10)
-	key := VideoPublishPrefix + uidStr
+	key := cache2.VideoPublishPrefix + uidStr
 	hit, err := r.cache.KeyExists(ctx, key)
 	if err == nil && hit {
 		ids, err := r.cache.GetVideoIdsByAuthor(ctx, key)
@@ -135,11 +130,11 @@ func (r *RepoImpl) GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int6
 	return videoIds, nil
 }
 
-func (r *RepoImpl) FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
+func FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
 	// TODO
 	// 查询cache是否存在
 
-	hit, err := r.cache.KeyExists(ctx, VideoFeedKey)
+	hit, err := r.cache.KeyExists(ctx, cache2.VideoFeedKey)
 	if err == nil && hit {
 		ids, nextTime, err := r.cache.GetFeedIds(ctx, lastTime)
 		if err == nil {
@@ -168,7 +163,7 @@ func (r *RepoImpl) FeedIds(ctx context.Context, lastTime int64) ([]int64, int64,
 
 }
 
-func (r *RepoImpl) RefreshFeed(ctx context.Context, lastTime int64) error {
+func RefreshFeed(ctx context.Context, lastTime int64) error {
 	// 可以换成查询refreshTime之后的，添加一个limit，然后返回下一个游标，更新refreshTime
 	vs, err := r.db.GetFeedIds(lastTime)
 	if err != nil {
@@ -193,24 +188,4 @@ func (r *RepoImpl) RefreshFeed(ctx context.Context, lastTime int64) error {
 	default:
 		return nil
 	}
-}
-
-// AddFavoriteCount 更新视频点赞，删除缓存
-func (r *RepoImpl) AddFavoriteCount(ctx context.Context, videoId int64) error {
-	err := r.db.AddFavoriteCount(videoId)
-	if err != nil {
-		return err
-	}
-	vidStr := strconv.FormatInt(videoId, 10)
-	return r.cache.DelKey(ctx, VideoFavoriteCountPrefix+vidStr)
-}
-
-// DelFavoriteCount 更新视频点赞，删除缓存
-func (r *RepoImpl) DelFavoriteCount(ctx context.Context, videoId int64) error {
-	err := r.db.DelFavoriteCount(videoId)
-	if err != nil {
-		return err
-	}
-	vidStr := strconv.FormatInt(videoId, 10)
-	return r.cache.DelKey(ctx, VideoFavoriteCountPrefix+vidStr)
 }

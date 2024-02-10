@@ -1,19 +1,20 @@
-package data
+package cache
 
 import (
 	"context"
 	"errors"
 	"github.com/go-redis/redis/v8"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"strconv"
 )
 
 var (
-	VideoFeedRefreshKey      = "tiktok:video::refresh"
-	VideoFeedKey             = "tiktok:video::feed"     // +nil zset	(vid, timestamp)
-	VideoInfoPrefix          = "tiktok:video:info:"     // +vid, hash	(info)
-	VideoPublishPrefix       = "tiktok:video:publish:"  // +uid set (vid)
-	VideoFavoriteCountPrefix = "tiktok:video:favorite:" // +vid, (favorite count)
-	VideoCommentCountPrefix  = "tiktok:video:comment:"
+	VideoFeedRefreshKey      = "tiktok:videoservice::refresh"
+	VideoFeedKey             = "tiktok:videoservice::feed"     // +nil zset	(vid, timestamp)
+	VideoInfoPrefix          = "tiktok:videoservice:info:"     // +vid, hash	(info)
+	VideoPublishPrefix       = "tiktok:videoservice:publish:"  // +uid set (vid)
+	VideoFavoriteCountPrefix = "tiktok:videoservice:favorite:" // +vid, (favorite count)
+	VideoCommentCountPrefix  = "tiktok:videoservice:comment:"
 	FieldInfoTitle           = "title"
 
 	FieldInfoPlayUrl   = "playurl"
@@ -29,13 +30,13 @@ type VideoCache interface {
 	KeyExists(context.Context, string) (bool, error)
 
 	DelVideo(context.Context, string) error
-	AddVideo(context.Context, string, *Video) error
+	AddVideo(context.Context, string, *repository.Video) error
 
 	DelKey(context.Context, string) error
 
-	GetVideoById(ctx context.Context, key string) (*Video, error)
+	GetVideoById(ctx context.Context, key string) (*repository.Video, error)
 
-	GetVideosByUser(ctx context.Context, key string) ([]*Video, error)
+	GetVideosByUser(ctx context.Context, key string) ([]*repository.Video, error)
 
 	AddPublishList(context.Context, string, []int64) error
 	DelPublishList(context.Context, string) error
@@ -65,7 +66,7 @@ func (c *RedisImpl) KeyExists(ctx context.Context, key string) (ok bool, err err
 	return num == 1, err
 }
 
-func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video, err error) {
+func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *repository.Video, err error) {
 	cm, err := c.rdb.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, err
@@ -73,7 +74,7 @@ func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video,
 	if len(cm) != 6 {
 		return nil, ErrInvalidType
 	}
-	video = new(Video)
+	video = new(repository.Video)
 	video.AuthorId, err = strconv.ParseInt(cm[FieldInfoAuthorId], 10, 64)
 	if err != nil {
 		return nil, err
@@ -82,7 +83,7 @@ func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video,
 	if err != nil {
 		return nil, err
 	}
-	//video.CommentCount, err = strconv.ParseInt(cm[Field], 10, 64)
+	//videoservice.CommentCount, err = strconv.ParseInt(cm[Field], 10, 64)
 	if err != nil {
 		return nil, err
 	}
@@ -92,14 +93,14 @@ func (c *RedisImpl) GetVideoById(ctx context.Context, key string) (video *Video,
 	return video, nil
 }
 
-func (c *RedisImpl) AddVideo(ctx context.Context, key string, video *Video) (err error) {
+func (c *RedisImpl) AddVideo(ctx context.Context, key string, video *repository.Video) (err error) {
 	_, err = c.rdb.HSet(ctx, key,
 		FieldInfoAuthorId, video.AuthorId,
 		FieldInfoTitle, video.Title,
 		FieldInfoPlayUrl, video.PlayUrl,
 		FieldInfoCoverUrl, video.CoverUrl,
 		FieldCountFavorite, video.FavoriteCount,
-		//FieldCountComment, video.CommentCount,
+		//FieldCountComment, videoservice.CommentCount,
 	).Result()
 	return err
 }
@@ -109,8 +110,8 @@ func (c *RedisImpl) DelVideo(ctx context.Context, key string) (err error) {
 	return err
 }
 
-func (c *RedisImpl) GetVideosByUser(ctx context.Context, key string) ([]*Video, error) {
-	return []*Video{}, nil
+func (c *RedisImpl) GetVideosByUser(ctx context.Context, key string) ([]*repository.Video, error) {
+	return []*repository.Video{}, nil
 }
 
 func (c *RedisImpl) DelPublishList(context.Context, string) error {

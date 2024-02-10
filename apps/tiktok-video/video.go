@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/server"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/mw/minio"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
 	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 	"github.com/joeyz1729/zero-tiktok/pkg/tool"
 
@@ -28,7 +27,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		model.RegisterVideoServer(grpcServer, server.NewVideoServer(ctx))
+		pb.RegisterVideoServiceServer(grpcServer, server.NewVideoServiceServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
@@ -42,8 +41,6 @@ func main() {
 	if err != nil {
 		panic("snowflake initialization failed")
 	}
-
-	minio.Init()
 
 	tool.NewSalt(c.Salt)
 

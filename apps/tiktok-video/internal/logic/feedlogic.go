@@ -3,12 +3,11 @@ package logic
 import (
 	"context"
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/user"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
 	"sync"
 	"time"
-
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/video/rpc/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,8 +26,8 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 	}
 }
 
-func (l *FeedLogic) Feed(in *model.FeedRequest) (*model.FeedResponse, error) {
-	resp := new(model.FeedResponse)
+func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
+	resp := new(pb.FeedResponse)
 	// 1 根据last_time查询video id列表，注意要限制查询条数
 	videoIds, nextTime, err := l.svcCtx.VideoRepo.FeedIds(l.ctx, in.LatestTime)
 	if err != nil {
@@ -36,10 +35,10 @@ func (l *FeedLogic) Feed(in *model.FeedRequest) (*model.FeedResponse, error) {
 		return nil, err
 	}
 	if len(videoIds) == 0 {
-		return &model.FeedResponse{VideoLen: 0, NextTime: time.Now().Unix(), VideoList: []*model.VideoDetail{}}, nil
+		return &pb.FeedResponse{NextTime: time.Now().Unix(), VideoList: []*pb.Video{}}, nil
 	}
 	// 可以并发请求，多条video不相关
-	feedList := make([]*model.VideoDetail, len(videoIds))
+	feedList := make([]*pb.Video, len(videoIds))
 	var wg sync.WaitGroup
 	errCh := make(chan error, len(videoIds))
 	wg.Add(len(videoIds))
@@ -53,7 +52,7 @@ func (l *FeedLogic) Feed(in *model.FeedRequest) (*model.FeedResponse, error) {
 				return
 			}
 			// 2->3 根据author ids查询author详细信息，然后根据user id和author id查询关注信息
-			author, err := l.svcCtx.UserRpc.GetAuthor(l.ctx, &user.GetAuthorRequest{UserId: in.UserId, AuthorId: vi.AuthorId})
+			author, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userservice.GetUserByIdRequest{UserId: in.UserId})
 			if err != nil {
 				errCh <- err
 				return
@@ -64,22 +63,15 @@ func (l *FeedLogic) Feed(in *model.FeedRequest) (*model.FeedResponse, error) {
 				errCh <- err
 				return
 			}
-			v := &model.VideoDetail{
+			// todo
+			v := &pb.Video{
 				Id: vid,
-				Author: &model.UserInfo{
+				Author: &pb.User{
 					Id:              author.Id,
 					Name:            author.Name,
 					Avatar:          author.Avatar,
 					BackgroundImage: author.BackgroundImage,
 					Signature:       author.Signature,
-
-					FollowCount:   author.FollowCount,
-					FollowerCount: author.FollowerCount,
-					IsFollow:      author.IsFollow,
-
-					FavoriteCount:  author.FavoriteCount,
-					WorkCount:      author.WorkCount,
-					TotalFavorited: author.TotalFavorited,
 				},
 				Title:         vi.Title,
 				PlayUrl:       vi.PlayUrl,
@@ -94,12 +86,11 @@ func (l *FeedLogic) Feed(in *model.FeedRequest) (*model.FeedResponse, error) {
 	wg.Wait()
 	select {
 	case err := <-errCh:
-		logx.Error("concurrency query video ", err)
+		logx.Error("concurrency query videoservice ", err)
 		return nil, err
 	default:
 	}
 
-	resp.VideoLen = int64(len(feedList))
 	resp.VideoList = feedList
 	resp.NextTime = nextTime - 1
 	return resp, nil

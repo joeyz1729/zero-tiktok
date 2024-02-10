@@ -1,15 +1,16 @@
-package data
+package cache
 
 import (
 	"context"
 	"fmt"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"strconv"
 	"testing"
 	"time"
 )
 
 func TestRedisImpl_KeyExists(t *testing.T) {
-	repo := InitRepo()
+	repo := repository.InitRepo()
 	for i := 1; i <= 6; i++ {
 		vid := strconv.FormatInt(int64(i), 10)
 		video, err := repo.cache.KeyExists(context.Background(), VideoInfoPrefix+vid)
@@ -22,7 +23,7 @@ func TestRedisImpl_KeyExists(t *testing.T) {
 }
 
 func TestRedisImpl_GetVideoById(t *testing.T) {
-	repo := InitRepo()
+	repo := repository.InitRepo()
 	for i := 1; i <= 6; i++ {
 		vid := strconv.FormatInt(int64(i), 10)
 		video, err := repo.cache.GetVideoById(context.Background(), VideoInfoPrefix+vid)
@@ -35,7 +36,7 @@ func TestRedisImpl_GetVideoById(t *testing.T) {
 }
 
 func TestRedisImpl_GetFeedIds(t *testing.T) {
-	repo := InitRepo()
+	repo := repository.InitRepo()
 	lastTime := time.Now().Unix()
 	//lastTime = 1697119044
 	hit, err := repo.cache.KeyExists(context.Background(), VideoFeedKey)
@@ -54,7 +55,7 @@ func TestRedisImpl_GetFeedIds(t *testing.T) {
 }
 
 func TestRedisImpl_AddFeedVideo(t *testing.T) {
-	repo := InitRepo()
+	repo := repository.InitRepo()
 	var uid, stamp int64
 	uid = time.Now().Unix()
 	stamp = time.Now().Unix()

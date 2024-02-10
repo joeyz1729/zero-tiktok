@@ -1,32 +1,32 @@
-Name: video.tiktok-user
-ListenOn: 0.0.0.0:8992
+Name: tiktok-video
+ListenOn: 0.0.0.0:9020
 Log:
-  ServiceName: video-tiktok-user
+  ServiceName: tiktok-video
 #  Mode: file
 #  Path: ./log
-Telemetry:
-  Name: video-tiktok-user
-  Endpoint: http://127.0.0.1:14268/api/traces
-  Sampler: 1.0
-  Batcher: jaeger
-Prometheus:
-  Host: 127.0.0.1
-  Port: 9082
-  Path: /metrics
+#Telemetry:
+#  Name: videoservice-tiktok-user
+#  Endpoint: http://127.0.0.1:14268/api/traces
+#  Sampler: 1.0
+#  Batcher: jaeger
+#Prometheus:
+#  Host: 127.0.0.1
+#  Port: 9082
+#  Path: /metrics
 Etcd:
   Hosts:
   - 127.0.0.1:2379
-  Key: video.tiktok-user
+  Key: tiktok-video
 
 Mysql:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_video?parseTime=true&charset=utf8
 
 CacheRedis:
-  - Host: 127.0.0.1:6379
+  - Host: 127.0.0.1:16379
 
 #Consul:
 #  Host: 127.0.0.1:8500
-#  Key: consul-video.tiktok-user
+#  Key: consul-videoservice.tiktok-user
 
 Salt: video_salt
 
@@ -37,7 +37,7 @@ Snowflake:
 
 RedisDB:
   Host: "127.0.0.1"
-  Port: 6379
+  Port: 16379
   Password: ""
   DB: 0
   PoolSize: 100
@@ -47,7 +47,7 @@ UserRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: tiktok-user.tiktok-user
+    Key: tiktok-user
   NonBlock: true
 
 
@@ -55,5 +55,5 @@ FavorRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
-    Key: favorite.tiktok-user
+    Key: tiktok-favor
   NonBlock: true
