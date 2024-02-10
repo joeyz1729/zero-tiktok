@@ -9,13 +9,11 @@ import (
 )
 
 var (
-	VideoFeedRefreshKey      = "tiktok:videoservice::refresh"
-	VideoFeedKey             = "tiktok:videoservice::feed"     // +nil zset	(vid, timestamp)
-	VideoInfoPrefix          = "tiktok:videoservice:info:"     // +vid, hash	(info)
-	VideoPublishPrefix       = "tiktok:videoservice:publish:"  // +uid set (vid)
-	VideoFavoriteCountPrefix = "tiktok:videoservice:favorite:" // +vid, (favorite count)
-	VideoCommentCountPrefix  = "tiktok:videoservice:comment:"
-	FieldInfoTitle           = "title"
+	VideoFeedRefreshKey = "tiktok:video::refresh"
+	VideoFeedKey        = "tiktok:video::feed"    // +nil zset	(vid, timestamp)
+	VideoInfoPrefix     = "tiktok:video:info:"    // +vid, hash	(info)
+	VideoPublishPrefix  = "tiktok:video:publish:" // +uid set (vid)
+	FieldInfoTitle      = "title"
 
 	FieldInfoPlayUrl   = "playurl"
 	FieldInfoCoverUrl  = "coverurl"
@@ -27,6 +25,10 @@ var (
 )
 
 var globalRdb *redis.Client
+
+func InitRdb(rdb *redis.Client) {
+	globalRdb = rdb
+}
 
 func DelKey(ctx context.Context, key string) error {
 	_, err := globalRdb.Del(ctx, key).Result()

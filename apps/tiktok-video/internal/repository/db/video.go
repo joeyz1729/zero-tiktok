@@ -25,6 +25,10 @@ func (*Video) TableName() string {
 
 var globalDB *gorm.DB
 
+func InitDB(database *gorm.DB) {
+	globalDB = database
+}
+
 func AddVideo(v *Video) error {
 	return globalDB.Create(v).Error
 }

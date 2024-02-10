@@ -1,31 +1,28 @@
 package svc
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"github.com/jmoiron/sqlx"
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/zeromicro/go-zero/zrpc"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 type ServiceContext struct {
 	Config config.Config
-
-	//VideoModel repository.VideoModel
-	VideoCache *redis.Client
-	VideoRepo  repository.VideoRepo
-	VideoDB    *sqlx.DB
 
 	UserRpc  userservice.UserService
 	FavorRpc favorite.Favorite
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	//sqlConn := sqlz.NewMysql(c.Mysql.DataSource)
-	db, err := sqlx.Connect("mysql", c.Mysql.DataSource)
+	database, err := gorm.Open(mysql.Open(c.Mysql.DataSource), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -36,14 +33,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		DB:       c.RedisDB.DB,
 		PoolSize: c.RedisDB.PoolSize,
 	})
+	rdb.Ping(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	db.InitDB(database)
+	cache.InitRdb(rdb)
 
 	return &ServiceContext{
-		Config: c,
-		//VideoModel: repository.NewVideoModel(sqlConn, c.CacheRedis),
-		VideoDB:    db,
-		VideoCache: rdb,
-		VideoRepo:  repository.NewRepoImpl(db, rdb),
-		UserRpc:    userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
-		FavorRpc:   favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
+		Config:   c,
+		UserRpc:  userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
+		FavorRpc: favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
 	}
 }
