@@ -43,6 +43,10 @@ func AddVideo(ctx context.Context, video *db.Video) (err error) {
 	return db.AddVideo(video)
 }
 
+func Feed(ctx context.Context, lastTime int64) ([]*db.Video, int64, error) {
+	return nil, 0, nil
+}
+
 func GetVideoById(ctx context.Context, vid int64) (*db.Video, error) {
 	// 1. 检查缓存
 	key := cache.VideoInfoPrefix + strconv.FormatInt(vid, 10)

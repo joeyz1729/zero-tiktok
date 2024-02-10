@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
 	"sync"
@@ -29,7 +30,7 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 	resp := new(pb.FeedResponse)
 	// 1 根据last_time查询video id列表，注意要限制查询条数
-	videoIds, nextTime, err := l.svcCtx.VideoRepo.FeedIds(l.ctx, in.LatestTime)
+	videoIds, nextTime, err := repository.Feed(l.ctx, in.LatestTime)
 	if err != nil {
 		logx.Error("get feed ids ", err)
 		return nil, err
@@ -46,7 +47,7 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 		go func(i int, vid int64) {
 			defer wg.Done()
 			// 2 根据video ids查询video详细信息，
-			vi, err := l.svcCtx.VideoRepo.GetVideoById(l.ctx, vid)
+			vi, err := repository.GetVideoById(l.ctx, vid)
 			if err != nil {
 				errCh <- err
 				return
@@ -73,15 +74,13 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 					BackgroundImage: author.BackgroundImage,
 					Signature:       author.Signature,
 				},
-				Title:         vi.Title,
-				PlayUrl:       vi.PlayUrl,
-				CoverUrl:      vi.CoverUrl,
-				FavoriteCount: vi.FavoriteCount,
-				CommentCount:  vi.CommentCount,
-				IsFavorite:    favor.ActionType == int64(1),
+				Title:      vi.Title,
+				PlayUrl:    vi.PlayURL,
+				CoverUrl:   vi.CoverURL,
+				IsFavorite: favor.ActionType == int64(1),
 			}
 			feedList[i] = v
-		}(i, vid)
+		}(i, vid.ID)
 	}
 	wg.Wait()
 	select {

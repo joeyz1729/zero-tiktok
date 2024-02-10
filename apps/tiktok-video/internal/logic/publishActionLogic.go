@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
 	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
@@ -29,12 +30,12 @@ func (l *PublishActionLogic) PublishAction(in *pb.PublishActionRequest) (*pb.Pub
 	// snowflake gen videoservice id
 	vid, err := snowflake.GenID()
 
-	err = l.svcCtx.VideoRepo.AddVideo(l.ctx, &repository.Video{
-		VideoId:  int64(vid),
-		AuthorId: in.GetUserId(),
+	err = repository.AddVideo(l.ctx, &db.Video{
+		ID:       int64(vid),
+		AuthorID: in.GetUserId(),
 		Title:    in.GetTitle(),
-		PlayUrl:  in.GetPlayUrl(),
-		CoverUrl: in.GetCoverUrl(),
+		PlayURL:  in.GetPlayUrl(),
+		CoverURL: in.GetCoverUrl(),
 	})
 
 	if err != nil {
