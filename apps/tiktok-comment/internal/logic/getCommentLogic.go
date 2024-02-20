@@ -2,9 +2,8 @@ package logic
 
 import (
 	"context"
-
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,8 +22,8 @@ func NewGetCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetCom
 	}
 }
 
-func (l *GetCommentLogic) GetComment(in *model.GetCommentRequest) (*model.GetCommentResponse, error) {
+func (l *GetCommentLogic) GetComment(in *pb.GetCommentRequest) (*pb.GetCommentResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &model.GetCommentResponse{}, nil
+	return &pb.GetCommentResponse{}, nil
 }

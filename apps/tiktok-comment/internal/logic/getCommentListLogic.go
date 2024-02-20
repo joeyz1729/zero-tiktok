@@ -2,8 +2,8 @@ package logic
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/pb"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -21,9 +21,9 @@ func NewGetCommentListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 	}
 }
 
-func (l *GetCommentListLogic) GetCommentList(in *model.GetCommentListRequest) (*model.GetCommentListResponse, error) {
+func (l *GetCommentListLogic) GetCommentList(in *pb.GetCommentListRequest) (*pb.GetCommentListResponse, error) {
 	// todo: add your logic here and delete this line
-	resp := new(model.GetCommentListResponse)
+	resp := new(pb.GetCommentListResponse)
 	//var err error
 	//
 	//var cl []*repository.Comment

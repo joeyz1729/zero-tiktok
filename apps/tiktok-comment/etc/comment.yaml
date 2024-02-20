@@ -1,20 +1,24 @@
-Name: repository.tiktok-user
-ListenOn: 0.0.0.0:9095
+Name: tiktok-comment
+ListenOn: 0.0.0.0:9050
 Log:
-  ServiceName: comment-tiktok-user
+  ServiceName: tiktok-comment
 #  Mode: file
 #  Path: ./log
+#Prometheus:
+#  Host: 127.0.0.1
+#  Port: 9085
+#  Path: /metrics
+
+
 Etcd:
   Hosts:
   - 127.0.0.1:2379
-  Key: comment.tiktok-user
+  Key: tiktok-comment
 
 Mysql:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_comment?parseTime=true&charset=utf8
-
-
 CacheRedis:
-  Addr: 127.0.0.1:16379
+  Addr: 127.0.0.1:6379
 
 Snowflake:
   StartTime: 2023-08-21
@@ -35,8 +39,3 @@ Telemetry:
   Sampler: 1.0
   Batcher: jaeger
 
-
-Prometheus:
-  Host: 127.0.0.1
-  Port: 9085
-  Path: /metrics

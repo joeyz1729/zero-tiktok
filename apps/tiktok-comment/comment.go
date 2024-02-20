@@ -3,14 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/kmq"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/server"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/pb"
 	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 
-	"github.com/zeromicro/go-queue/kq"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -28,7 +26,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		model.RegisterCommentServer(grpcServer, server.NewCommentServer(ctx))
+		pb.RegisterCommentServer(grpcServer, server.NewCommentServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
@@ -40,16 +38,16 @@ func main() {
 		panic(err)
 	}
 
-	go initMq(c, ctx)
+	//go initMq(c, ctx)
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }
 
-func initMq(c config.Config, ctx *svc.ServiceContext) {
-	q := kmq.NewMq(c.KafkaMq, ctx.CommentDB, ctx.CommentCache)
-	queue := kq.MustNewQueue(c.KafkaMq, kq.WithHandle(q.Consume))
-	defer queue.Stop()
-	fmt.Printf("Starting kafka mq server at %v", c.KafkaMq.Brokers)
-	queue.Start()
-}
+//func initMq(c config.Config, ctx *svc.ServiceContext) {
+//	q := kmq.NewMq(c.KafkaMq, ctx.CommentDB, ctx.CommentCache)
+//	queue := kq.MustNewQueue(c.KafkaMq, kq.WithHandle(q.Consume))
+//	defer queue.Stop()
+//	fmt.Printf("Starting kafka mq server at %v", c.KafkaMq.Brokers)
+//	queue.Start()
+//}
