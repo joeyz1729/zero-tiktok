@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"

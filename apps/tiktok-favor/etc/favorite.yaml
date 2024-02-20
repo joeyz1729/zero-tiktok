@@ -1,0 +1,40 @@
+Name: tiktok-favor
+ListenOn: 0.0.0.0:9030
+Log:
+  ServiceName: tiktok-favor
+#  Mode: file
+#  Path: ./log
+#Telemetry:
+#  Name: tiktok-favor
+#  Endpoint: http://127.0.0.1:14268/api/traces
+#  Sampler: 1.0
+#  Batcher: jaeger
+#Prometheus:
+#  Host: 127.0.0.1
+#  Port: 9084
+#  Path: /metrics
+
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: tiktok-favor
+
+Mysql:
+  DataSource: root:root1234@tcp(localhost:13306)/tiktok_thumbup?parseTime=true&charset=utf8
+CacheRedis:
+  Addr: 127.0.0.1:6379
+
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: tiktok-user
+  NonBlock: true
+
+VideoRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: tiktok-video
+  NonBlock: true

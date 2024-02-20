@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package favorite;
+option go_package="./pb";
+
+
+
+service Favorite {
+  // 添加点赞操作
+  rpc AddThumbup(add_thumbup_request) returns(add_thumbup_response);
+  // 取消点赞
+  rpc DeleteThumbup(delete_thumbup_request) returns(delete_thumbup_response);
+  // 检查用户对视频是否点过赞
+  rpc CheckThumbup(check_thumbup_request) returns(check_thumbup_response);
+
+  // 获取用户点赞的视频id
+  rpc GetThumbupVideoIds(get_thumbup_video_ids_request) returns (get_thumbup_video_ids_response);
+
+}
+
+message add_thumbup_request {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+message add_thumbup_response {
+}
+
+
+message delete_thumbup_request {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+message delete_thumbup_response {
+}
+
+message check_thumbup_request {
+  int64 user_id = 1;
+  int64 video_id = 2;
+}
+
+message check_thumbup_response {
+  int32 is_thumbup = 1;
+}
+
+message get_thumbup_video_ids_request {
+  int64 user_id = 1;
+}
+
+message get_thumbup_video_ids_response {
+  repeated int64 video_ids = 1;
+}

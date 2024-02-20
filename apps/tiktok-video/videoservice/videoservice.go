@@ -41,7 +41,7 @@ type (
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 		// 查询指定用户发布的视频列表
 		PublishList(ctx context.Context, in *PublishListRequest, opts ...grpc.CallOption) (*PublishListResponse, error)
-		// rpc
+		// tiktok-favor
 		GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
 		// 根据视频id查询视频详细信息，不包括作者详细信息
 		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
@@ -78,7 +78,7 @@ func (m *defaultVideoService) PublishList(ctx context.Context, in *PublishListRe
 	return client.PublishList(ctx, in, opts...)
 }
 
-// rpc
+// tiktok-favor
 func (m *defaultVideoService) GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error) {
 	client := pb.NewVideoServiceClient(m.cli.Conn())
 	return client.GetListByAuthorId(ctx, in, opts...)

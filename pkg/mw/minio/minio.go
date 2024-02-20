@@ -3,11 +3,9 @@ package minio
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/joeyz1729/zero-tiktok/pkg/mw/ffmpeg"
 	"github.com/joeyz1729/zero-tiktok/pkg/utils"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"log"
 	"mime/multipart"
 	"net/url"
 	"time"
@@ -17,13 +15,12 @@ import (
 
 var (
 	ImageTypeSuffix      = ".png"
-	MinioVideoBucketName = "tiktokvideo"
-	MinioImgBucketName   = "tiktokimage"
+	MinioVideoBucketName = "tiktok-video"
+	MinioImgBucketName   = "tiktok-image"
 
-	endpoint             = "localhost:9090"
-	accessKeyId          = "minio"
-	secretAccessKey      = "minio@123"
-	useSSL          bool = false
+	endpoint        = "localhost:9090"
+	accessKeyId     = "minio"
+	secretAccessKey = "minio@123"
 
 	globalClient *minio.Client
 )
@@ -32,20 +29,35 @@ func GetClient() *minio.Client {
 	return globalClient
 }
 
-func MakeBucket(ctx context.Context, bucketName string) {
+func Init() {
+	ctx := context.Background()
+	var err error
+	globalClient, err = minio.New(endpoint, &minio.Options{
+		Creds: credentials.NewStaticV4(accessKeyId, secretAccessKey, ""),
+	})
+	if err != nil {
+		panic(err)
+	}
+	if err := MakeBucket(ctx, MinioVideoBucketName); err != nil {
+		panic(err)
+	}
+	if err := MakeBucket(ctx, MinioImgBucketName); err != nil {
+		panic(err)
+	}
+}
+
+func MakeBucket(ctx context.Context, bucketName string) error {
 	exists, err := globalClient.BucketExists(ctx, bucketName)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	if !exists {
 		err = globalClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			fmt.Println(err)
-			return
+			return err
 		}
-		fmt.Printf("Successfully created mybucket %v\n", bucketName)
 	}
+	return nil
 }
 
 func PutToBucket(ctx context.Context, bucketName string, file *multipart.FileHeader) (info minio.UploadInfo, err error) {
@@ -71,24 +83,6 @@ func PutToBucketByFilePath(ctx context.Context, bucketName, filename, filepath s
 	// 是否需要加options：contentType？
 	info, err = globalClient.FPutObject(ctx, bucketName, filename, filepath, minio.PutObjectOptions{})
 	return info, err
-}
-
-func Init() {
-	ctx := context.Background()
-	var err error
-	globalClient, err = minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyId, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		log.Println("minio client connect failed")
-		log.Fatalln(err)
-	}
-	log.Println("minio client connect success")
-	log.Printf("%#v\n", globalClient)
-
-	MakeBucket(ctx, MinioVideoBucketName)
-	MakeBucket(ctx, MinioImgBucketName)
 }
 
 func UploadVideo(ctx context.Context, userId int64, fileType string, data []byte) (string, string, error) {

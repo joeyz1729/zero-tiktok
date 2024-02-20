@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"

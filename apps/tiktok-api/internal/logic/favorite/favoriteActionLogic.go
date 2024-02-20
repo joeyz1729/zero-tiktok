@@ -2,9 +2,9 @@ package favorite
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"net/http"
@@ -57,7 +57,7 @@ func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionRequest) (
 		resp.StatusMsg = "check videoservice id failed: " + err.Error()
 		return resp, nil
 	}
-	authorId := videoRes.VideoInfo.AuthorId
+	authorId := videoRes.VideoInfo.Author.Id
 	// 添加更新，需要修改关系，user的点赞数，author的被点赞数，video的被点赞数
 	_, err = l.svcCtx.FavoriteRpc.Action(l.ctx, &favorite.ActionRequest{
 		UserId:     uid,

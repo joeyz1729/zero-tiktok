@@ -38,7 +38,7 @@ type VideoServiceClient interface {
 	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 	// 查询指定用户发布的视频列表
 	PublishList(ctx context.Context, in *PublishListRequest, opts ...grpc.CallOption) (*PublishListResponse, error)
-	// rpc
+	// tiktok-favor
 	// 根据用户id查询发布的所有视频信息，不需要再查询用户信息
 	GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
 	// 根据视频id查询视频详细信息，不包括作者详细信息
@@ -120,7 +120,7 @@ type VideoServiceServer interface {
 	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
 	// 查询指定用户发布的视频列表
 	PublishList(context.Context, *PublishListRequest) (*PublishListResponse, error)
-	// rpc
+	// tiktok-favor
 	// 根据用户id查询发布的所有视频信息，不需要再查询用户信息
 	GetListByAuthorId(context.Context, *GetListByAuthorIdRequest) (*GetListByAuthorIdResponse, error)
 	// 根据视频id查询视频详细信息，不包括作者详细信息

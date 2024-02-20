@@ -40,7 +40,7 @@ func (s *VideoServiceServer) PublishList(ctx context.Context, in *pb.PublishList
 	return l.PublishList(in)
 }
 
-// rpc
+// tiktok-favor
 func (s *VideoServiceServer) GetListByAuthorId(ctx context.Context, in *pb.GetListByAuthorIdRequest) (*pb.GetListByAuthorIdResponse, error) {
 	l := logic.NewGetListByAuthorIdLogic(ctx, s.svcCtx)
 	return l.GetListByAuthorId(in)

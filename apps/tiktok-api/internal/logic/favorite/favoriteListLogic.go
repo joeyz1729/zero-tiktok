@@ -3,9 +3,9 @@ package favorite
 import (
 	"context"
 	"encoding/json"
-	"github.com/joeyz1729/zero-tiktok/apps/favorite/rpc/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"net/http"
 
@@ -53,8 +53,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	}
 
 	// 3. videoservice tiktok-user 根据 videoservice ids 列表获取详细的视频信息
-	videosRes := new(videoservice.GetFavorListResponse)
-	videosRes, err = l.svcCtx.VideoRpc.GetFavorList(l.ctx, &videoservice.GetFavorListRequest{
+	videosRes := new(videoservice.GetVideosByIdsResponse)
+	videosRes, err = l.svcCtx.VideoRpc.GetVideosByIds(l.ctx, &videoservice.GetVideosByIdsRequest{
 		UserId:   req.UserId,
 		VideoIds: idsRes.VideoIds,
 	})
