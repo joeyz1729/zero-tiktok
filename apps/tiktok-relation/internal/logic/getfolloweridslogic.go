@@ -2,9 +2,8 @@ package logic
 
 import (
 	"context"
-
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,9 +23,9 @@ func NewGetFollowerIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 // GetFollowerIds 获取粉丝列表
-func (l *GetFollowerIdsLogic) GetFollowerIds(in *model.GetFollowerIdsRequest) (*model.GetFollowerIdsResponse, error) {
-	resp := new(model.GetFollowerIdsResponse)
-	ids, err := l.svcCtx.FollowRepo.GetFollowerIds(in.UserId)
+func (l *GetFollowerIdsLogic) GetFollowerIds(in *pb.GetFollowerIdsRequest) (*pb.GetFollowerIdsResponse, error) {
+	resp := new(pb.GetFollowerIdsResponse)
+	ids, err := l.svcCtx.FollowRepo.GetFollowerIds(l.ctx, in.UserId)
 	if err != nil {
 		return nil, err
 	}

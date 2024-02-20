@@ -19,9 +19,5 @@ type Config struct {
 		Password string
 	}
 
-	//KafkaMq kq.KqConf
-
 	UserRpc zrpc.RpcClientConf
-
-	DtmServer string
 }

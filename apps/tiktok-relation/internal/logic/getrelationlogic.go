@@ -2,9 +2,8 @@ package logic
 
 import (
 	"context"
-
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,14 +23,14 @@ func NewGetRelationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetRe
 }
 
 // GetRelation 检查指定用户是否关注自己，以及自己是否关注
-func (l *GetRelationLogic) GetRelation(in *model.GetRelationRequest) (*model.GetRelationResponse, error) {
-	var resp = new(model.GetRelationResponse)
+func (l *GetRelationLogic) GetRelation(in *pb.GetRelationRequest) (*pb.GetRelationResponse, error) {
+	var resp = new(pb.GetRelationResponse)
 	var err error
-	resp.IsFollowing, err = l.svcCtx.FollowRepo.CheckRelation(in.UserId, in.ToUserId)
+	resp.IsFollowing, err = l.svcCtx.FollowRepo.CheckRelation(l.ctx, in.UserId, in.ToUserId)
 	if err != nil {
 		return nil, err
 	}
-	resp.IsFollowed, err = l.svcCtx.FollowRepo.CheckRelation(in.ToUserId, in.UserId)
+	resp.IsFollowed, err = l.svcCtx.FollowRepo.CheckRelation(l.ctx, in.ToUserId, in.UserId)
 	if err != nil {
 		return nil, err
 	}

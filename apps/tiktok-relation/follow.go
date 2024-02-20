@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/server"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/internal/svc"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/model"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/server"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/svc"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/pb"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -25,7 +25,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		model.RegisterFollowServer(grpcServer, server.NewFollowServer(ctx))
+		pb.RegisterFollowServer(grpcServer, server.NewFollowServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

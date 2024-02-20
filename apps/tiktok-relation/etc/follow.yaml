@@ -1,0 +1,48 @@
+Name: tiktok-follow
+ListenOn: 0.0.0.0:9040
+Log:
+  ServiceName: tiktok-follow
+#  Mode: file
+#  Path: ./log
+#Telemetry:
+#  Name: tiktok-follow
+#  Endpoint: http://127.0.0.1:14268/api/traces
+#  Sampler: 1.0
+#  Batcher: jaeger
+#Prometheus:
+#  Host: 127.0.0.1
+#  Port: 9083
+#  Path: /metrics
+
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: tiktok-follow
+
+Mysql:
+  DataSource: root:root1234@tcp(localhost:13306)/tiktok_relation?parseTime=true&charset=utf8
+
+RedisDB:
+  Host: "127.0.0.1"
+  Port: 6379
+  Password: ""
+  DB: 0
+  PoolSize: 100
+
+
+KafkaMq:
+  Name: kq
+  Brokers:
+    - 127.0.0.1:9092
+  Group: tiktok
+  Topic: tiktok-follow
+  Offset: first
+  Consumer: 1
+
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: tiktok-user
+  NonBlock: true
