@@ -7,7 +7,6 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/server"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
-	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 	"github.com/joeyz1729/zero-tiktok/pkg/tool"
 
 	"github.com/zeromicro/go-zero/core/conf"
@@ -35,12 +34,6 @@ func main() {
 	})
 	defer s.Stop()
 
-	//_ = consul.RegisterService(c.ListenOn, c.Consul)
-
-	err := snowflake.Init(c.Snowflake.StartTime, c.Snowflake.MachineId)
-	if err != nil {
-		panic("snowflake initialization failed")
-	}
 	tool.NewSalt(c.Salt)
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)

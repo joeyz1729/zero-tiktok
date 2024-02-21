@@ -30,24 +30,24 @@ type Repo struct {
 
 var repo *Repo
 
-func NewRepo(datasource, redisAddr string) *Repo {
+func NewRepo(datasource, redisAddr string) (*Repo, error) {
 	database, err := gorm.Open(mysql.Open(datasource), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr: redisAddr,
 	})
-	rdb.Ping(context.Background())
+	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	repo = &Repo{
 		db:  database,
 		rdb: rdb,
 	}
-	return repo
+	return repo, nil
 }
 
 // Register 注册操作，事务添加用户信息，用户计数，不添加缓存
