@@ -11,7 +11,7 @@ import (
 	"gorm.io/gen"
 )
 
-const MySQLDSN = "root:root1234@tcp(127.0.0.1:13306)/tiktok_thumbup?charset=utf8mb4&parseTime=True"
+const MySQLDSN = "root:root1234@tcp(127.0.0.1:13306)/tiktok_relation?charset=utf8mb4&parseTime=True"
 
 func connectDB(dsn string) *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn))
@@ -26,7 +26,7 @@ func main() {
 	// 默认生成需要使用WithContext之后才可以查询的代码，但可以通过设置gen.WithoutContext禁用该模式
 	g := gen.NewGenerator(gen.Config{
 		OutPath:      "./query",
-		ModelPkgPath: "./model",
+		ModelPkgPath: "./pb",
 		Mode:         gen.WithDefaultQuery | gen.WithQueryInterface,
 		// gen.WithoutContext：禁用WithContext模式
 		// gen.WithDefaultQuery：生成一个全局Query对象Q

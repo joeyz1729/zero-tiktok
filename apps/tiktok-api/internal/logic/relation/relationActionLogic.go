@@ -2,9 +2,9 @@ package relation
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"net/http"
@@ -56,11 +56,17 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 		return resp, nil
 	}
 
-	_, err = l.svcCtx.FollowRpc.Action(l.ctx, &follow.ActionRequest{
-		UserId:     userId,
-		ToUserId:   req.ToUserId,
-		ActionType: req.ActionType,
-	})
+	if req.ActionType == int32(1) {
+		_, err = l.svcCtx.FollowRpc.AddFollow(l.ctx, &follow.AddFollowRequest{
+			UserId:   userId,
+			ToUserId: req.ToUserId,
+		})
+	} else {
+		_, err = l.svcCtx.FollowRpc.DelFollow(l.ctx, &follow.DelFollowRequest{
+			UserId:   userId,
+			ToUserId: req.ToUserId,
+		})
+	}
 	if err != nil {
 		logx.Errorw("tiktok-user follow action failed",
 			logx.Field("err", err),

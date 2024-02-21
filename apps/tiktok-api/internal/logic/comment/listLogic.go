@@ -2,9 +2,9 @@ package comment
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/comment"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/comment"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"net/http"
 
@@ -58,9 +58,8 @@ func (l *ListLogic) List(req *types.CommentListRequest) (resp *types.CommentList
 	resp.CommentList = make([]types.Comment, len(commentListRes.CommentList))
 	for i, c := range commentListRes.CommentList {
 		cmt := types.Comment{
-			Id:         c.CommentId,
-			Content:    c.Content,
-			CreateDate: c.CreateTime,
+			Id:      c.CommentId,
+			Content: c.Content,
 		}
 
 		if err != nil {

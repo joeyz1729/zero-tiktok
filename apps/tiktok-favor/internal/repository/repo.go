@@ -68,7 +68,7 @@ func (r *ThumbupDao) AddCacheFromDB(userId int64) error {
 }
 
 func (r *ThumbupDao) GetFavoriteIdsFromDB(userId int64) ([]int64, error) {
-	//favors := []*model.Favorite{}
+	//favors := []*pb.Favorite{}
 	//err := r.db.Table("favorite").Select("video_id").Where("user_id = ?", userId).Find(&favors).Error
 	//if err != nil {
 	//	return nil, err

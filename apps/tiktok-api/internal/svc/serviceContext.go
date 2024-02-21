@@ -1,11 +1,11 @@
 package svc
 
 import (
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/comment"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/message/message"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/comment"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/videoservice"
 	"github.com/zeromicro/go-zero/zrpc"

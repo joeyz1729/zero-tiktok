@@ -2,9 +2,9 @@ package relation
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"net/http"
 

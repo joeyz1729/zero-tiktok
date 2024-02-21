@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"github.com/joeyz1729/zero-tiktok/apps/follow/rpc/follow"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/zeromicro/go-zero/zrpc"

@@ -2,9 +2,9 @@ package comment
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/comment/rpc/comment"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-comment/comment"
 	"github.com/joeyz1729/zero-tiktok/pkg/jwtx"
 	"net/http"
 
@@ -60,8 +60,6 @@ func (l *ActionLogic) Action(req *types.CommentActionRequest) (resp *types.Comme
 
 	// delete comment
 	_, err = l.svcCtx.CommentRpc.DelComment(l.ctx, &comment.DelCommentRequest{
-		UserId:    claims.UserId,
-		VideoId:   req.VideoId,
 		CommentId: req.CommentId,
 	})
 	if err != nil {

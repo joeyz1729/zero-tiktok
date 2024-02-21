@@ -31,8 +31,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	resp = new(types.FavoriteListResponse)
 	resp.VideoList = []types.Video{}
 	// 2. favorite tiktok-user 根据 user_id 查询点赞 videoservice ids 列表
-	idsRes := new(favorite.GetVideoIdsResponse)
-	idsRes, err = l.svcCtx.FavoriteRpc.GetVideoIds(l.ctx, &favorite.GetVideoIdsRequest{
+	idsRes := new(favorite.GetThumbupVideoIdsResponse)
+	idsRes, err = l.svcCtx.FavoriteRpc.GetThumbupVideoIds(l.ctx, &favorite.GetThumbupVideoIdsRequest{
 		UserId: req.UserId,
 	})
 	length := len(idsRes.VideoIds)

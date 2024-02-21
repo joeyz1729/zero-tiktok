@@ -16,34 +16,39 @@ import (
 )
 
 var (
-	Q       = new(Query)
-	Thumbup *thumbup
+	Q             = new(Query)
+	Relation      *relation
+	RelationCount *relationCount
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
-	Thumbup = &Q.Thumbup
+	Relation = &Q.Relation
+	RelationCount = &Q.RelationCount
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:      db,
-		Thumbup: newThumbup(db, opts...),
+		db:            db,
+		Relation:      newRelation(db, opts...),
+		RelationCount: newRelationCount(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Thumbup thumbup
+	Relation      relation
+	RelationCount relationCount
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:      db,
-		Thumbup: q.Thumbup.clone(db),
+		db:            db,
+		Relation:      q.Relation.clone(db),
+		RelationCount: q.RelationCount.clone(db),
 	}
 }
 
@@ -57,18 +62,21 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:      db,
-		Thumbup: q.Thumbup.replaceDB(db),
+		db:            db,
+		Relation:      q.Relation.replaceDB(db),
+		RelationCount: q.RelationCount.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Thumbup IThumbupDo
+	Relation      IRelationDo
+	RelationCount IRelationCountDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Thumbup: q.Thumbup.WithContext(ctx),
+		Relation:      q.Relation.WithContext(ctx),
+		RelationCount: q.RelationCount.WithContext(ctx),
 	}
 }
 
