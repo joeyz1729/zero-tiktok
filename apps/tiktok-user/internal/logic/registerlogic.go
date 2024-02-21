@@ -8,7 +8,6 @@ import (
 	"github.com/joeyz1729/zero-tiktok/pkg/tool"
 	"gorm.io/gorm"
 
-	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -36,7 +35,7 @@ func (l *RegisterLogic) Register(in *pb.RegisterRequest) (*pb.RegisterResponse, 
 	if err == nil {
 		return resp, errors.New("user already exists")
 	}
-	uid, err := snowflake.GenID()
+	uid, err := l.svcCtx.IDGenerator.Snowflake.NextID()
 	if err != nil {
 		return resp, errors.New("generate tiktok-user id failed")
 	}

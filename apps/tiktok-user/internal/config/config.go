@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
@@ -11,15 +10,19 @@ type Config struct {
 	FollowRpc zrpc.RpcClientConf
 
 	Repo struct {
-		DataSource string
-		RedisAddr  string
+		DataSource  string
+		RedisAddr   string
+		EsAddresses []string
 	}
-
-	CacheRedis cache.CacheConf
 
 	Snowflake struct {
 		StartTime string
 		MachineId uint16
+	}
+
+	Kafka struct {
+		Brokers []string
+		Topic   string
 	}
 
 	Salt string

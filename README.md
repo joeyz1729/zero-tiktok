@@ -161,3 +161,24 @@ user模块需要通过consul服务注册，与redis和mysql交互，在生成use
 
 
 bff --> user, video --> bff
+
+# 架构
+
+主要思路：mysql用作数据持久，常用数据基本不从mysql中获取。优先从redis-es中。
+不能只使用es，还是要加上redis层，必要时还可以加local cache。
+
+## 用户
+
+用户成功注册后更新user表，通过canal订阅的消息，添加user_count表，以及es中存储用户的全部信息（包含计数）。
+
+登陆没有特别的。
+
+获取用户信息，包含全部信息，加上关注关系。全部信息直接通过es拿到，关注关系调用rpc。
+
+## 关注
+
+关注添加/删除成功之后，修改relation关系表删除/新增，通过canal订阅更新计数表，通过canal更新es中user的信息。
+关于计数，这里有实现区别：
+1. 只同步更新relation，计数表和es都通过canal消息消费。问题在于接口幂等性，或许通过事务消息实现？
+2. 事务更新relation和count表，然后canal订阅更新es。问题是如果count和relation分库，就要修改为分布式事务。
+3. 

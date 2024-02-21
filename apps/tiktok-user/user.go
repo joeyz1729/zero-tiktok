@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
@@ -37,5 +38,6 @@ func main() {
 	tool.NewSalt(c.Salt)
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
+	go ctx.Worker.Start(context.Background())
 	s.Start()
 }

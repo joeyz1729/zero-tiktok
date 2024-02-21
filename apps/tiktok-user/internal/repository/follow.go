@@ -9,7 +9,7 @@ package repository
 //)
 //
 //func (r *Repo) AddFollow(userId, toUserId int64) (err error) {
-//	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
+//	tx, err := r.DB.BeginTx(context.Background(), &sql.TxOptions{})
 //	if err != nil {
 //		return err
 //	}
@@ -30,7 +30,7 @@ package repository
 //
 //	uidStr := strconv.FormatInt(userId, 10)
 //	tidStr := strconv.FormatInt(toUserId, 10)
-//	pipeline := r.rdb.TxPipeline()
+//	pipeline := r.RDB.TxPipeline()
 //	pipeline.HIncrBy(context.Background(), UserCountPrefix+uidStr, FieldFollowedCount, 1)
 //	pipeline.HIncrBy(context.Background(), UserCountPrefix+tidStr, FieldFollowerCount, 1)
 //	_, err = pipeline.Exec(context.Background())
@@ -44,7 +44,7 @@ package repository
 //}
 //
 //func (r *Repo) DelFollow(userId, toUserId int64) (err error) {
-//	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
+//	tx, err := r.DB.BeginTx(context.Background(), &sql.TxOptions{})
 //	if err != nil {
 //		return err
 //	}
@@ -65,7 +65,7 @@ package repository
 //
 //	uidStr := strconv.FormatInt(userId, 10)
 //	tidStr := strconv.FormatInt(toUserId, 10)
-//	pipeline := r.rdb.TxPipeline()
+//	pipeline := r.RDB.TxPipeline()
 //	pipeline.HIncrBy(context.Background(), UserCountPrefix+uidStr, FieldFollowedCount, -1)
 //	pipeline.HIncrBy(context.Background(), UserCountPrefix+tidStr, FieldFollowerCount, -1)
 //	_, err = pipeline.Exec(context.Background())

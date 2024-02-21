@@ -20,10 +20,12 @@ Etcd:
 
 Repo:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_user?parseTime=true&charset=utf8
-  RedisAddr: 127.0.0.1:16379
+  RedisAddr: 127.0.0.1:6379
+  EsAddresses:
+    - http://127.0.0.1:9200
 
 CacheRedis:
-  - Host: 127.0.0.1:16379
+  - Host: 127.0.0.1:6379
 
 
 Salt: salt
@@ -38,3 +40,9 @@ FollowRpc:
       - 127.0.0.1:2379
     Key: follow.tiktok-videoservice
   NonBlock: true
+
+
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  Topic: tiktok_user_user

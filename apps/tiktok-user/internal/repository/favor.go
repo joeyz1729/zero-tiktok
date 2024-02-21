@@ -13,9 +13,9 @@ package repository
 //	var sqlStr1, sqlStr2 string
 //	sqlStr1 = `update tiktok_user.user_count set favorite_count = favorite_count + 1 where user_id = ? limit 1`
 //	sqlStr2 = `update tiktok_user.user_count set total_favorited = total_favorited + 1 where user_id = ? limit 1`
-//	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
+//	tx, err := r.DB.BeginTx(context.Background(), &sql.TxOptions{})
 //	if err != nil {
-//		logx.Error("db transaction begin ", err)
+//		logx.Error("DB transaction begin ", err)
 //		return err
 //	}
 //	// 出现错误返回的时候回滚
@@ -28,7 +28,7 @@ package repository
 //	}
 //	// 提交失败返回
 //	if err = tx.Commit(); err != nil {
-//		logx.Error("db transaction commit ", err)
+//		logx.Error("DB transaction commit ", err)
 //		return err
 //	}
 //
@@ -42,9 +42,9 @@ package repository
 //	sqlStr1 = `update tiktok_user.user_count set favorite_count = favorite_count - 1 where user_id = ? limit 1`
 //	sqlStr2 = `update tiktok_user.user_count set total_favorited = total_favorited - 1 where user_id = ? limit 1`
 //
-//	tx, err := r.db.BeginTx(context.Background(), &sql.TxOptions{})
+//	tx, err := r.DB.BeginTx(context.Background(), &sql.TxOptions{})
 //	if err != nil {
-//		logx.Error("db transaction begin ", err)
+//		logx.Error("DB transaction begin ", err)
 //		return err
 //	}
 //	defer tx.Rollback()
@@ -56,7 +56,7 @@ package repository
 //	}
 //	err = tx.Commit()
 //	if err != nil {
-//		logx.Error("db transaction commit ", err)
+//		logx.Error("DB transaction commit ", err)
 //		return err
 //	}
 //
