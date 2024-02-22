@@ -4,6 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/cache"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/json-iterator/go/extra"
 	"strconv"
 	"time"
 
@@ -23,10 +29,9 @@ const (
 )
 
 var (
-	ErrInvalidParams   = errors.New("invalid params")
-	ErrUserNotExist    = errors.New("tiktok-user not exist")
-	ErrCacheMiss       = errors.New("cache miss")
-	ErrInvalidPassword = errors.New("invalid password")
+	ErrInvalidParams = errors.New("invalid params")
+	ErrUserNotExist  = errors.New("tiktok-user not exist")
+	ErrCacheMiss     = errors.New("cache miss")
 )
 
 type Repo struct {
@@ -67,91 +72,39 @@ func NewRepo(datasource, redisAddr string, esAddresses []string) (*Repo, error) 
 	return repo, nil
 }
 
-// Register 注册操作，事务添加用户信息，用户计数，不添加缓存
-func (r *Repo) Register(userId int64, username, password string) error {
-	user := db.User{ID: userId, Username: username, Password: password}
-	return r.DB.Table(db.TableNameUser).Create(&user).Error
-}
-
-func (r *Repo) Login(username, password string) (userId int64, err error) {
-	var user db.User
-	err = r.DB.Table(db.TableNameUser).Where("username = ?", username).First(&user).Error
-	if err != nil {
-		return 0, err
-	}
-	if password != user.Password {
-		return 0, ErrInvalidPassword
-	}
-	return user.ID, nil
-}
-
 func (r *Repo) GetUserDetail(userId int64) (*UserDetail, error) {
 	var err error
-	res, err := r.getUserFromCache(userId)
+	res, err := r.CacheGetUser(userId)
 	if err != nil {
 		return nil, err
 	}
 	if res != nil {
 		return res, nil
 	}
-	res, err = r.getUserFromES(userId)
+	res, err = r.ESGetUser(userId)
 	if err != nil {
 		return nil, err
 	}
-	go r.AddUserCache(res)
+	go r.CacheAddUser(res)
 	return res, nil
 }
 
-func (r *Repo) GetUserById(userId int64) (*db.User, error) {
-
-	var user db.User
-	err := r.DB.Table(db.TableNameUser).Where("id = ?", userId).First(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
+func (r *Repo) DBCreateUser(userId int64, username, password string) error {
+	user := db.User{ID: userId, Username: username, Password: password}
+	return r.DB.Table(db.TableNameUser).Create(&user).Error
 }
 
-func (r *Repo) getUserFromCache(userId int64) (*UserDetail, error) {
-	b, err := r.RDB.Get(context.Background(), strconv.Itoa(int(userId))).Result()
-	if err != nil {
-		return nil, err
+func (r *Repo) DBCreateCount(userId int64, createdTime time.Time) error {
+	// todo 更新时间和创建时间需要吗，user和count的需要一致吗
+	var count = db.UserCount{
+		ID:         userId,
+		CreateTime: createdTime,
+		UpdateTime: createdTime,
 	}
-	var detail UserDetail
-	err = json.Unmarshal([]byte(b), &detail)
-	if err != nil {
-		return nil, err
-	}
-	return &detail, nil
+	return r.DB.Table(db.TableNameUserCount).Create(&count).Error
 }
 
-func (r *Repo) AddUserCache(detail *UserDetail) error {
-	if detail == nil {
-		return ErrInvalidParams
-	}
-	b, err := json.Marshal(detail)
-	if err != nil {
-		return err
-	}
-	_, err = r.RDB.Set(context.Background(), strconv.Itoa(int(detail.Id)), string(b), 24*time.Hour).Result()
-	return err
-}
-
-func (r *Repo) getUserFromES(userId int64) (*UserDetail, error) {
-	// todo
-	return nil, nil
-}
-
-func (r *Repo) GetUserFromDB(userId int64) (*db.User, error) {
-	var user db.User
-	err := r.DB.Table(db.TableNameUser).Where("id = ?", userId).First(&user).Error
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
-func (r *Repo) GetUserByName(username string) (*db.User, error) {
+func (r *Repo) DBGetUserByName(username string) (*db.User, error) {
 	var user db.User
 	err := r.DB.Table(db.TableNameUser).Where("username = ?", username).First(&user).Error
 	if err != nil {
@@ -160,11 +113,73 @@ func (r *Repo) GetUserByName(username string) (*db.User, error) {
 	return &user, nil
 }
 
-func (r *Repo) CreateCount(userId int64, createdTime time.Time) error {
-	var count = db.UserCount{
-		ID:         userId,
-		CreateTime: createdTime,
-		UpdateTime: createdTime,
+func (r *Repo) DBGetUserById(userId int64) (*db.User, error) {
+	var user db.User
+	err := r.DB.Table(db.TableNameUser).Where("id = ?", userId).First(&user).Error
+	if err != nil {
+		return nil, err
 	}
-	return r.DB.Table(db.TableNameUserCount).Create(&count).Error
+	return &user, nil
+}
+
+func (r *Repo) CacheGetUser(userId int64) (*UserDetail, error) {
+	b, err := r.RDB.Get(context.Background(), strconv.Itoa(int(userId))).Result()
+	if err != nil {
+		return nil, err
+	}
+	var detail UserDetail
+	extra.RegisterFuzzyDecoders()
+	err = jsoniter.Unmarshal([]byte(b), &detail)
+	if err != nil {
+		return nil, err
+	}
+	return &detail, nil
+}
+
+func (r *Repo) CacheAddUser(detail *UserDetail) error {
+	if detail == nil {
+		return ErrInvalidParams
+	}
+	b, err := json.Marshal(detail)
+	if err != nil {
+		return err
+	}
+	key := cache.UserInfoPrefix + strconv.Itoa(int(detail.Id))
+	_, err = r.RDB.Set(context.Background(), key, string(b), 24*time.Hour).Result()
+	return err
+}
+
+func (r *Repo) ESGetUser(userId int64) (*UserDetail, error) {
+	resp, err := repo.ES.Search().
+		Index(es.UserIndex).
+		Request(&search.Request{
+			Query: &types.Query{
+				Bool: &types.BoolQuery{
+					Filter: []types.Query{
+						{
+							Term: map[string]types.TermQuery{
+								"id": {Value: strconv.Itoa(int(userId))},
+							},
+						},
+					},
+				},
+			},
+		}).Do(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.Hits.Hits) != 1 {
+		return nil, errors.New("invalid record count")
+	}
+	str, err := resp.Hits.Hits[0].Source_.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	var detail UserDetail
+	extra.RegisterFuzzyDecoders()
+	err = jsoniter.Unmarshal(str, &detail)
+	if err != nil {
+		return nil, err
+	}
+	return &detail, nil
 }

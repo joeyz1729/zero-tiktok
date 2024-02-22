@@ -39,6 +39,7 @@ message login_response {
 
 message user_info_request {
   int64 user_id = 1; // 用户id
+  int64 to_user_id = 2;
 }
 message user_info_response {
   User user = 1; // 用户信息

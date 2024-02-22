@@ -67,7 +67,7 @@ func (w *Worker) insertCount(ctx context.Context, data map[string]interface{}) e
 	if err != nil {
 		return err
 	}
-	return w.Repo.CreateCount(userId, createdTime)
+	return w.Repo.DBCreateCount(userId, createdTime)
 }
 
 func (w *Worker) insertEs(ctx context.Context, data map[string]interface{}) error {

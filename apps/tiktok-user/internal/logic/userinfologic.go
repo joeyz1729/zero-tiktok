@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -23,17 +24,28 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 
 func (l *UserInfoLogic) UserInfo(in *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
 	resp := new(pb.UserInfoResponse)
-	resp.User = new(pb.User)
-	user, err := l.svcCtx.UserRepo.GetUserById(in.UserId)
+	user, err := l.svcCtx.UserRepo.GetUserDetail(in.ToUserId)
 	if err != nil {
 		logx.Errorw("get tiktok-user info failed",
 			logx.Field("err", err))
 		return resp, err
 	}
-	resp.User.Id = in.UserId
-	resp.User.Name = user.Username
-	resp.User.Avatar = user.Avatar
-	resp.User.BackgroundImage = user.BackgroundImage
-	resp.User.Signature = user.Signature
+	resp.User = &pb.User{
+		Id:              user.Id,
+		Name:            user.Name,
+		Avatar:          user.Avatar,
+		BackgroundImage: user.BackgroundImage,
+		Signature:       user.Signature,
+		FollowerCount:   user.FollowerCount,
+		FollowCount:     user.FollowCount,
+		TotalFavorited:  user.TotalFavorited,
+		WorkCount:       user.WorkCount,
+		FavoriteCount:   user.FavoriteCount,
+	}
+	relation, err := l.svcCtx.FollowRpc.GetRelation(l.ctx, &follow.GetRelationRequest{UserId: in.UserId, ToUserId: in.ToUserId})
+	if err != nil {
+		return nil, err
+	}
+	resp.User.IsFollow = relation.IsFollowing
 	return resp, nil
 }
