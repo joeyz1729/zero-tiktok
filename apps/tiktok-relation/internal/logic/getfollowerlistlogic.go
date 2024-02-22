@@ -2,30 +2,30 @@ package logic
 
 import (
 	"context"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
+
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/pb"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type GetFollowListLogic struct {
+type GetFollowerListLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewGetFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFollowListLogic {
-	return &GetFollowListLogic{
+func NewGetFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFollowerListLogic {
+	return &GetFollowerListLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-// GetFollowList 获取点赞列表，并检查对方是否关注自己
-func (l *GetFollowListLogic) GetFollowList(in *pb.GetFollowListRequest) (*pb.GetFollowListResponse, error) {
-	ids, err := l.svcCtx.FollowRepo.GetFollowedIds(l.ctx, in.GetToUserId())
+func (l *GetFollowerListLogic) GetFollowerList(in *pb.GetFollowerListRequest) (*pb.GetFollowerListResponse, error) {
+	ids, err := l.svcCtx.FollowRepo.GetFollowerIds(l.ctx, in.GetToUserId())
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (l *GetFollowListLogic) GetFollowList(in *pb.GetFollowListRequest) (*pb.Get
 	if err != nil {
 		return nil, err
 	}
-	resp := new(pb.GetFollowListResponse)
+	resp := new(pb.GetFollowerListResponse)
 	resp.List = make([]*pb.User, len(users.UserList))
 	for i, user := range users.UserList {
 		relation, err := l.svcCtx.FollowRepo.CheckRelation(l.ctx, in.UserId, in.ToUserId)

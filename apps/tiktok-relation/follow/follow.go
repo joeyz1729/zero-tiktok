@@ -13,31 +13,27 @@ import (
 )
 
 type (
-	AddFollowRequest       = pb.AddFollowRequest
-	AddFollowResponse      = pb.AddFollowResponse
-	DelFollowRequest       = pb.DelFollowRequest
-	DelFollowResponse      = pb.DelFollowResponse
-	GetFollowIdsRequest    = pb.GetFollowIdsRequest
-	GetFollowIdsResponse   = pb.GetFollowIdsResponse
-	GetFollowListRequest   = pb.GetFollowListRequest
-	GetFollowListResponse  = pb.GetFollowListResponse
-	GetFollowerIdsRequest  = pb.GetFollowerIdsRequest
-	GetFollowerIdsResponse = pb.GetFollowerIdsResponse
-	GetRelationRequest     = pb.GetRelationRequest
-	GetRelationResponse    = pb.GetRelationResponse
+	AddFollowRequest        = pb.AddFollowRequest
+	AddFollowResponse       = pb.AddFollowResponse
+	DelFollowRequest        = pb.DelFollowRequest
+	DelFollowResponse       = pb.DelFollowResponse
+	GetFollowListRequest    = pb.GetFollowListRequest
+	GetFollowListResponse   = pb.GetFollowListResponse
+	GetFollowerListRequest  = pb.GetFollowerListRequest
+	GetFollowerListResponse = pb.GetFollowerListResponse
+	GetRelationRequest      = pb.GetRelationRequest
+	GetRelationResponse     = pb.GetRelationResponse
+	User                    = pb.User
 
 	Follow interface {
-		// 关注操作
+		// http
 		AddFollow(ctx context.Context, in *AddFollowRequest, opts ...grpc.CallOption) (*AddFollowResponse, error)
 		DelFollow(ctx context.Context, in *DelFollowRequest, opts ...grpc.CallOption) (*DelFollowResponse, error)
-		// 查询关系
-		GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
-		// 获取粉丝列表
-		GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error)
-		// 获取关注者列表
-		GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error)
 		// 获取关注者列表
 		GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListResponse, error)
+		GetFollowerList(ctx context.Context, in *GetFollowerListRequest, opts ...grpc.CallOption) (*GetFollowerListResponse, error)
+		// grpc
+		GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
 	}
 
 	defaultFollow struct {
@@ -51,7 +47,7 @@ func NewFollow(cli zrpc.Client) Follow {
 	}
 }
 
-// 关注操作
+// http
 func (m *defaultFollow) AddFollow(ctx context.Context, in *AddFollowRequest, opts ...grpc.CallOption) (*AddFollowResponse, error) {
 	client := pb.NewFollowClient(m.cli.Conn())
 	return client.AddFollow(ctx, in, opts...)
@@ -62,26 +58,19 @@ func (m *defaultFollow) DelFollow(ctx context.Context, in *DelFollowRequest, opt
 	return client.DelFollow(ctx, in, opts...)
 }
 
-// 查询关系
-func (m *defaultFollow) GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error) {
-	client := pb.NewFollowClient(m.cli.Conn())
-	return client.GetRelation(ctx, in, opts...)
-}
-
-// 获取粉丝列表
-func (m *defaultFollow) GetFollowerIds(ctx context.Context, in *GetFollowerIdsRequest, opts ...grpc.CallOption) (*GetFollowerIdsResponse, error) {
-	client := pb.NewFollowClient(m.cli.Conn())
-	return client.GetFollowerIds(ctx, in, opts...)
-}
-
-// 获取关注者列表
-func (m *defaultFollow) GetFollowIds(ctx context.Context, in *GetFollowIdsRequest, opts ...grpc.CallOption) (*GetFollowIdsResponse, error) {
-	client := pb.NewFollowClient(m.cli.Conn())
-	return client.GetFollowIds(ctx, in, opts...)
-}
-
 // 获取关注者列表
 func (m *defaultFollow) GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListResponse, error) {
 	client := pb.NewFollowClient(m.cli.Conn())
 	return client.GetFollowList(ctx, in, opts...)
+}
+
+func (m *defaultFollow) GetFollowerList(ctx context.Context, in *GetFollowerListRequest, opts ...grpc.CallOption) (*GetFollowerListResponse, error) {
+	client := pb.NewFollowClient(m.cli.Conn())
+	return client.GetFollowerList(ctx, in, opts...)
+}
+
+// grpc
+func (m *defaultFollow) GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error) {
+	client := pb.NewFollowClient(m.cli.Conn())
+	return client.GetRelation(ctx, in, opts...)
 }

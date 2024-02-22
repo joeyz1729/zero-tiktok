@@ -22,7 +22,7 @@ func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
 	}
 }
 
-// 关注操作
+// http
 func (s *FollowServer) AddFollow(ctx context.Context, in *pb.AddFollowRequest) (*pb.AddFollowResponse, error) {
 	l := logic.NewAddFollowLogic(ctx, s.svcCtx)
 	return l.AddFollow(in)
@@ -33,26 +33,19 @@ func (s *FollowServer) DelFollow(ctx context.Context, in *pb.DelFollowRequest) (
 	return l.DelFollow(in)
 }
 
-// 查询关系
-func (s *FollowServer) GetRelation(ctx context.Context, in *pb.GetRelationRequest) (*pb.GetRelationResponse, error) {
-	l := logic.NewGetRelationLogic(ctx, s.svcCtx)
-	return l.GetRelation(in)
-}
-
-// 获取粉丝列表
-func (s *FollowServer) GetFollowerIds(ctx context.Context, in *pb.GetFollowerIdsRequest) (*pb.GetFollowerIdsResponse, error) {
-	l := logic.NewGetFollowerIdsLogic(ctx, s.svcCtx)
-	return l.GetFollowerIds(in)
-}
-
-// 获取关注者列表
-func (s *FollowServer) GetFollowIds(ctx context.Context, in *pb.GetFollowIdsRequest) (*pb.GetFollowIdsResponse, error) {
-	l := logic.NewGetFollowIdsLogic(ctx, s.svcCtx)
-	return l.GetFollowIds(in)
-}
-
 // 获取关注者列表
 func (s *FollowServer) GetFollowList(ctx context.Context, in *pb.GetFollowListRequest) (*pb.GetFollowListResponse, error) {
 	l := logic.NewGetFollowListLogic(ctx, s.svcCtx)
 	return l.GetFollowList(in)
+}
+
+func (s *FollowServer) GetFollowerList(ctx context.Context, in *pb.GetFollowerListRequest) (*pb.GetFollowerListResponse, error) {
+	l := logic.NewGetFollowerListLogic(ctx, s.svcCtx)
+	return l.GetFollowerList(in)
+}
+
+// grpc
+func (s *FollowServer) GetRelation(ctx context.Context, in *pb.GetRelationRequest) (*pb.GetRelationResponse, error) {
+	l := logic.NewGetRelationLogic(ctx, s.svcCtx)
+	return l.GetRelation(in)
 }
