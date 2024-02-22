@@ -72,6 +72,11 @@ func (w *Worker) insertCount(ctx context.Context, data map[string]interface{}) e
 
 func (w *Worker) insertEs(ctx context.Context, data map[string]interface{}) error {
 	userId := data["id"].(string)
+	data["total_favorited"] = 0
+	data["work_count"] = 0
+	data["favorite_count"] = 0
+	data["follow_count"] = 0
+	data["follow_count"] = 0
 	resp, err := w.Repo.ES.Index(es.UserIndex).Id(userId).Document(data).Do(ctx)
 	if err != nil {
 		logx.Error(err)

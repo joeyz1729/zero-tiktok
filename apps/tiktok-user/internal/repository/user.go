@@ -2,7 +2,9 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 
 	elasticsearch "github.com/elastic/go-elasticsearch/v8"
@@ -21,6 +23,7 @@ const (
 )
 
 var (
+	ErrInvalidParams   = errors.New("invalid params")
 	ErrUserNotExist    = errors.New("tiktok-user not exist")
 	ErrCacheMiss       = errors.New("cache miss")
 	ErrInvalidPassword = errors.New("invalid password")
@@ -82,7 +85,64 @@ func (r *Repo) Login(username, password string) (userId int64, err error) {
 	return user.ID, nil
 }
 
+func (r *Repo) GetUserDetail(userId int64) (*UserDetail, error) {
+	var err error
+	res, err := r.getUserFromCache(userId)
+	if err != nil {
+		return nil, err
+	}
+	if res != nil {
+		return res, nil
+	}
+	res, err = r.getUserFromES(userId)
+	if err != nil {
+		return nil, err
+	}
+	go r.AddUserCache(res)
+	return res, nil
+}
+
 func (r *Repo) GetUserById(userId int64) (*db.User, error) {
+
+	var user db.User
+	err := r.DB.Table(db.TableNameUser).Where("id = ?", userId).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *Repo) getUserFromCache(userId int64) (*UserDetail, error) {
+	b, err := r.RDB.Get(context.Background(), strconv.Itoa(int(userId))).Result()
+	if err != nil {
+		return nil, err
+	}
+	var detail UserDetail
+	err = json.Unmarshal([]byte(b), &detail)
+	if err != nil {
+		return nil, err
+	}
+	return &detail, nil
+}
+
+func (r *Repo) AddUserCache(detail *UserDetail) error {
+	if detail == nil {
+		return ErrInvalidParams
+	}
+	b, err := json.Marshal(detail)
+	if err != nil {
+		return err
+	}
+	_, err = r.RDB.Set(context.Background(), strconv.Itoa(int(detail.Id)), string(b), 24*time.Hour).Result()
+	return err
+}
+
+func (r *Repo) getUserFromES(userId int64) (*UserDetail, error) {
+	// todo
+	return nil, nil
+}
+
+func (r *Repo) GetUserFromDB(userId int64) (*db.User, error) {
 	var user db.User
 	err := r.DB.Table(db.TableNameUser).Where("id = ?", userId).First(&user).Error
 	if err != nil {
