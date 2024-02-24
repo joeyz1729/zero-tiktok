@@ -33,6 +33,8 @@ func newUserCount(db *gorm.DB, opts ...gen.DOOption) userCount {
 	_userCount.FavoriteCount = field.NewInt64(tableName, "favorite_count")
 	_userCount.CreateTime = field.NewTime(tableName, "create_time")
 	_userCount.UpdateTime = field.NewTime(tableName, "update_time")
+	_userCount.FollowCount = field.NewInt64(tableName, "follow_count")
+	_userCount.FollowerCount = field.NewInt64(tableName, "follower_count")
 
 	_userCount.fillFieldMap()
 
@@ -50,6 +52,8 @@ type userCount struct {
 	FavoriteCount  field.Int64
 	CreateTime     field.Time
 	UpdateTime     field.Time
+	FollowCount    field.Int64
+	FollowerCount  field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -72,6 +76,8 @@ func (u *userCount) updateTableName(table string) *userCount {
 	u.FavoriteCount = field.NewInt64(table, "favorite_count")
 	u.CreateTime = field.NewTime(table, "create_time")
 	u.UpdateTime = field.NewTime(table, "update_time")
+	u.FollowCount = field.NewInt64(table, "follow_count")
+	u.FollowerCount = field.NewInt64(table, "follower_count")
 
 	u.fillFieldMap()
 
@@ -98,13 +104,15 @@ func (u *userCount) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *userCount) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 6)
+	u.fieldMap = make(map[string]field.Expr, 8)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["total_favorited"] = u.TotalFavorited
 	u.fieldMap["work_count"] = u.WorkCount
 	u.fieldMap["favorite_count"] = u.FavoriteCount
 	u.fieldMap["create_time"] = u.CreateTime
 	u.fieldMap["update_time"] = u.UpdateTime
+	u.fieldMap["follow_count"] = u.FollowCount
+	u.fieldMap["follower_count"] = u.FollowerCount
 }
 
 func (u userCount) clone(db *gorm.DB) userCount {

@@ -10,6 +10,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
+	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
 	"time"
 
@@ -76,6 +77,7 @@ func (r *Repo) GetUserDetail(userId int64) (*UserDetail, error) {
 	var err error
 	res, err := r.CacheGetUser(userId)
 	if err != nil {
+		logx.Errorw("[GetUserDetail] cache", logx.Field("err", err))
 		return nil, err
 	}
 	if res != nil {
@@ -83,9 +85,15 @@ func (r *Repo) GetUserDetail(userId int64) (*UserDetail, error) {
 	}
 	res, err = r.ESGetUser(userId)
 	if err != nil {
+		logx.Errorw("[GetUserDetail] es", logx.Field("err", err))
 		return nil, err
 	}
-	go r.CacheAddUser(res)
+	go func() {
+		err := r.CacheAddUser(res)
+		if err != nil {
+			logx.Errorw("[GetUserDetail] add cache", logx.Field("err", err))
+		}
+	}()
 	return res, nil
 }
 
@@ -102,6 +110,34 @@ func (r *Repo) DBCreateCount(userId int64, createdTime time.Time) error {
 		UpdateTime: createdTime,
 	}
 	return r.DB.Table(db.TableNameUserCount).Create(&count).Error
+}
+
+func (r *Repo) DBUpdateCount(userId, toUserId int64, incr int64) error {
+	r.DB = r.DB.Table(db.TableNameUserCount)
+	err := r.DB.Transaction(func(tx *gorm.DB) error {
+		var userCount db.UserCount
+		if err := tx.First(&userCount, userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", userId).
+			Updates(map[string]interface{}{"follow_count": userCount.FollowCount + incr}).Error; err != nil {
+			return err
+		}
+
+		var followedCount = db.UserCount{}
+		if err := tx.First(&followedCount, toUserId).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Where("id = ?", toUserId).
+			Updates(map[string]interface{}{"follower_count": followedCount.FollowerCount + incr}).Error; err != nil {
+			return err
+		}
+
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
 }
 
 func (r *Repo) DBGetUserByName(username string) (*db.User, error) {
@@ -150,6 +186,25 @@ func (r *Repo) CacheAddUser(detail *UserDetail) error {
 }
 
 func (r *Repo) ESGetUser(userId int64) (*UserDetail, error) {
+	resp, err := repo.ES.Get(es.UserIndex, strconv.Itoa(int(userId))).Do(context.TODO())
+	if err != nil {
+		logx.Errorw("[ESGetUser]", logx.Field("err", err), logx.Field("userId", userId))
+		return nil, err
+	}
+	b, err := resp.Source_.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	var detail UserDetail
+	extra.RegisterFuzzyDecoders()
+	err = jsoniter.Unmarshal(b, &detail)
+	if err != nil {
+		return nil, err
+	}
+	return &detail, nil
+}
+
+func (r *Repo) ESGetUserByName(username string) (*UserDetail, error) {
 	resp, err := repo.ES.Search().
 		Index(es.UserIndex).
 		Request(&search.Request{
@@ -158,13 +213,14 @@ func (r *Repo) ESGetUser(userId int64) (*UserDetail, error) {
 					Filter: []types.Query{
 						{
 							Term: map[string]types.TermQuery{
-								"id": {Value: strconv.Itoa(int(userId))},
+								"username": {Value: username},
 							},
 						},
 					},
 				},
 			},
 		}).Do(context.TODO())
+
 	if err != nil {
 		return nil, err
 	}

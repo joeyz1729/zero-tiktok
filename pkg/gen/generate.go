@@ -11,7 +11,7 @@ import (
 	"gorm.io/gen"
 )
 
-const MySQLDSN = "root:root1234@tcp(127.0.0.1:13306)/tiktok_relation?charset=utf8mb4&parseTime=True"
+const MySQLDSN = "root:root1234@tcp(127.0.0.1:13306)/tiktok_user?charset=utf8mb4&parseTime=True"
 
 func connectDB(dsn string) *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn))

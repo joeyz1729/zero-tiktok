@@ -16,39 +16,39 @@ import (
 )
 
 var (
-	Q             = new(Query)
-	Relation      *relation
-	RelationCount *relationCount
+	Q         = new(Query)
+	User      *user
+	UserCount *userCount
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
-	Relation = &Q.Relation
-	RelationCount = &Q.RelationCount
+	User = &Q.User
+	UserCount = &Q.UserCount
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:            db,
-		Relation:      newRelation(db, opts...),
-		RelationCount: newRelationCount(db, opts...),
+		db:        db,
+		User:      newUser(db, opts...),
+		UserCount: newUserCount(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Relation      relation
-	RelationCount relationCount
+	User      user
+	UserCount userCount
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:            db,
-		Relation:      q.Relation.clone(db),
-		RelationCount: q.RelationCount.clone(db),
+		db:        db,
+		User:      q.User.clone(db),
+		UserCount: q.UserCount.clone(db),
 	}
 }
 
@@ -62,21 +62,21 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:            db,
-		Relation:      q.Relation.replaceDB(db),
-		RelationCount: q.RelationCount.replaceDB(db),
+		db:        db,
+		User:      q.User.replaceDB(db),
+		UserCount: q.UserCount.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Relation      IRelationDo
-	RelationCount IRelationCountDo
+	User      IUserDo
+	UserCount IUserCountDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Relation:      q.Relation.WithContext(ctx),
-		RelationCount: q.RelationCount.WithContext(ctx),
+		User:      q.User.WithContext(ctx),
+		UserCount: q.UserCount.WithContext(ctx),
 	}
 }
 

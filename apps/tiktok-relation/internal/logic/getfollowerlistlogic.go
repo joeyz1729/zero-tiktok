@@ -43,14 +43,14 @@ func (l *GetFollowerListLogic) GetFollowerList(in *pb.GetFollowerListRequest) (*
 		resp.List[i] = &pb.User{
 			Id:              user.Id,
 			Name:            user.Name,
-			FollowCount:     user.FollowCount,
-			FollowerCount:   user.FollowerCount,
 			Avatar:          user.Avatar,
 			BackgroundImage: user.BackgroundImage,
 			Signature:       user.Signature,
-			TotalFavorited:  user.TotalFavorited,
 			WorkCount:       user.WorkCount,
+			TotalFavorited:  user.TotalFavorited,
 			FavoriteCount:   user.FavoriteCount,
+			FollowCount:     user.FollowCount,
+			FollowerCount:   user.FollowerCount,
 			IsFollow:        relation,
 		}
 	}

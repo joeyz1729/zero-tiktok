@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -12,14 +11,12 @@ import (
 	"time"
 )
 
-type Worker struct {
-	Repo        *repository.Repo
-	KafkaReader *kafka.Reader
-}
-
-func (w *Worker) Start(ctx context.Context) error {
+func (w *Worker) UserStart(ctx context.Context) error {
 	for {
-		m, err := w.KafkaReader.ReadMessage(ctx)
+		w.ReaderConfig.Topic = TopicUser
+		w.ReaderConfig.GroupID = TopicUser
+		reader := kafka.NewReader(w.ReaderConfig)
+		m, err := reader.ReadMessage(ctx)
 		if errors.Is(err, context.Canceled) {
 			return err
 		}
@@ -35,7 +32,6 @@ func (w *Worker) Start(ctx context.Context) error {
 				err = w.insertCount(ctx, msg.Data[idx])
 				if err != nil {
 					logx.Error(err)
-					continue
 				}
 				err = w.insertEs(ctx, msg.Data[idx])
 				if err != nil {
@@ -49,12 +45,16 @@ func (w *Worker) Start(ctx context.Context) error {
 	return nil
 }
 
-type Msg struct {
-	Type     string                   `json:"type"`
-	Database string                   `json:"database"`
-	Table    string                   `json:"table"`
-	IsDdl    bool                     `json:"isDdl"`
-	Data     []map[string]interface{} `json:"data"`
+func (w *Worker) CreateUser(ctx context.Context, data map[string]interface{}) error {
+	err := w.insertCount(ctx, data)
+	if err != nil {
+		return err
+	}
+	err = w.insertEs(ctx, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (w *Worker) insertCount(ctx context.Context, data map[string]interface{}) error {
@@ -72,11 +72,6 @@ func (w *Worker) insertCount(ctx context.Context, data map[string]interface{}) e
 
 func (w *Worker) insertEs(ctx context.Context, data map[string]interface{}) error {
 	userId := data["id"].(string)
-	data["total_favorited"] = 0
-	data["work_count"] = 0
-	data["favorite_count"] = 0
-	data["follow_count"] = 0
-	data["follow_count"] = 0
 	resp, err := w.Repo.ES.Index(es.UserIndex).Id(userId).Document(data).Do(ctx)
 	if err != nil {
 		logx.Error(err)

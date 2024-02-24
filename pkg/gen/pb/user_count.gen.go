@@ -18,6 +18,8 @@ type UserCount struct {
 	FavoriteCount  int64     `gorm:"column:favorite_count;not null" json:"favorite_count"`
 	CreateTime     time.Time `gorm:"column:create_time;default:CURRENT_TIMESTAMP" json:"create_time"`
 	UpdateTime     time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP" json:"update_time"`
+	FollowCount    int64     `gorm:"column:follow_count;not null" json:"follow_count"`
+	FollowerCount  int64     `gorm:"column:follower_count;not null" json:"follower_count"`
 }
 
 // TableName UserCount's table name

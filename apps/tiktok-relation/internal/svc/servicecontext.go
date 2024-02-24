@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/job"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
+	"github.com/segmentio/kafka-go"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
@@ -18,6 +20,8 @@ type ServiceContext struct {
 	Config config.Config
 
 	FollowRepo *repository.Repo
+
+	Worker *job.Worker
 
 	UserRpc userservice.UserService
 }
@@ -39,9 +43,23 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
+	reader := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:     c.Kafka.Brokers,
+		Topic:       c.Kafka.Topic,
+		Partition:   0,
+		MaxBytes:    10e6, // 10MB
+		GroupID:     "tiktok-user",
+		StartOffset: kafka.LastOffset,
+	})
+	repo := repository.NewRepo(db, rdb)
+
 	return &ServiceContext{
 		Config:     c,
-		FollowRepo: repository.NewRepo(db, rdb),
-		UserRpc:    userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
+		FollowRepo: repo,
+		Worker: &job.Worker{
+			Repo:        repo,
+			KafkaReader: reader,
+		},
+		UserRpc: userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

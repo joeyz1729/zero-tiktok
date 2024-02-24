@@ -19,3 +19,11 @@ type RelationCount struct {
 func (*RelationCount) TableName() string {
 	return TableNameRelationCount
 }
+
+func (fd *FollowDB) DecrCount(userId int64, toUserId int64) error {
+	return nil
+}
+
+func (fd *FollowDB) IncrCount(userId int64, toUserId int64) error {
+	return nil
+}

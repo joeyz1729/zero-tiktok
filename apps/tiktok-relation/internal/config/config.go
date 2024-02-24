@@ -19,5 +19,10 @@ type Config struct {
 		Password string
 	}
 
+	Kafka struct {
+		Brokers []string
+		Topic   string
+	}
+
 	UserRpc zrpc.RpcClientConf
 }

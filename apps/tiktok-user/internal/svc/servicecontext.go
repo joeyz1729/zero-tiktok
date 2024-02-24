@@ -33,27 +33,20 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
-	reader := kafka.NewReader(kafka.ReaderConfig{
+	readerConf := kafka.ReaderConfig{
 		Brokers:     c.Kafka.Brokers,
-		Topic:       c.Kafka.Topic,
 		Partition:   0,
 		MaxBytes:    10e6, // 10MB
 		StartOffset: kafka.LastOffset,
-	})
-
-	conn, err := kafka.Dial("tcp", "localhost:9092")
-	if err != nil {
-		panic(err.Error())
 	}
-	defer conn.Close()
 
 	return &ServiceContext{
 		Config:      c,
 		UserRepo:    repo,
 		IDGenerator: idGenerator,
 		Worker: &job.Worker{
-			Repo:        repo,
-			KafkaReader: reader,
+			Repo:         repo,
+			ReaderConfig: readerConf,
 		},
 		FollowRpc: follow.NewFollow(zrpc.MustNewClient(c.FollowRpc)),
 	}
