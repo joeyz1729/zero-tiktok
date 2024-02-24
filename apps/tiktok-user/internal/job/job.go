@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	TopicUser          = "tiktok_user_user"
-	TopicRelation      = "tiktok_relation_relation"
-	TopicRelationCount = "tiktok_relation_relation_count"
+	TopicUser      = "tiktok_user_user"
+	TopicUserCount = "tiktok_user_user_count"
+	TopicRelation  = "tiktok_relation_relation"
 )
 
 type Worker struct {

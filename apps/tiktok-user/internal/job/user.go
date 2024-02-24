@@ -12,10 +12,10 @@ import (
 )
 
 func (w *Worker) UserStart(ctx context.Context) error {
+	w.ReaderConfig.Topic = TopicUser
+	w.ReaderConfig.GroupID = TopicUser
+	reader := kafka.NewReader(w.ReaderConfig)
 	for {
-		w.ReaderConfig.Topic = TopicUser
-		w.ReaderConfig.GroupID = TopicUser
-		reader := kafka.NewReader(w.ReaderConfig)
 		m, err := reader.ReadMessage(ctx)
 		if errors.Is(err, context.Canceled) {
 			return err

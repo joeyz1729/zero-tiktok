@@ -10,10 +10,10 @@ import (
 )
 
 func (w *Worker) RelationCountStart(ctx context.Context) error {
+	w.ReaderConfig.Topic = TopicUserCount
+	w.ReaderConfig.GroupID = TopicUserCount
+	reader := kafka.NewReader(w.ReaderConfig)
 	for {
-		w.ReaderConfig.Topic = TopicRelationCount
-		w.ReaderConfig.GroupID = TopicRelationCount
-		reader := kafka.NewReader(w.ReaderConfig)
 		m, err := reader.ReadMessage(ctx)
 		if errors.Is(err, context.Canceled) {
 			return err
@@ -27,10 +27,7 @@ func (w *Worker) RelationCountStart(ctx context.Context) error {
 		}
 		if msg.Type == "UPDATE" {
 			for idx := range msg.Data {
-				err = w.updateCountES(ctx, msg.Data[idx])
-				if err != nil {
-					logx.Error(err)
-				}
+				w.updateCountES(ctx, msg.Data[idx])
 			}
 		} else {
 		}
