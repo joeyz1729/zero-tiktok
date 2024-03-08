@@ -12,6 +12,10 @@ type Config struct {
 		DataSource string
 	}
 
+	MinIO struct {
+		Upload bool
+	}
+
 	CacheRedis cache.CacheConf
 
 	UserRpc  zrpc.RpcClientConf

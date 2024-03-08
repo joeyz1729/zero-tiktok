@@ -15,10 +15,10 @@ import (
 )
 
 type ServiceContext struct {
-	Config config.Config
-
-	UserRpc  userservice.UserService
-	FavorRpc favorite.Favorite
+	Config        config.Config
+	IfUploadMinIO bool
+	UserRpc       userservice.UserService
+	FavorRpc      favorite.Favorite
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -42,8 +42,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	cache.InitRdb(rdb)
 
 	return &ServiceContext{
-		Config:   c,
-		UserRpc:  userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
-		FavorRpc: favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
+		Config:        c,
+		IfUploadMinIO: c.MinIO.Upload,
+		UserRpc:       userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
+		FavorRpc:      favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
 	}
 }

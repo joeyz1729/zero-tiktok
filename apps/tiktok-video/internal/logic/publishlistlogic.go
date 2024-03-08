@@ -23,7 +23,7 @@ func NewPublishListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publi
 	}
 }
 
-// 查询指定用户发布的视频列表
+// PublishList 查询指定用户发布的视频列表
 func (l *PublishListLogic) PublishList(in *pb.PublishListRequest) (*pb.PublishListResponse, error) {
 	// todo: add your logic here and delete this line
 

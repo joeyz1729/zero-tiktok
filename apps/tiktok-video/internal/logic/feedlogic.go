@@ -59,7 +59,7 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 				return
 			}
 			// 2 根据vid uid查询点赞信息
-			favor, err := l.svcCtx.FavorRpc.GetFavorite(l.ctx, &favorite.GetFavoriteRequest{UserId: in.UserId, VideoId: vid})
+			favor, err := l.svcCtx.FavorRpc.CheckThumbup(l.ctx, &favorite.CheckThumbupRequest{UserId: in.UserId, VideoId: vid})
 			if err != nil {
 				errCh <- err
 				return
@@ -77,7 +77,7 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 				Title:      vi.Title,
 				PlayUrl:    vi.PlayURL,
 				CoverUrl:   vi.CoverURL,
-				IsFavorite: favor.ActionType == int64(1),
+				IsFavorite: favor.IsThumbup == int32(1),
 			}
 			feedList[i] = v
 		}(i, vid.ID)

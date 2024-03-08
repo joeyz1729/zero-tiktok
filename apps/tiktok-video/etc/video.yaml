@@ -2,6 +2,9 @@ Name: tiktok-video
 ListenOn: 0.0.0.0:9020
 Log:
   ServiceName: tiktok-video
+MinIO:
+  Upload: false
+
 #  Mode: file
 #  Path: ./log
 #Telemetry:
