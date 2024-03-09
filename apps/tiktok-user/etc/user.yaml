@@ -22,7 +22,7 @@ Repo:
   DataSource: root:root1234@tcp(localhost:13306)/tiktok_user?parseTime=true&charset=utf8
   RedisAddr: 127.0.0.1:6379
   EsAddresses:
-    - http://127.0.0.1:9200
+    - https://127.0.0.1:9200
   EsUsername: elastic
   EsPassword: 8ny=SYF605xG2-=fVNh3
   EsCACert: /Users/zouyi/elastic_search/elasticsearch-8.12.2/config/certs/http_ca.crt

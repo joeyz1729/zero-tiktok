@@ -11,7 +11,7 @@ import (
 // VideoPublishStart 上传视频时事务更新video和video_count，通过mq同步canal。
 func (w *Worker) VideoPublishStart(ctx context.Context) error {
 	w.ReaderConfig.Topic = TopicVideo
-	w.ReaderConfig.GroupID = TopicVideo
+	w.ReaderConfig.GroupID = GroupCreateVideo
 	reader := kafka.NewReader(w.ReaderConfig)
 	for {
 		m, err := reader.ReadMessage(ctx)

@@ -39,8 +39,8 @@ func main() {
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	go ctx.Worker.CreateUserStart(context.Background())
-	go ctx.Worker.RelationStart(context.Background())
 	go ctx.Worker.UserCountStart(context.Background())
+	go ctx.Worker.RelationStart(context.Background())
 	go ctx.Worker.VideoPublishStart(context.Background())
 	s.Start()
 }

@@ -83,6 +83,27 @@ func NewRepo(c config.RepoConfig) (*Repo, error) {
 	return repo, nil
 }
 
+func (r *Repo) DBCreateUser(userId int64, username, password string) error {
+	err := repo.DB.Transaction(func(tx *gorm.DB) error {
+		var user = db.User{
+			ID:       userId,
+			Username: username,
+			Password: password,
+		}
+		if err := tx.Table(db.TableNameUser).Create(&user).Error; err != nil {
+			return err
+		}
+		var userCount = db.UserCount{
+			ID: userId,
+		}
+		if err := tx.Table(db.TableNameUserCount).Create(&userCount).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
 func (r *Repo) GetUserDetail(userId int64) (*UserDetail, error) {
 	var err error
 	res, err := r.CacheGetUser(userId)
@@ -105,11 +126,6 @@ func (r *Repo) GetUserDetail(userId int64) (*UserDetail, error) {
 		}
 	}()
 	return res, nil
-}
-
-func (r *Repo) DBCreateUser(userId int64, username, password string) error {
-	user := db.User{ID: userId, Username: username, Password: password}
-	return r.DB.Table(db.TableNameUser).Create(&user).Error
 }
 
 func (r *Repo) DBCreateCount(userId int64, createdTime time.Time) error {
@@ -290,4 +306,16 @@ func (r *Repo) ESGetUserByName(username string) (*UserDetail, error) {
 		return nil, err
 	}
 	return &detail, nil
+}
+
+func (r *Repo) EsCreateUser(ctx context.Context, data map[string]interface{}) error {
+	userId := data["id"].(string)
+	_, err := r.ES.Index(es.UserIndex).Id(userId).Document(data).Do(ctx)
+	return err
+}
+
+func (r *Repo) EsUpdateUserCount(ctx context.Context, data map[string]interface{}) error {
+	userId := data["id"].(string)
+	_, err := r.ES.Update(es.UserIndex, userId).Doc(data).Do(ctx)
+	return err
 }

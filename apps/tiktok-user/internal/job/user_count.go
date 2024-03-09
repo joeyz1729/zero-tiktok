@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,8 +26,8 @@ func (w *Worker) UserCountStart(ctx context.Context) error {
 			continue
 		}
 		if msg.Type == "UPDATE" {
-			for idx := range msg.Data {
-				w.updateCountES(ctx, msg.Data[idx])
+			for _, data := range msg.Data {
+				w.EsUpdateUserCount(ctx, data)
 			}
 		} else {
 		}
@@ -36,13 +35,12 @@ func (w *Worker) UserCountStart(ctx context.Context) error {
 	return nil
 }
 
-func (w *Worker) updateCountES(ctx context.Context, data map[string]interface{}) error {
-	userId := data["id"].(string)
-	resp, err := w.Repo.ES.Update(es.UserIndex, userId).Doc(data).Do(context.TODO())
+func (w *Worker) EsUpdateUserCount(ctx context.Context, data map[string]interface{}) {
+	err := w.Repo.EsUpdateUserCount(ctx, data)
 	if err != nil {
-		logx.Error(err)
-		return err
+		logx.Errorw("es update user count", logx.Field("err", err))
+		return
 	}
-	logx.Info(resp)
-	return nil
+	logx.Infow("es update user count", logx.Field("data", data))
+	return
 }

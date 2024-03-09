@@ -27,7 +27,7 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 func (l *RegisterLogic) Register(in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	resp := new(pb.RegisterResponse)
-
+	// 检查username是否合法
 	_, err := l.svcCtx.UserRepo.DBGetUserByName(in.Username)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
@@ -35,10 +35,12 @@ func (l *RegisterLogic) Register(in *pb.RegisterRequest) (*pb.RegisterResponse, 
 	if err == nil {
 		return resp, errors.New("user already exists")
 	}
+	// 生成userId
 	uid, err := l.svcCtx.IDGenerator.Snowflake.NextID()
 	if err != nil {
 		return resp, errors.New("generate tiktok-user id failed")
 	}
+	// 创建user和user_count
 	err = l.svcCtx.UserRepo.DBCreateUser(int64(uid), in.GetUsername(), tool.Encrypt(in.GetPassword()))
 	if err != nil {
 		return resp, err

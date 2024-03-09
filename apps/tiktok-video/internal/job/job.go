@@ -10,6 +10,11 @@ const (
 	TopicVideoCount = "tiktok_video_video_count"
 	TopicFavor      = "tiktok_thumbup_thumbup"
 	TopicComment    = "tiktok_comment_comment"
+
+	GroupCreateVideo        = "es_create_video"
+	GroupUpdateVideoCount   = "es_update_video_count"
+	GroupUpdateCommentCount = "db_update_comment_count"
+	GroupUpdateFavorCount   = "db_update_favor_count"
 )
 
 type Worker struct {
