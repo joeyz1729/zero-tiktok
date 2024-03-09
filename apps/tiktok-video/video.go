@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/server"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
@@ -35,8 +37,6 @@ func main() {
 	})
 	defer s.Stop()
 
-	//_ = consul.RegisterService(c.ListenOn, c.Consul)
-
 	err := snowflake.Init(c.Snowflake.StartTime, c.Snowflake.MachineId)
 	if err != nil {
 		panic("snowflake initialization failed")
@@ -44,6 +44,7 @@ func main() {
 
 	tool.NewSalt(c.Salt)
 
+	go ctx.Worker.CreateVideoStart(context.TODO())
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }

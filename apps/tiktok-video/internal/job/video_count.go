@@ -27,19 +27,9 @@ func (w *Worker) EsUpdateCount(ctx context.Context) error {
 		}
 		logx.Info(reader.Offset(), msg.Data)
 		if msg.Type == "INSERT" {
-			for idx := range msg.Data {
-				err = w.incrCount(ctx, msg.Data[idx])
-				if err != nil {
-					logx.Error(err)
-				}
-			}
+			//for idx := range msg.Data {
+			//}
 		} else if msg.Type == "DELETE" {
-			for idx := range msg.Data {
-				err = w.decrCount(ctx, msg.Data[idx])
-				if err != nil {
-					logx.Error(err)
-				}
-			}
 		}
 	}
 	return nil

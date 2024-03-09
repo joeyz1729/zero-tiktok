@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
-	"strconv"
 )
 
 // CreateVideoStart 上传video并添加到video表之后，同步到video_count和es中。
@@ -27,48 +26,19 @@ func (w *Worker) CreateVideoStart(ctx context.Context) error {
 			continue
 		}
 		logx.Info(reader.Offset(), msg.Data)
+		// todo 成功消费才更新offset
 		if msg.Type == "INSERT" {
-			for idx := range msg.Data {
-				err = w.incrCount(ctx, msg.Data[idx])
+			for _, data := range msg.Data {
+				err = w.Repo.CreateVideoCount(ctx, data)
 				if err != nil {
-					logx.Error(err)
+					logx.Errorf("create video count", logx.Field("err", err))
 				}
-			}
-		} else if msg.Type == "DELETE" {
-			for idx := range msg.Data {
-				err = w.decrCount(ctx, msg.Data[idx])
+				err = w.Repo.EsCreateVideo(ctx, data)
 				if err != nil {
-					logx.Error(err)
+					logx.Errorf("es create video", logx.Field("err", err))
 				}
 			}
 		}
 	}
-	return nil
-}
-
-func (w *Worker) incrCount(ctx context.Context, data map[string]interface{}) error {
-	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	logx.Infow("add follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return nil
-}
-
-func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) error {
-	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	logx.Infow("del follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	//return w.Repo.DBUpdateCount(userId, toUserId, -1)
 	return nil
 }

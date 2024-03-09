@@ -1,50 +1,56 @@
 package svc
 
 import (
-	"context"
-	"fmt"
-	"github.com/go-redis/redis/v8"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/job"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
+	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/zrpc"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 type ServiceContext struct {
 	Config        config.Config
 	IfUploadMinIO bool
+	Repo          *repository.Repo
+	Worker        *job.Worker
+	IDGenerator   *snowflake.IDGenerator
 	UserRpc       userservice.UserService
 	FavorRpc      favorite.Favorite
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	database, err := gorm.Open(mysql.Open(c.Mysql.DataSource), &gorm.Config{})
+	repo, err := repository.NewRepo(c.Repo.DataSource, c.Repo.RedisAddr, c.Repo.EsAddresses)
+	if err != nil {
+		panic(err)
+	}
+	idGenerator, err := snowflake.NewIDGenerator(c.Snowflake.StartTime, c.Snowflake.MachineId)
 	if err != nil {
 		panic(err)
 	}
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", c.RedisDB.Host, c.RedisDB.Port),
-		Password: c.RedisDB.Password,
-		DB:       c.RedisDB.DB,
-		PoolSize: c.RedisDB.PoolSize,
-	})
-	rdb.Ping(context.Background())
+	readerConf := kafka.ReaderConfig{
+		Brokers:     c.Kafka.Brokers,
+		Partition:   0,
+		MaxBytes:    10e6, // 10MB
+		StartOffset: kafka.LastOffset,
+	}
 	if err != nil {
 		panic(err)
 	}
-
-	db.InitDB(database)
-	cache.InitRdb(rdb)
 
 	return &ServiceContext{
 		Config:        c,
 		IfUploadMinIO: c.MinIO.Upload,
-		UserRpc:       userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
-		FavorRpc:      favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
+		Repo:          repo,
+		Worker: &job.Worker{
+			Repo:         repo,
+			ReaderConfig: readerConf,
+		},
+		IDGenerator: idGenerator,
+		UserRpc:     userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
+		FavorRpc:    favorite.NewFavorite(zrpc.MustNewClient(c.FavorRpc)),
 	}
 }

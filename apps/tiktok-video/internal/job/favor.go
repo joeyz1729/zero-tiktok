@@ -25,9 +25,9 @@ func (w *Worker) UpdateFavorCount(ctx context.Context) error {
 			continue
 		}
 		if msg.Type == "UPDATE" {
-			for idx := range msg.Data {
-				//w.updateCountES(ctx, msg.Data[idx])
-			}
+			//for idx := range msg.Data {
+			//w.updateCountES(ctx, msg.Data[idx])
+			//}
 		} else {
 		}
 	}

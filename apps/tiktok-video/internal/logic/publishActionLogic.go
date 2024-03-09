@@ -2,11 +2,9 @@ package logic
 
 import (
 	"context"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
-	"github.com/joeyz1729/zero-tiktok/pkg/snowflake"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -27,9 +25,9 @@ func NewPublishActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pub
 func (l *PublishActionLogic) PublishAction(in *pb.PublishActionRequest) (*pb.PublishActionResponse, error) {
 	resp := new(pb.PublishActionResponse)
 	var err error
-	vid, err := snowflake.GenID()
+	vid, err := l.svcCtx.IDGenerator.Snowflake.NextID()
 
-	err = repository.AddVideo(l.ctx, &db.Video{
+	err = l.svcCtx.Repo.AddVideo(l.ctx, &db.Video{
 		ID:       int64(vid),
 		AuthorID: in.GetUserId(),
 		Title:    in.GetTitle(),

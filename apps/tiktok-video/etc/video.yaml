@@ -20,31 +20,21 @@ Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: tiktok-video
-
-Mysql:
-  DataSource: root:root1234@tcp(localhost:13306)/tiktok_video?parseTime=true&charset=utf8
-
-CacheRedis:
-  - Host: 127.0.0.1:16379
-
 #Consul:
 #  Host: 127.0.0.1:8500
 #  Key: consul-videoservice.tiktok-user
 
-Salt: video_salt
 
+Repo:
+  DataSource: root:root1234@tcp(localhost:13306)/tiktok_video?parseTime=true&charset=utf8
+  RedisAddr: 127.0.0.1:6379
+  EsAddresses:
+    - https://127.0.0.1:9200
+
+Salt: video_salt
 Snowflake:
   StartTime: 2023-08-24
   MachineId: 9092
-
-
-RedisDB:
-  Host: "127.0.0.1"
-  Port: 16379
-  Password: ""
-  DB: 0
-  PoolSize: 100
-
 
 UserRpc:
   Etcd:
@@ -52,11 +42,14 @@ UserRpc:
       - 127.0.0.1:2379
     Key: tiktok-user
   NonBlock: true
-
-
 FavorRpc:
   Etcd:
     Hosts:
       - 127.0.0.1:2379
     Key: tiktok-favor
   NonBlock: true
+
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  Topic: tiktok_video_video

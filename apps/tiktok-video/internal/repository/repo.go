@@ -2,45 +2,66 @@ package repository
 
 import (
 	"context"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
 	"github.com/zeromicro/go-zero/core/logx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"os"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type Repo struct {
-	db  *gorm.DB
-	rdb *redis.Client
+	DB  *gorm.DB
+	RDB *redis.Client
+	ES  *elasticsearch.TypedClient
 }
 
 var repo *Repo
 
-func NewRepo(datasource, redisAddr string) *Repo {
+func NewRepo(datasource, redisAddr string, esAddresses []string) (*Repo, error) {
 	database, err := gorm.Open(mysql.Open(datasource), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr: redisAddr,
 	})
-	rdb.Ping(context.Background())
+	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
-		panic(err)
+		return nil, err
+	}
+
+	crt, err := os.ReadFile("/Users/zouyi/elastic_search/elasticsearch-8.12.2/config/certs/http_ca.crt")
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := elasticsearch.NewTypedClient(elasticsearch.Config{
+		Addresses: esAddresses,
+		Username:  "elastic",
+		Password:  "8ny=SYF605xG2-=fVNh3",
+		CACert:    crt,
+	})
+	if err != nil {
+		return nil, err
 	}
 	repo = &Repo{
-		db:  database,
-		rdb: rdb,
+		DB:  database,
+		RDB: rdb,
+		ES:  client,
 	}
-	return repo
+	return repo, nil
 }
 
-func AddVideo(ctx context.Context, video *db.Video) (err error) {
-	return db.AddVideo(video)
+func (repo *Repo) AddVideo(ctx context.Context, video *db.Video) (err error) {
+	return repo.DB.Table(db.TableNameVideo).Create(video).Error
 }
 
 func Feed(ctx context.Context, lastTime int64) ([]*db.Video, int64, error) {
@@ -138,4 +159,28 @@ func GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int64, error) {
 		return nil, err
 	}
 	return videoIds, nil
+}
+
+func (repo *Repo) CreateVideoCount(ctx context.Context, data map[string]interface{}) error {
+	videoId, err := strconv.ParseInt(data["id"].(string), 10, 64)
+	if err != nil {
+		return err
+	}
+	layout := "2006-01-02 15:04:05"
+	createdTime, err := time.Parse(layout, data["create_time"].(string))
+	if err != nil {
+		return err
+	}
+	var count = db.VideoCount{
+		ID:         videoId,
+		CreateTime: createdTime,
+		UpdateTime: createdTime,
+	}
+	return repo.DB.Table(db.TableNameVideoCount).Create(&count).Error
+}
+
+func (repo *Repo) EsCreateVideo(ctx context.Context, data map[string]interface{}) error {
+	videoId := data["id"].(string)
+	_, err := repo.ES.Index(es.VideoIndex).Id(videoId).Document(data).Do(ctx)
+	return err
 }
