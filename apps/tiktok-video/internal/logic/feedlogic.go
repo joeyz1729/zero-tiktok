@@ -47,7 +47,7 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 		go func(i int, vid int64) {
 			defer wg.Done()
 			// 2 根据video ids查询video详细信息，
-			vi, err := repository.GetVideoById(l.ctx, vid)
+			vi, err := l.svcCtx.Repo.GetVideoById(l.ctx, vid)
 			if err != nil {
 				errCh <- err
 				return

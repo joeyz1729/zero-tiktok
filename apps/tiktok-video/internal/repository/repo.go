@@ -63,7 +63,7 @@ func NewRepo(c config.RepoConfig) (*Repo, error) {
 func (repo *Repo) GetVideoById(ctx context.Context, vid int64) (*dto.Video, error) {
 	// 1. 从redis获取
 	video, err := cache.GetVideo(ctx, vid, repo.RDB)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		logx.Errorw("cache.GetVideo", logx.Field("err", err))
 		return nil, err
 	}
