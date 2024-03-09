@@ -1,15 +1,15 @@
 package job
 
 import (
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"github.com/segmentio/kafka-go"
 )
 
 const (
-	TopicUser      = "tiktok_user_user"
-	TopicUserCount = "tiktok_user_user_count"
-	TopicRelation  = "tiktok_relation_relation"
-	TopicVideo     = "tiktok_video_video"
+	TopicVideo      = "tiktok_video_video"
+	TopicVideoCount = "tiktok_video_video_count"
+	TopicFavor      = "tiktok_thumbup_thumbup"
+	TopicComment    = "tiktok_comment_comment"
 )
 
 type Worker struct {

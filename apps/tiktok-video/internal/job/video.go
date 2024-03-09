@@ -9,10 +9,10 @@ import (
 	"strconv"
 )
 
-// RelationStart 关注动作之后，更新双方用户的计数信息。
-func (w *Worker) RelationStart(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicRelation
-	w.ReaderConfig.GroupID = TopicRelation
+// CreateVideoStart 上传video并添加到video表之后，同步到video_count和es中。
+func (w *Worker) CreateVideoStart(ctx context.Context) error {
+	w.ReaderConfig.Topic = TopicVideo
+	w.ReaderConfig.GroupID = TopicVideo
 	reader := kafka.NewReader(w.ReaderConfig)
 	for {
 		m, err := reader.ReadMessage(ctx)
@@ -56,7 +56,7 @@ func (w *Worker) incrCount(ctx context.Context, data map[string]interface{}) err
 		return err
 	}
 	logx.Infow("add follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return w.Repo.DBUpdateCount(userId, toUserId, 1)
+	return nil
 }
 
 func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) error {
@@ -69,5 +69,6 @@ func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) err
 		return err
 	}
 	logx.Infow("del follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return w.Repo.DBUpdateCount(userId, toUserId, -1)
+	//return w.Repo.DBUpdateCount(userId, toUserId, -1)
+	return nil
 }

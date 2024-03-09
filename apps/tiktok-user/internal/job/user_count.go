@@ -9,7 +9,8 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-func (w *Worker) RelationCountStart(ctx context.Context) error {
+// UserCountStart user_count表更新的时候，同步到es中
+func (w *Worker) UserCountStart(ctx context.Context) error {
 	w.ReaderConfig.Topic = TopicUserCount
 	w.ReaderConfig.GroupID = TopicUserCount
 	reader := kafka.NewReader(w.ReaderConfig)

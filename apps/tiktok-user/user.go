@@ -38,8 +38,8 @@ func main() {
 	tool.NewSalt(c.Salt)
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
-	go ctx.Worker.UserStart(context.Background())
+	go ctx.Worker.CreateUserStart(context.Background())
 	go ctx.Worker.RelationStart(context.Background())
-	go ctx.Worker.RelationCountStart(context.Background())
+	go ctx.Worker.UserCountStart(context.Background())
 	s.Start()
 }

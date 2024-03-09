@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-// CreateUserStart 创建新用户时更新user_count表和es。
-func (w *Worker) CreateUserStart(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicUser
-	w.ReaderConfig.GroupID = TopicUser
+// UpdateCommentCount 更新视频对应的评价数
+func (w *Worker) UpdateCommentCount(ctx context.Context) error {
+	w.ReaderConfig.Topic = TopicComment
+	w.ReaderConfig.GroupID = TopicComment
 	reader := kafka.NewReader(w.ReaderConfig)
 	for {
 		m, err := reader.ReadMessage(ctx)
