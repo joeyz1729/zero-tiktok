@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -35,7 +36,7 @@ func (w *Worker) VideoPublishStart(ctx context.Context) error {
 }
 
 func (w *Worker) EsCreateVideo(ctx context.Context, data map[string]interface{}) {
-	err := w.Repo.EsCreateVideo(ctx, data)
+	err := es.CreateVideo(ctx, data, w.Repo.ES)
 	if err != nil {
 		logx.Errorw("es create video", logx.Field("err", err))
 	}

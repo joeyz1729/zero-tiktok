@@ -27,13 +27,13 @@ func (l *PublishActionLogic) PublishAction(in *pb.PublishActionRequest) (*pb.Pub
 	var err error
 	vid, err := l.svcCtx.IDGenerator.Snowflake.NextID()
 
-	err = l.svcCtx.Repo.CreateVideo(l.ctx, &db.Video{
+	err = db.CreateVideo(l.ctx, &db.Video{
 		ID:       int64(vid),
 		AuthorID: in.GetUserId(),
 		Title:    in.GetTitle(),
 		PlayURL:  in.GetPlayUrl(),
 		CoverURL: in.GetCoverUrl(),
-	})
+	}, l.svcCtx.Repo.DB)
 
 	if err != nil {
 		logx.Errorw("[PublishAction] repo add video failed",

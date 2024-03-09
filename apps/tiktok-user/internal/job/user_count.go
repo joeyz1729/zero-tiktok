@@ -11,7 +11,7 @@ import (
 // UserCountStart user_count表更新的时候，同步到es中
 func (w *Worker) UserCountStart(ctx context.Context) error {
 	w.ReaderConfig.Topic = TopicUserCount
-	w.ReaderConfig.GroupID = TopicUserCount
+	w.ReaderConfig.GroupID = GroupUpdateUserCount
 	reader := kafka.NewReader(w.ReaderConfig)
 	for {
 		m, err := reader.ReadMessage(ctx)

@@ -7,14 +7,13 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/dto"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
 	"github.com/zeromicro/go-zero/core/logx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"os"
 	"strconv"
-	"sync"
-	"time"
 )
 
 type Repo struct {
@@ -61,139 +60,78 @@ func NewRepo(c config.RepoConfig) (*Repo, error) {
 	return repo, nil
 }
 
-func (repo *Repo) CreateVideo(ctx context.Context, video *db.Video) error {
-	err := repo.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Table(db.TableNameVideo).Create(video).Error; err != nil {
-			return err
-		}
-		var videoCount = db.VideoCount{
-			ID: video.ID,
-		}
-		if err := tx.Table(db.TableNameVideoCount).Create(&videoCount).Error; err != nil {
-			return err
-		}
-		return nil
-	})
-	return err
-}
-
-func Feed(ctx context.Context, lastTime int64) ([]*db.Video, int64, error) {
-	return nil, 0, nil
-}
-
-func GetVideoById(ctx context.Context, vid int64) (*db.Video, error) {
-	// 1. 检查缓存
-	key := cache.VideoInfoPrefix + strconv.FormatInt(vid, 10)
-	hit, err := cache.KeyExists(ctx, key)
-	if err == nil && hit {
-		// cache hit
-		if v, err := cache.GetVideoById(ctx, key); err == nil {
-			v.ID = vid
-			return v, nil
-		}
+func (repo *Repo) GetVideoById(ctx context.Context, vid int64) (*dto.Video, error) {
+	// 1. 从redis获取
+	video, err := cache.GetVideo(ctx, vid, repo.RDB)
+	if err != nil {
+		logx.Errorw("cache.GetVideo", logx.Field("err", err))
+		return nil, err
 	}
-	// 缓存命中，或者获取失败
-	// 2. 从数据库读取
-	v, err := db.GetVideoById(vid)
+	if video != nil {
+		return video, nil
+	}
+	// 2. 从es获取
+	video, err = es.GetVideoById(ctx, vid, repo.ES)
+	if err != nil {
+		logx.Errorw("es.GetVideoById", logx.Field("err", err))
+		return nil, err
+	}
+	// 3. 添加到redis
+	go func() {
+		if err := cache.AddVideo(ctx, video, repo.RDB); err != nil {
+			logx.Errorw("cache.AddVideo", logx.Field("err", err))
+		}
+	}()
+	return video, nil
+}
+
+func (repo *Repo) GetVideosByAuthor(ctx context.Context, uid int64) ([]*dto.Video, error) {
+	// todo
+	// 1. redis是否存有authorId-->set(videoId)的key
+	videoIds, err := cache.GetVideoIdsByAuthor(ctx, uid, repo.RDB)
 	if err != nil {
 		return nil, err
 	}
-	_ = cache.AddVideo(ctx, key, v)
-	return v, nil
-}
-
-// GetFavorLists 根据用户点赞的video id列表获取详细信息，不查询is favorite
-func GetFavorLists(ctx context.Context, ids []int64) ([]*db.Video, error) {
-	videos := make([]*db.Video, len(ids))
-	var wg sync.WaitGroup
-	var errCh = make(chan error, len(ids))
-	wg.Add(len(ids))
-	for i := range videos {
-		go func(i int) {
-			defer wg.Done()
-			video, err := cache.GetVideoById(ctx, "")
-			if err != nil {
-				errCh <- err
-				return
+	var videos []*dto.Video
+	if len(videoIds) == 0 {
+		videos, err = es.GetVideosByAuthor(ctx, uid, repo.ES)
+		if err != nil {
+			logx.Errorw("es.GetVideosByAuthor", logx.Field("err", err))
+			return nil, err
+		}
+		go func() {
+			ids := make([]int64, len(videos))
+			for i, video := range videos {
+				ids[i] = video.ID
 			}
-			videos[i] = video
-		}(i)
+			if err := cache.AddPublishList(ctx, uid, ids, repo.RDB); err != nil {
+				logx.Errorw("cache.AddPublishList", logx.Field("err", err))
+			}
+		}()
+		return videos, nil
 	}
-	wg.Wait()
-	select {
-	case err := <-errCh:
-		logx.Error("get videoservice concurrency ", err)
-		return nil, err
-	default:
+	videos = make([]*dto.Video, len(videoIds))
+	for i := range videos {
+		vid, err := strconv.ParseInt(videoIds[i], 10, 64)
+		if err != nil {
+			logx.Errorw("parse video id", logx.Field("err", err))
+			return nil, err
+		}
+		video, err := repo.GetVideoById(ctx, vid)
+		if err != nil {
+			logx.Errorw("repo.GetVideoById", logx.Field("err", err))
+			return nil, err
+		}
+		videos[i] = video
+		go func() {
+			if err := cache.AddVideo(ctx, video, repo.RDB); err != nil {
+				logx.Errorw("cache.AddVideo", logx.Field("err", err))
+			}
+		}()
 	}
 	return videos, nil
 }
 
-// GetVideosByAuthorId 根据author id获取video列表
-func GetVideosByAuthorId(ctx context.Context, uid int64) ([]*db.Video, error) {
-	//// 获取video ids
-	//videoIds, err := cache.GetVideoIdsByAuthor(ctx, "")
-	//if err != nil {
-	//	return nil, err
-	//}
-	//// 根据video ids获取详细信息
-	////videos, err := cache.GetFavorLists(ctx, videoIds)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return videos, nil
-	return nil, nil
-}
-
-// GetVideoIdsByAuthorId 根据author id获取video id列表
-func GetVideoIdsByAuthorId(ctx context.Context, uid int64) ([]int64, error) {
-	uidStr := strconv.FormatInt(uid, 10)
-	key := cache.VideoPublishPrefix + uidStr
-	hit, err := cache.KeyExists(ctx, key)
-	if err == nil && hit {
-		ids, err := cache.GetVideoIdsByAuthor(ctx, key)
-		if err == nil {
-			return ids, err
-		}
-	}
-	// 从数据库查询
-	videos, err := db.GetVideosByAuthorId(uid)
-	if err != nil {
-		return nil, err
-	}
-	// 添加缓存
-	var videoIds []int64
-	for _, v := range videos {
-		videoIds = append(videoIds, v.ID)
-	}
-
-	err = cache.AddPublishList(ctx, key, videoIds)
-	if err != nil {
-		return nil, err
-	}
-	return videoIds, nil
-}
-
-func (repo *Repo) CreateVideoCount(ctx context.Context, data map[string]interface{}) error {
-	videoId, err := strconv.ParseInt(data["id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	layout := "2006-01-02 15:04:05"
-	createdTime, err := time.Parse(layout, data["create_time"].(string))
-	if err != nil {
-		return err
-	}
-	var count = db.VideoCount{
-		ID:         videoId,
-		CreateTime: createdTime,
-		UpdateTime: createdTime,
-	}
-	return repo.DB.Table(db.TableNameVideoCount).Create(&count).Error
-}
-
-func (repo *Repo) EsCreateVideo(ctx context.Context, data map[string]interface{}) error {
-	videoId := data["id"].(string)
-	_, err := repo.ES.Index(es.VideoIndex).Id(videoId).Document(data).Do(ctx)
-	return err
+func Feed(ctx context.Context, lastTime int64) ([]*db.Video, int64, error) {
+	return nil, 0, nil
 }

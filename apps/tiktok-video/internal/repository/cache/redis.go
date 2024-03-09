@@ -2,10 +2,12 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/go-redis/redis/v8"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/dto"
 	"strconv"
+	"time"
 )
 
 var (
@@ -22,92 +24,59 @@ var (
 
 	ErrInvalidType = errors.New("invalid type")
 	ErrEmptySet    = errors.New("empty set")
+
+	NormalTTL = time.Hour * 24
 )
 
-var globalRdb *redis.Client
-
-func InitRdb(rdb *redis.Client) {
-	globalRdb = rdb
+func getPublishListKey(uid int64) string {
+	return VideoPublishPrefix + strconv.FormatInt(uid, 10)
 }
 
-func DelKey(ctx context.Context, key string) error {
-	_, err := globalRdb.Del(ctx, key).Result()
+func getVideoKey(vid int64) string {
+	return VideoInfoPrefix + strconv.FormatInt(vid, 10)
+}
+
+func AddVideo(ctx context.Context, video *dto.Video, rdb *redis.Client) error {
+	data, err := json.Marshal(video)
+	if err != nil {
+		return err
+	}
+	_, err = rdb.Set(ctx, getVideoKey(video.ID), data, NormalTTL).Result()
 	return err
 }
 
-func KeyExists(ctx context.Context, key string) (ok bool, err error) {
-	num, err := globalRdb.Exists(ctx, key).Result()
-	return num == 1, err
-}
-
-func GetVideoById(ctx context.Context, key string) (video *db.Video, err error) {
-	cm, err := globalRdb.HGetAll(ctx, key).Result()
+func AddPublishList(ctx context.Context, uid int64, videoIds []int64, rdb *redis.Client) error {
+	_, err := rdb.SAdd(ctx, getPublishListKey(uid), videoIds).Result()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if len(cm) != 6 {
-		return nil, ErrInvalidType
-	}
-	video = new(db.Video)
-	video.AuthorID, err = strconv.ParseInt(cm[FieldInfoAuthorId], 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	video.Title = cm[FieldInfoTitle]
-	video.CoverURL = cm[FieldInfoCoverUrl]
-	video.PlayURL = cm[FieldInfoPlayUrl]
-	return video, nil
-}
-
-func AddVideo(ctx context.Context, key string, video *db.Video) (err error) {
-	_, err = globalRdb.HSet(ctx, key,
-		FieldInfoAuthorId, video.AuthorID,
-		FieldInfoTitle, video.Title,
-		FieldInfoPlayUrl, video.PlayURL,
-		FieldInfoCoverUrl, video.CoverURL,
-	).Result()
+	_, err = rdb.Expire(ctx, getPublishListKey(uid), NormalTTL).Result()
 	return err
 }
 
-func DelVideo(ctx context.Context, key string) (err error) {
-	_, err = globalRdb.Del(ctx, key).Result()
-	return err
-}
-
-func GetVideosByUser(ctx context.Context, key string) ([]*db.Video, error) {
-	return []*db.Video{}, nil
-}
-
-func DelPublishList(context.Context, string) error {
-	return nil
-}
-
-// GetVideoIdsByAuthor 根据作者id获取video id列表
-func GetVideoIdsByAuthor(ctx context.Context, key string) ([]int64, error) {
-	ids, err := globalRdb.SMembers(ctx, key).Result()
+func GetVideoIdsByAuthor(ctx context.Context, userId int64, rdb *redis.Client) ([]string, error) {
+	ids, err := rdb.SMembers(ctx, getPublishListKey(userId)).Result()
 	if err != nil {
 		return nil, err
 	}
-	res := make([]int64, len(ids))
-	for i, idStr := range ids {
-		id, err := strconv.ParseInt(idStr, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		res[i] = id
+	return ids, nil
+}
+
+func GetVideo(ctx context.Context, vid int64, rdb *redis.Client) (*dto.Video, error) {
+	data, err := rdb.Get(ctx, getVideoKey(vid)).Result()
+	if err != nil {
+		return nil, err
 	}
-	return res, nil
+	var video dto.Video
+	if err = json.Unmarshal([]byte(data), &video); err != nil {
+		return nil, err
+	}
+	return &video, nil
 }
 
-func AddPublishList(ctx context.Context, uidStr string, videoIds []int64) error {
-	return nil
-}
-
-// GetFeedIds 通过cache获取vid列表，
-func GetFeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
+func GetFeedIds(ctx context.Context, lastTime int64, rdb *redis.Client) ([]int64, int64, error) {
 	// limit 30，以及获取结果中最小的时间戳
-	zs, err := globalRdb.ZRevRangeByScoreWithScores(ctx, VideoFeedKey,
+	zs, err := rdb.ZRevRangeByScoreWithScores(ctx, VideoFeedKey,
 		&redis.ZRangeBy{
 			Max:    strconv.FormatInt(lastTime, 10),
 			Offset: 0,
@@ -132,9 +101,4 @@ func GetFeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
 		}
 	}
 	return vids, int64(nextTime), nil
-}
-
-func AddFeedVideo(ctx context.Context, vid int64, stamp int64) error {
-	_, err := globalRdb.ZAdd(ctx, VideoFeedKey, &redis.Z{Member: strconv.FormatInt(vid, 10), Score: float64(stamp)}).Result()
-	return err
 }

@@ -1,6 +1,11 @@
 package db
 
-import "time"
+import (
+	"context"
+	"gorm.io/gorm"
+	"strconv"
+	"time"
+)
 
 const TableNameVideoCount = "video_count"
 
@@ -16,4 +21,22 @@ type VideoCount struct {
 // TableName VideoCount's table name
 func (*VideoCount) TableName() string {
 	return TableNameVideoCount
+}
+
+func CreateVideoCount(ctx context.Context, data map[string]interface{}, db *gorm.DB) error {
+	videoId, err := strconv.ParseInt(data["id"].(string), 10, 64)
+	if err != nil {
+		return err
+	}
+	layout := "2006-01-02 15:04:05"
+	createdTime, err := time.Parse(layout, data["create_time"].(string))
+	if err != nil {
+		return err
+	}
+	var count = VideoCount{
+		ID:         videoId,
+		CreateTime: createdTime,
+		UpdateTime: createdTime,
+	}
+	return db.Table(TableNameVideoCount).Create(&count).Error
 }

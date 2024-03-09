@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"gorm.io/gorm"
 	"time"
 )
@@ -23,30 +24,18 @@ func (*Video) TableName() string {
 	return TableNameVideo
 }
 
-var globalDB *gorm.DB
-
-func InitDB(database *gorm.DB) {
-	globalDB = database
-}
-
-func AddVideo(v *Video) error {
-	return globalDB.Create(v).Error
-}
-
-func GetVideoById(vid int64) (*Video, error) {
-	var v Video
-	err := globalDB.Where("id = ?", vid).First(&v).Error
-	return &v, err
-}
-
-func GetVideosByAuthorId(uid int64) ([]*Video, error) {
-	var videoList []*Video
-	err := globalDB.Where("author_id = ?", uid).Find(&videoList).Error
-	return videoList, err
-}
-
-func Feeds(lastTime int64) ([]*Video, error) {
-	var videoList []*Video
-	err := globalDB.Where("create_time <= ?", lastTime).Find(videoList).Error
-	return videoList, err
+func CreateVideo(ctx context.Context, video *Video, db *gorm.DB) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Table(TableNameVideo).Create(video).Error; err != nil {
+			return err
+		}
+		var videoCount = VideoCount{
+			ID: video.ID,
+		}
+		if err := tx.Table(TableNameVideoCount).Create(&videoCount).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }
