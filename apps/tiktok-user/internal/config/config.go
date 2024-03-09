@@ -9,11 +9,7 @@ type Config struct {
 
 	FollowRpc zrpc.RpcClientConf
 
-	Repo struct {
-		DataSource  string
-		RedisAddr   string
-		EsAddresses []string
-	}
+	Repo RepoConfig
 
 	Snowflake struct {
 		StartTime string
@@ -26,4 +22,13 @@ type Config struct {
 	}
 
 	Salt string
+}
+
+type RepoConfig struct {
+	DataSource  string
+	RedisAddr   string
+	EsAddresses []string
+	EsUsername  string
+	EsPassword  string
+	EsCACert    string
 }

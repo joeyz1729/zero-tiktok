@@ -7,11 +7,7 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 
-	Repo struct {
-		DataSource  string
-		RedisAddr   string
-		EsAddresses []string
-	}
+	Repo RepoConfig
 
 	MinIO struct {
 		Upload bool
@@ -31,4 +27,13 @@ type Config struct {
 	}
 
 	Salt string
+}
+
+type RepoConfig struct {
+	DataSource  string
+	RedisAddr   string
+	EsAddresses []string
+	EsUsername  string
+	EsPassword  string
+	EsCACert    string
 }

@@ -22,7 +22,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	repo, err := repository.NewRepo(c.Repo.DataSource, c.Repo.RedisAddr, c.Repo.EsAddresses)
+	repo, err := repository.NewRepo(c.Repo)
 	if err != nil {
 		panic(err)
 	}

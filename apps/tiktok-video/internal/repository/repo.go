@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
@@ -24,29 +25,29 @@ type Repo struct {
 
 var repo *Repo
 
-func NewRepo(datasource, redisAddr string, esAddresses []string) (*Repo, error) {
-	database, err := gorm.Open(mysql.Open(datasource), &gorm.Config{})
+func NewRepo(c config.RepoConfig) (*Repo, error) {
+	database, err := gorm.Open(mysql.Open(c.DataSource), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
+		Addr: c.RedisAddr,
 	})
 	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	crt, err := os.ReadFile("/Users/zouyi/elastic_search/elasticsearch-8.12.2/config/certs/http_ca.crt")
+	crt, err := os.ReadFile(c.EsCACert)
 	if err != nil {
 		return nil, err
 	}
 
 	client, err := elasticsearch.NewTypedClient(elasticsearch.Config{
-		Addresses: esAddresses,
-		Username:  "elastic",
-		Password:  "8ny=SYF605xG2-=fVNh3",
+		Addresses: c.EsAddresses,
+		Username:  c.EsUsername,
+		Password:  c.EsPassword,
 		CACert:    crt,
 	})
 	if err != nil {
