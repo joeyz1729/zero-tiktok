@@ -61,8 +61,20 @@ func NewRepo(c config.RepoConfig) (*Repo, error) {
 	return repo, nil
 }
 
-func (repo *Repo) AddVideo(ctx context.Context, video *db.Video) (err error) {
-	return repo.DB.Table(db.TableNameVideo).Create(video).Error
+func (repo *Repo) CreateVideo(ctx context.Context, video *db.Video) error {
+	err := repo.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Table(db.TableNameVideo).Create(video).Error; err != nil {
+			return err
+		}
+		var videoCount = db.VideoCount{
+			ID: video.ID,
+		}
+		if err := tx.Table(db.TableNameVideoCount).Create(&videoCount).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }
 
 func Feed(ctx context.Context, lastTime int64) ([]*db.Video, int64, error) {

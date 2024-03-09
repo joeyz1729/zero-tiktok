@@ -7,13 +7,12 @@ import (
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
-	"time"
 )
 
-// VideoPublishStart 用户发布视频之后，更新work_count计数。
+// VideoPublishStart 上传视频时事务更新video和video_count，通过mq同步canal。
 func (w *Worker) VideoPublishStart(ctx context.Context) error {
 	w.ReaderConfig.Topic = TopicVideo
-	w.ReaderConfig.GroupID = TopicVideo
+	w.ReaderConfig.GroupID = "update_work_count"
 	reader := kafka.NewReader(w.ReaderConfig)
 	for {
 		m, err := reader.ReadMessage(ctx)
@@ -29,27 +28,24 @@ func (w *Worker) VideoPublishStart(ctx context.Context) error {
 		}
 		if msg.Type == "INSERT" {
 			for _, data := range msg.Data {
-				err = w.updateWorkCount(ctx, data)
-				if err != nil {
-					logx.Errorf("update work count", logx.Field("err", err))
-				}
+				w.updateWorkCount(data)
 			}
-		} else {
 		}
 	}
 	return nil
 }
 
-func (w *Worker) updateWorkCount(ctx context.Context, data map[string]interface{}) error {
-	userId, err := strconv.ParseInt(data["id"].(string), 10, 64)
+func (w *Worker) updateWorkCount(data map[string]interface{}) {
+	userId, err := strconv.ParseInt(data["author_id"].(string), 10, 64)
 	if err != nil {
-		return err
+		logx.Errorw("get author_id from msg data", logx.Field("err", err))
+		return
 	}
-	layout := "2006-01-02 15:04:05"
-	createdTime, err := time.Parse(layout, data["create_time"].(string))
+
+	err = w.Repo.DBUpdateWorkCount(userId, 1)
 	if err != nil {
-		return err
+		logx.Errorw("db update work count", logx.Field("err", err))
+		return
 	}
-	// todo
-	return w.Repo.DBCreateCount(userId, createdTime)
+	logx.Infow("update work count success", logx.Field("data", data))
 }

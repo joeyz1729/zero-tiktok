@@ -122,9 +122,8 @@ func (r *Repo) DBCreateCount(userId int64, createdTime time.Time) error {
 	return r.DB.Table(db.TableNameUserCount).Create(&count).Error
 }
 
-func (r *Repo) DBUpdateCount(userId, toUserId int64, incr int64) error {
-	r.DB = r.DB.Table(db.TableNameUserCount)
-	err := r.DB.Transaction(func(tx *gorm.DB) error {
+func (r *Repo) DBUpdateRelationCount(userId, toUserId int64, incr int64) error {
+	err := r.DB.Table(db.TableNameUserCount).Transaction(func(tx *gorm.DB) error {
 		var userCount db.UserCount
 		if err := tx.First(&userCount, userId).Error; err != nil {
 			return err
@@ -144,6 +143,49 @@ func (r *Repo) DBUpdateCount(userId, toUserId int64, incr int64) error {
 			return err
 		}
 
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
+}
+
+func (r *Repo) DBUpdateWorkCount(userId int64, incr int64) error {
+	err := r.DB.Table(db.TableNameUserCount).Transaction(func(tx *gorm.DB) error {
+		var userCount db.UserCount
+		if err := tx.First(&userCount, userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", userId).
+			Updates(map[string]interface{}{"work_count": userCount.WorkCount + incr}).Error; err != nil {
+			return err
+		}
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
+}
+
+func (r *Repo) DBUpdateFavorCount(userId, authorId int64, incr int64) error {
+	r.DB = r.DB.Table(db.TableNameUserCount)
+	err := r.DB.Transaction(func(tx *gorm.DB) error {
+		// 更新用户点赞数
+		var userCount db.UserCount
+		if err := tx.First(&userCount, userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", userId).
+			Updates(map[string]interface{}{"favorite_count": userCount.FavoriteCount + incr}).Error; err != nil {
+			return err
+		}
+		// 更新作者获赞数
+		var authorCount = db.UserCount{}
+		if err := tx.First(&authorCount, authorId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", authorId).
+			Updates(map[string]interface{}{"total_favorited": authorCount.TotalFavorited + incr}).Error; err != nil {
+			return err
+		}
 		// 返回 nil 提交事务
 		return nil
 	})

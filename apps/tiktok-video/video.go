@@ -44,7 +44,7 @@ func main() {
 
 	tool.NewSalt(c.Salt)
 
-	go ctx.Worker.CreateVideoStart(context.TODO())
+	go ctx.Worker.VideoPublishStart(context.TODO())
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }
