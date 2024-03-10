@@ -62,8 +62,9 @@ func (r *GormImpl) Delete(userId int64, videoId int64) error {
 
 func (r *GormImpl) GetThumbupListByUserId(userId int64) ([]int64, error) {
 	var list []*Thumbup
-	err := r.DB.Table(TableNameThumbup).Where("user_id = ?", userId).
-		Select("video_id").Find(&list).Error
+	err := r.DB.Table(TableNameThumbup).Select("video_id").
+		Where("user_id = ?", userId).
+		Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
