@@ -97,6 +97,7 @@ func (r *Repo) GetUserDetail(userId int64) (*dto.User, error) {
 
 func (r *Repo) GetUserByName(username string) (*dto.User, error) {
 	return es.GetUserByName(username, r.ES)
+
 }
 
 func (r *Repo) CreateUser(userId int64, username, password string) error {

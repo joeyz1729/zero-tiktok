@@ -18,6 +18,11 @@ const (
 	UserIndex = "tiktok_user"
 )
 
+var (
+	ErrRecordNotFound      = errors.New("record not found")
+	ErrInvalidRecordNumber = errors.New("invalid record number")
+)
+
 func GetUser(userId int64, esClient *elasticsearch.TypedClient) (*dto.User, error) {
 	resp, err := esClient.Get(UserIndex, strconv.Itoa(int(userId))).Do(context.TODO())
 	if err != nil {
@@ -53,12 +58,14 @@ func GetUserByName(username string, esClient *elasticsearch.TypedClient) (*dto.U
 				},
 			},
 		}).Do(context.TODO())
-
 	if err != nil {
 		return nil, err
 	}
-	if len(resp.Hits.Hits) != 1 {
-		return nil, errors.New("invalid record count")
+	if len(resp.Hits.Hits) > 1 {
+		return nil, ErrInvalidRecordNumber
+	}
+	if len(resp.Hits.Hits) == 0 {
+		return nil, ErrRecordNotFound
 	}
 	str, err := resp.Hits.Hits[0].Source_.MarshalJSON()
 	if err != nil {

@@ -3,11 +3,10 @@ package logic
 import (
 	"context"
 	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
 	"github.com/joeyz1729/zero-tiktok/pkg/tool"
-	"gorm.io/gorm"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -29,12 +28,12 @@ func (l *RegisterLogic) Register(in *pb.RegisterRequest) (*pb.RegisterResponse, 
 	resp := new(pb.RegisterResponse)
 	// 检查username是否合法
 	_, err := l.svcCtx.UserRepo.GetUserByName(in.Username)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && err != es.ErrRecordNotFound {
 		return nil, err
-	}
-	if err == nil {
+	} else if err == nil {
 		return resp, errors.New("user already exists")
 	}
+
 	// 生成userId
 	uid, err := l.svcCtx.IDGenerator.Snowflake.NextID()
 	if err != nil {

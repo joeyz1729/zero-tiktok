@@ -43,31 +43,6 @@ func (w *Worker) EsCreateUser(ctx context.Context, data map[string]interface{}) 
 		logx.Errorw("es create user", logx.Field("err", err))
 		return
 	}
-	logx.Infow("es create user success", logx.Field("err", err))
+	logx.Infow("es create user success", logx.Field("data", data))
 	return
 }
-
-//func (w *Worker) CreateUser(ctx context.Context, data map[string]interface{}) error {
-//	err := w.insertCount(ctx, data)
-//	if err != nil {
-//		return err
-//	}
-//	err = w.insertEs(ctx, data)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-
-//func (w *Worker) insertCount(ctx context.Context, data map[string]interface{}) error {
-//	userId, err := strconv.ParseInt(data["id"].(string), 10, 64)
-//	if err != nil {
-//		return err
-//	}
-//	layout := "2006-01-02 15:04:05"
-//	createdTime, err := time.Parse(layout, data["create_time"].(string))
-//	if err != nil {
-//		return err
-//	}
-//	return w.Repo.DBCreateCount(userId, createdTime)
-//}
