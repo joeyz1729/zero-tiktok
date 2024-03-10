@@ -46,12 +46,17 @@ func main() {
 
 	tool.NewSalt(c.Salt)
 
+	w := &kafka.Writer{
+		Addr:         kafka.TCP(c.Kafka.Brokers...),
+		Topic:        c.Kafka.Topic,
+		RequiredAcks: -1,
+	}
 	job.Start(context.TODO(), kafka.ReaderConfig{
 		Brokers:     c.Kafka.Brokers,
 		Partition:   c.Kafka.Partition,
 		MaxBytes:    c.Kafka.MaxBytes,
 		StartOffset: c.Kafka.StartOffset,
-	}, ctx.Repo)
+	}, ctx.Repo, w)
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()

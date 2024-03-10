@@ -32,8 +32,8 @@ type Msg struct {
 	Data     []map[string]interface{} `json:"data"`
 }
 
-func Start(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) {
+func Start(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo, w *kafka.Writer) {
 	go VideoPublish(ctx, c, repo).Start(ctx)
 	go VideoCountWorker(ctx, c, repo).Start(ctx)
-	go UpdateFavorCount(ctx, c, repo).Start(ctx)
+	go UpdateFavorCount(ctx, c, repo, w).Start(ctx)
 }

@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func UpdateFavorCount(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+func UpdateFavorCount(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo, w *kafka.Writer) *worker.Worker {
 	handler := func(msg *worker.Msg) error {
 		var incr int64
 		switch msg.Type {
@@ -35,6 +35,23 @@ func UpdateFavorCount(ctx context.Context, c kafka.ReaderConfig, repo *repositor
 				return err
 			}
 			logx.Infow("update thumbup count success", logx.Field("videoId", videoId))
+
+			video, err := repo.GetVideoById(ctx, videoId)
+			if err != nil {
+				logx.Errorw("get video by id", logx.Field("err", err),
+					logx.Field("videoId", videoId))
+				return err
+			}
+			err = w.WriteMessages(ctx,
+				kafka.Message{
+					Key:   []byte(strconv.FormatInt(video.AuthorID, 10)),
+					Value: []byte(strconv.FormatInt(incr, 10)),
+				})
+			if err != nil {
+				logx.Errorw("send message", logx.Field("err", err),
+					logx.Field("authorId", video.AuthorID))
+				return err
+			}
 		}
 		return nil
 	}

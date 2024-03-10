@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"errors"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/pkg/worker"
@@ -46,28 +47,35 @@ func FavoriteCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *reposi
 
 }
 
-func TotalFavoritedWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
-	handler := func(msg *worker.Msg) error {
-		var incr int64
-		if msg.Type == "INSERT" {
-			incr = 1
-		} else if msg.Type == "DELETE" {
-			incr = -1
+func TotalFavoritedWorkerStart(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) error {
+	c.Topic = TopicTotalFavorited
+	c.GroupID = GroupUpdateTotalFavorited
+	reader := kafka.NewReader(c)
+	for {
+		m, err := reader.FetchMessage(ctx)
+		if errors.Is(err, context.Canceled) {
+			return err
 		}
-		for _, data := range msg.Data {
-			userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-			if err != nil {
-				return err
-			}
-			return db.UpdateFavoriteCount(userId, incr, repo.DB)
+		if err != nil {
+			logx.Errorw("fetch message", logx.Field("err", err))
+			break
 		}
-		return nil
+		userId, err := strconv.ParseInt(string(m.Key), 10, 64)
+		if err != nil {
+			return err
+		}
+		incr, err := strconv.ParseInt(string(m.Value), 10, 64)
+		if err != nil {
+			return err
+		}
+		if err := db.UpdateTotalFavorited(userId, incr, repo.DB); err != nil {
+			return err
+		}
+		if err := reader.CommitMessages(ctx, m); err != nil {
+			logx.Errorw("commit messages", logx.Field("err", err),
+				logx.Field("authorId", userId))
+			return err
+		}
 	}
-	c.Topic = TopicRelation
-	c.GroupID = GroupUpdateFavorCount
-	return &worker.Worker{
-		Handler:      handler,
-		ReaderConfig: c,
-	}
-
+	return nil
 }
