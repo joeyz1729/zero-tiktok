@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
@@ -42,7 +43,7 @@ func (w *Worker) updateWorkCount(data map[string]interface{}) {
 		return
 	}
 
-	err = w.Repo.DBUpdateWorkCount(userId, 1)
+	err = db.UpdateWorkCount(userId, 1, w.Repo.DB)
 	if err != nil {
 		logx.Errorw("db update work count", logx.Field("err", err))
 		return

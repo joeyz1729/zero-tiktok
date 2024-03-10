@@ -4,21 +4,12 @@ package user;
 option go_package="./pb";
 
 service UserService {
-  // http api
   // 用户注册
   rpc Register(register_request) returns(register_response);
   // 用户登陆
   rpc Login(login_request) returns(login_response);
-  // 查询用户信息
-  rpc UserInfo(user_info_request) returns(user_info_response);
-
-  // rpc
-  // 关注等操作检查用户id是否合法
-  rpc GetUserById(get_user_by_id_request) returns(get_user_by_id_response);
   // 根据id列表批量获取用户信息
   rpc GetUsers(get_users_request) returns(get_users_response);
-  rpc GetIdByName(get_id_by_name_request) returns(get_id_by_name_response);
-
 }
 
 message register_request {
@@ -37,12 +28,13 @@ message login_response {
   int64 user_id = 1;
 }
 
-message user_info_request {
-  int64 user_id = 1; // 用户id
-  int64 to_user_id = 2;
+message get_users_request {
+  repeated int64 user_ids = 1;
+  int64 user_id = 2;
 }
-message user_info_response {
-  User user = 1; // 用户信息
+
+message get_users_response {
+  repeated User user_list = 1;
 }
 
 message User {
@@ -57,106 +49,4 @@ message User {
   int64 total_favorited = 9; //获赞数量
   int64 work_count = 10; //作品数量
   int64 favorite_count = 11; //点赞数量
-}
-
-message get_user_by_id_request {
-  int64 user_id = 1;
-}
-
-message get_user_by_id_response {
-  int64 id = 1;
-  string name = 2;
-  string avatar = 3;
-  string background_image = 4;
-  string signature = 5;
-}
-
-message update_follow_info_request {
-  int64 user_id = 1;
-  int64 to_user_id = 2;
-  bool action_type = 3;
-}
-
-message update_follow_info_response {
-  int32 status_code = 1;
-  string status_msg = 2;
-}
-
-message update_favorite_info_request {
-  int64 user_id = 1;
-  int64 video_id = 2;
-  bool action_type = 3;
-  int64 author_id = 4;
-}
-
-message update_favorite_info_response {
-  int32 status_code = 1;
-  string status_msg = 2;
-}
-
-message update_work_info_request {
-  int64 user_id = 1;
-  int64 video_id = 2;
-  int64 work_count= 3;
-}
-
-message update_work_info_response {
-  int32 status_code = 1;
-  string status_msg = 2;
-}
-
-
-message get_users_request {
-  repeated int64 user_ids = 1;
-}
-
-message get_users_response {
-  repeated User user_list = 1;
-}
-
-message get_author_request {
-  int64 user_id = 1;
-  int64 author_id = 2;
-}
-
-message get_author_response {
-  int64 id = 1; // 用户id
-  string name = 2; // 用户名称
-  int64 follow_count = 3; // 关注总数
-  int64 follower_count = 4; // 粉丝总数
-  bool is_follow = 5; // true-已关注，false-未关注
-  string avatar = 6; //用户头像
-  string background_image = 7; //用户个人页顶部大图
-  string signature = 8; //个人简介
-  int64 total_favorited = 9; //获赞数量
-  int64 work_count = 10; //作品数量
-  int64 favorite_count = 11; //点赞数量
-}
-
-
-message get_authors_request {
-  int64 user_id = 1;
-  repeated int64 author_ids = 2;
-}
-
-message get_authors_response {
-  repeated User author_infos = 1;
-}
-
-message follow_prepare_request {
-  int64 user_id = 1;
-  bool action_type = 2;
-}
-
-message follow_prepare_response{
-
-}
-
-message get_id_by_name_request  {
-  string username = 1;
-}
-
-message get_id_by_name_response {
-  bool exist = 1;
-  int64 user_id = 2;
 }

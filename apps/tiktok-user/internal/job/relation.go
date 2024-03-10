@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
@@ -56,7 +57,7 @@ func (w *Worker) incrCount(ctx context.Context, data map[string]interface{}) err
 		return err
 	}
 	logx.Infow("add follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return w.Repo.DBUpdateRelationCount(userId, toUserId, 1)
+	return db.UpdateRelationCount(userId, toUserId, 1, w.Repo.DB)
 }
 
 func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) error {
@@ -69,5 +70,5 @@ func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) err
 		return err
 	}
 	logx.Infow("del follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return w.Repo.DBUpdateRelationCount(userId, toUserId, -1)
+	return db.UpdateRelationCount(userId, toUserId, -1, w.Repo.DB)
 }

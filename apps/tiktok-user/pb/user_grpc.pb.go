@@ -19,31 +19,21 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_Register_FullMethodName    = "/user.UserService/Register"
-	UserService_Login_FullMethodName       = "/user.UserService/Login"
-	UserService_UserInfo_FullMethodName    = "/user.UserService/UserInfo"
-	UserService_GetUserById_FullMethodName = "/user.UserService/GetUserById"
-	UserService_GetUsers_FullMethodName    = "/user.UserService/GetUsers"
-	UserService_GetIdByName_FullMethodName = "/user.UserService/GetIdByName"
+	UserService_Register_FullMethodName = "/user.UserService/Register"
+	UserService_Login_FullMethodName    = "/user.UserService/Login"
+	UserService_GetUsers_FullMethodName = "/user.UserService/GetUsers"
 )
 
 // UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// http api
 	// 用户注册
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	// 用户登陆
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	// 查询用户信息
-	UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
-	// rpc
-	// 关注等操作检查用户id是否合法
-	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 	// 根据id列表批量获取用户信息
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
-	GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 }
 
 type userServiceClient struct {
@@ -72,36 +62,9 @@ func (c *userServiceClient) Login(ctx context.Context, in *LoginRequest, opts ..
 	return out, nil
 }
 
-func (c *userServiceClient) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
-	out := new(UserInfoResponse)
-	err := c.cc.Invoke(ctx, UserService_UserInfo_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
-	out := new(GetUserByIdResponse)
-	err := c.cc.Invoke(ctx, UserService_GetUserById_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
 	out := new(GetUsersResponse)
 	err := c.cc.Invoke(ctx, UserService_GetUsers_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
-	out := new(GetIdByNameResponse)
-	err := c.cc.Invoke(ctx, UserService_GetIdByName_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,19 +75,12 @@ func (c *userServiceClient) GetIdByName(ctx context.Context, in *GetIdByNameRequ
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// http api
 	// 用户注册
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	// 用户登陆
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	// 查询用户信息
-	UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error)
-	// rpc
-	// 关注等操作检查用户id是否合法
-	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error)
 	// 根据id列表批量获取用户信息
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
-	GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -138,17 +94,8 @@ func (UnimplementedUserServiceServer) Register(context.Context, *RegisterRequest
 func (UnimplementedUserServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedUserServiceServer) UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
-}
-func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
-}
 func (UnimplementedUserServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
-}
-func (UnimplementedUserServiceServer) GetIdByName(context.Context, *GetIdByNameRequest) (*GetIdByNameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetIdByName not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -199,42 +146,6 @@ func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).UserInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_UserInfo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UserInfo(ctx, req.(*UserInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserByIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserById(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_GetUserById_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserById(ctx, req.(*GetUserByIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUsersRequest)
 	if err := dec(in); err != nil {
@@ -249,24 +160,6 @@ func _UserService_GetUsers_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUsers(ctx, req.(*GetUsersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_GetIdByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetIdByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).GetIdByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_GetIdByName_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetIdByName(ctx, req.(*GetIdByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -287,20 +180,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_Login_Handler,
 		},
 		{
-			MethodName: "UserInfo",
-			Handler:    _UserService_UserInfo_Handler,
-		},
-		{
-			MethodName: "GetUserById",
-			Handler:    _UserService_GetUserById_Handler,
-		},
-		{
 			MethodName: "GetUsers",
 			Handler:    _UserService_GetUsers_Handler,
-		},
-		{
-			MethodName: "GetIdByName",
-			Handler:    _UserService_GetIdByName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

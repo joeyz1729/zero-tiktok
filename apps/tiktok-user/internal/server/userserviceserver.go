@@ -22,7 +22,7 @@ func NewUserServiceServer(svcCtx *svc.ServiceContext) *UserServiceServer {
 	}
 }
 
-// http api
+// 用户注册
 func (s *UserServiceServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	l := logic.NewRegisterLogic(ctx, s.svcCtx)
 	return l.Register(in)
@@ -34,25 +34,8 @@ func (s *UserServiceServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb
 	return l.Login(in)
 }
 
-// 查询用户信息
-func (s *UserServiceServer) UserInfo(ctx context.Context, in *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
-	l := logic.NewUserInfoLogic(ctx, s.svcCtx)
-	return l.UserInfo(in)
-}
-
-// rpc
-func (s *UserServiceServer) GetUserById(ctx context.Context, in *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
-	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
-	return l.GetUserById(in)
-}
-
 // 根据id列表批量获取用户信息
 func (s *UserServiceServer) GetUsers(ctx context.Context, in *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
 	l := logic.NewGetUsersLogic(ctx, s.svcCtx)
 	return l.GetUsers(in)
-}
-
-func (s *UserServiceServer) GetIdByName(ctx context.Context, in *pb.GetIdByNameRequest) (*pb.GetIdByNameResponse, error) {
-	l := logic.NewGetIdByNameLogic(ctx, s.svcCtx)
-	return l.GetIdByName(in)
 }

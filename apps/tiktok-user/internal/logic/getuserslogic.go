@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -22,31 +23,41 @@ func NewGetUsersLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUsers
 }
 
 func (l *GetUsersLogic) GetUsers(in *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
-	//// todo: add your logic here and delete this line
 	resp := new(pb.GetUsersResponse)
-	//users := make([]*pb.UserInfo, len(in.UserIds))
-	//for i, uid := range in.UserIds {
-	//	user, err := l.svcCtx.UserRepo.GetUserInfo(uid)
-	//	if err != nil {
-	//		logx.Error("get tiktok-user info failed")
-	//		return nil, err
-	//	}
-	//	logx.Info(user)
-	//	users[i] = &pb.UserInfo{
-	//		Id:              uid,
-	//		Name:            user.Username,
-	//		Avatar:          "no avatar",
-	//		BackgroundImage: "no background image",
-	//		Signature:       "no signature",
-	//
-	//		FollowCount:   user.FollowedCount,
-	//		FollowerCount: user.FollowerCount,
-	//
-	//		TotalFavorited: user.TotalFavorited,
-	//		FavoriteCount:  user.FavoriteCount,
-	//		WorkCount:      user.WorkCount,
-	//	}
-	//}
-	//resp.UserList = users
+	users := make([]*pb.User, len(in.UserIds))
+	for i, uid := range in.UserIds {
+		// 查询用户信息
+		user, err := l.svcCtx.UserRepo.GetUserDetail(uid)
+		if err != nil {
+			logx.Errorw("get user detail", logx.Field("err", err))
+			return nil, err
+		}
+		users[i] = &pb.User{
+			Id:              user.ID,
+			Name:            user.Username,
+			FollowCount:     user.FollowCount,
+			FollowerCount:   user.FollowerCount,
+			Avatar:          user.Avatar,
+			BackgroundImage: user.BackgroundImage,
+			Signature:       user.Signature,
+			TotalFavorited:  user.TotalFavorited,
+			WorkCount:       user.WorkCount,
+			FavoriteCount:   user.FavoriteCount,
+		}
+
+		// userId字段为0时不查询关注关系。
+		if in.UserId != 0 {
+			relation, err := l.svcCtx.FollowRpc.GetRelation(l.ctx, &follow.GetRelationRequest{
+				UserId:   in.UserId,
+				ToUserId: uid,
+			})
+			if err != nil {
+				logx.Errorw("follow rpc get relation", logx.Field("err", err))
+				return nil, err
+			}
+			users[i].IsFollow = relation.IsFollowing
+		}
+	}
+	resp.UserList = users
 	return resp, nil
 }

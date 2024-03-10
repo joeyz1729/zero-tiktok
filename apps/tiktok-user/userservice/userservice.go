@@ -13,44 +13,21 @@ import (
 )
 
 type (
-	FollowPrepareRequest       = pb.FollowPrepareRequest
-	FollowPrepareResponse      = pb.FollowPrepareResponse
-	GetAuthorRequest           = pb.GetAuthorRequest
-	GetAuthorResponse          = pb.GetAuthorResponse
-	GetAuthorsRequest          = pb.GetAuthorsRequest
-	GetAuthorsResponse         = pb.GetAuthorsResponse
-	GetIdByNameRequest         = pb.GetIdByNameRequest
-	GetIdByNameResponse        = pb.GetIdByNameResponse
-	GetUserByIdRequest         = pb.GetUserByIdRequest
-	GetUserByIdResponse        = pb.GetUserByIdResponse
-	GetUsersRequest            = pb.GetUsersRequest
-	GetUsersResponse           = pb.GetUsersResponse
-	LoginRequest               = pb.LoginRequest
-	LoginResponse              = pb.LoginResponse
-	RegisterRequest            = pb.RegisterRequest
-	RegisterResponse           = pb.RegisterResponse
-	UpdateFavoriteInfoRequest  = pb.UpdateFavoriteInfoRequest
-	UpdateFavoriteInfoResponse = pb.UpdateFavoriteInfoResponse
-	UpdateFollowInfoRequest    = pb.UpdateFollowInfoRequest
-	UpdateFollowInfoResponse   = pb.UpdateFollowInfoResponse
-	UpdateWorkInfoRequest      = pb.UpdateWorkInfoRequest
-	UpdateWorkInfoResponse     = pb.UpdateWorkInfoResponse
-	User                       = pb.User
-	UserInfoRequest            = pb.UserInfoRequest
-	UserInfoResponse           = pb.UserInfoResponse
+	GetUsersRequest  = pb.GetUsersRequest
+	GetUsersResponse = pb.GetUsersResponse
+	LoginRequest     = pb.LoginRequest
+	LoginResponse    = pb.LoginResponse
+	RegisterRequest  = pb.RegisterRequest
+	RegisterResponse = pb.RegisterResponse
+	User             = pb.User
 
 	UserService interface {
-		// http api
+		// 用户注册
 		Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 		// 用户登陆
 		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-		// 查询用户信息
-		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
-		// rpc
-		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error)
 		// 根据id列表批量获取用户信息
 		GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
-		GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error)
 	}
 
 	defaultUserService struct {
@@ -64,7 +41,7 @@ func NewUserService(cli zrpc.Client) UserService {
 	}
 }
 
-// http api
+// 用户注册
 func (m *defaultUserService) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	client := pb.NewUserServiceClient(m.cli.Conn())
 	return client.Register(ctx, in, opts...)
@@ -76,25 +53,8 @@ func (m *defaultUserService) Login(ctx context.Context, in *LoginRequest, opts .
 	return client.Login(ctx, in, opts...)
 }
 
-// 查询用户信息
-func (m *defaultUserService) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
-	client := pb.NewUserServiceClient(m.cli.Conn())
-	return client.UserInfo(ctx, in, opts...)
-}
-
-// rpc
-func (m *defaultUserService) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByIdResponse, error) {
-	client := pb.NewUserServiceClient(m.cli.Conn())
-	return client.GetUserById(ctx, in, opts...)
-}
-
 // 根据id列表批量获取用户信息
 func (m *defaultUserService) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
 	client := pb.NewUserServiceClient(m.cli.Conn())
 	return client.GetUsers(ctx, in, opts...)
-}
-
-func (m *defaultUserService) GetIdByName(ctx context.Context, in *GetIdByNameRequest, opts ...grpc.CallOption) (*GetIdByNameResponse, error) {
-	client := pb.NewUserServiceClient(m.cli.Conn())
-	return client.GetIdByName(ctx, in, opts...)
 }

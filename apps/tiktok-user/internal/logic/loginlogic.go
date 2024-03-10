@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
+	"github.com/joeyz1729/zero-tiktok/pkg/tool"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -28,11 +29,11 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 func (l *LoginLogic) Login(in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	resp := new(pb.LoginResponse)
-	user, err := l.svcCtx.UserRepo.DBGetUserByName(in.Username)
+	user, err := l.svcCtx.UserRepo.GetUserByName(in.Username) // todo
 	if err != nil {
 		return resp, err
 	}
-	if user.Password != in.Password {
+	if user.Password != tool.Encrypt(in.GetPassword()) {
 		return nil, ErrInvalidPassword
 	}
 	resp.UserId = user.ID
