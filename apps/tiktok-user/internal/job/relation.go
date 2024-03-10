@@ -6,6 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
+	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
 )
 
@@ -31,8 +32,12 @@ func RelationWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository.
 			}
 			err = db.UpdateRelationCount(userId, toUserId, incr, repo.DB)
 			if err != nil {
+				logx.Errorw("update relation count", logx.Field("err", err),
+					logx.Field("userId", userId), logx.Field("toUserId", toUserId))
 				return err
 			}
+			logx.Infow("update relation count success", logx.Field("incr", incr),
+				logx.Field("userId", userId), logx.Field("toUserId", toUserId))
 		}
 		return nil
 	}

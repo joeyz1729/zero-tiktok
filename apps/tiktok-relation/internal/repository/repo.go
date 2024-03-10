@@ -36,18 +36,25 @@ func (r *Repo) CheckRelation(ctx context.Context, userId int64, toUserId int64) 
 }
 
 func (r *Repo) AddRelation(ctx context.Context, userId int64, toUserId int64) (err error) {
-	return r.mdb.Add(userId, toUserId)
+	err = r.mdb.Add(userId, toUserId)
+	if err != nil {
+		return err
+	}
+	return r.cache.AddRelation(ctx, userId, toUserId)
 }
 
 func (r *Repo) DelRelation(ctx context.Context, userId int64, toUserId int64) (err error) {
-	return r.mdb.Delete(userId, toUserId)
+	err = r.mdb.Delete(userId, toUserId)
+	if err != nil {
+		return err
+	}
+	return r.cache.DelRelation(ctx, userId, toUserId)
 }
 
 func (r *Repo) GetFollowedIds(ctx context.Context, userId int64) (ids []int64, err error) {
-	return ids, nil
+	return r.mdb.GetFollowedIds(ctx, userId)
 }
 
-// GetFollowerIds 根据用户获取他的粉丝列表
 func (r *Repo) GetFollowerIds(ctx context.Context, userId int64) (ids []int64, err error) {
-	return ids, nil
+	return r.mdb.GetFollowerIds(ctx, userId)
 }

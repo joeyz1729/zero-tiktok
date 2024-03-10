@@ -25,21 +25,29 @@ func NewGetFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetFollowerListLogic) GetFollowerList(in *pb.GetFollowerListRequest) (*pb.GetFollowerListResponse, error) {
-	ids, err := l.svcCtx.FollowRepo.GetFollowerIds(l.ctx, in.GetToUserId())
+	// 获取id列表
+	ids, err := l.svcCtx.FollowRepo.GetFollowerIds(l.ctx, in.ToUserId)
 	if err != nil {
+		logx.Errorw("get follower ids", logx.Field("err", err),
+			logx.Field("userId", in.ToUserId))
 		return nil, err
 	}
-	users, err := l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{UserIds: ids})
+
+	// 获取详细用户信息
+	users, err := l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{
+		UserIds: ids,
+		UserId:  in.UserId,
+	})
 	if err != nil {
+		logx.Errorw("user rpc get users", logx.Field("err", err),
+			logx.Field("userIds", ids), logx.Field("userId", in.UserId))
 		return nil, err
 	}
+
+	// 组装结果
 	resp := new(pb.GetFollowerListResponse)
 	resp.List = make([]*pb.User, len(users.UserList))
 	for i, user := range users.UserList {
-		relation, err := l.svcCtx.FollowRepo.CheckRelation(l.ctx, in.UserId, in.ToUserId)
-		if err != nil {
-			return nil, err
-		}
 		resp.List[i] = &pb.User{
 			Id:              user.Id,
 			Name:            user.Name,
@@ -51,9 +59,8 @@ func (l *GetFollowerListLogic) GetFollowerList(in *pb.GetFollowerListRequest) (*
 			FavoriteCount:   user.FavoriteCount,
 			FollowCount:     user.FollowCount,
 			FollowerCount:   user.FollowerCount,
-			IsFollow:        relation,
+			IsFollow:        user.IsFollow,
 		}
 	}
-
 	return resp, nil
 }

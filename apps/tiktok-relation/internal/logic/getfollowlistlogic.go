@@ -25,21 +25,27 @@ func NewGetFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 
 // GetFollowList 获取点赞列表，并检查对方是否关注自己
 func (l *GetFollowListLogic) GetFollowList(in *pb.GetFollowListRequest) (*pb.GetFollowListResponse, error) {
-	ids, err := l.svcCtx.FollowRepo.GetFollowedIds(l.ctx, in.GetToUserId())
+	ids, err := l.svcCtx.FollowRepo.GetFollowedIds(l.ctx, in.ToUserId)
 	if err != nil {
+		logx.Errorw("get followed ids", logx.Field("err", err),
+			logx.Field("userId", in.ToUserId))
 		return nil, err
 	}
-	users, err := l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{UserIds: ids})
+	logx.Infow("followed ids", logx.Field("ids", ids))
+	users, err := l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{
+		UserIds: ids,
+		UserId:  in.UserId,
+	})
+	logx.Infow("get users", logx.Field("id", users.UserList[0].Name))
 	if err != nil {
+		logx.Errorw("user rpc get users", logx.Field("err", err),
+			logx.Field("userIds", ids), logx.Field("userId", in.UserId))
 		return nil, err
 	}
+
 	resp := new(pb.GetFollowListResponse)
 	resp.List = make([]*pb.User, len(users.UserList))
 	for i, user := range users.UserList {
-		relation, err := l.svcCtx.FollowRepo.CheckRelation(l.ctx, in.UserId, in.ToUserId)
-		if err != nil {
-			return nil, err
-		}
 		resp.List[i] = &pb.User{
 			Id:              user.Id,
 			Name:            user.Name,
@@ -51,7 +57,7 @@ func (l *GetFollowListLogic) GetFollowList(in *pb.GetFollowListRequest) (*pb.Get
 			TotalFavorited:  user.TotalFavorited,
 			WorkCount:       user.WorkCount,
 			FavoriteCount:   user.FavoriteCount,
-			IsFollow:        relation,
+			IsFollow:        user.IsFollow,
 		}
 	}
 

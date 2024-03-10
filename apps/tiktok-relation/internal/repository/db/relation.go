@@ -65,10 +65,14 @@ func (fd *FollowDB) Delete(userId int64, followedId int64) error {
 	return fd.Table(TableNameRelation).Where("user_id = ? and followed_id = ?", userId, followedId).Delete(&relation).Error
 }
 
-func (fd *FollowDB) GetFollowerIds(ctx context.Context, uid int64) (ids []int64, err error) {
-	return nil, nil
+func (fd *FollowDB) GetFollowerIds(ctx context.Context, uid int64) ([]int64, error) {
+	var ids []int64
+	err := fd.Table(TableNameRelation).Select("user_id").Where("followed_id = ?", uid).Find(&ids).Error
+	return ids, err
 }
 
-func (fd *FollowDB) GetFollowedIds(ctx context.Context, uid int64) (ids []int64, err error) {
-	return nil, nil
+func (fd *FollowDB) GetFollowedIds(ctx context.Context, uid int64) ([]int64, error) {
+	var ids []int64
+	err := fd.Table(TableNameRelation).Select("followed_id").Where("user_id = ?", uid).Find(&ids).Error
+	return ids, err
 }
