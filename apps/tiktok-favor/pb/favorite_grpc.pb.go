@@ -22,6 +22,7 @@ const (
 	Favorite_AddThumbup_FullMethodName         = "/favorite.Favorite/AddThumbup"
 	Favorite_DeleteThumbup_FullMethodName      = "/favorite.Favorite/DeleteThumbup"
 	Favorite_CheckThumbup_FullMethodName       = "/favorite.Favorite/CheckThumbup"
+	Favorite_MCheckThumbup_FullMethodName      = "/favorite.Favorite/MCheckThumbup"
 	Favorite_GetThumbupVideoIds_FullMethodName = "/favorite.Favorite/GetThumbupVideoIds"
 )
 
@@ -35,6 +36,7 @@ type FavoriteClient interface {
 	DeleteThumbup(ctx context.Context, in *DeleteThumbupRequest, opts ...grpc.CallOption) (*DeleteThumbupResponse, error)
 	// 检查用户对视频是否点过赞
 	CheckThumbup(ctx context.Context, in *CheckThumbupRequest, opts ...grpc.CallOption) (*CheckThumbupResponse, error)
+	MCheckThumbup(ctx context.Context, in *MCheckThumbupRequest, opts ...grpc.CallOption) (*MCheckThumbupResponse, error)
 	// 获取用户点赞的视频id
 	GetThumbupVideoIds(ctx context.Context, in *GetThumbupVideoIdsRequest, opts ...grpc.CallOption) (*GetThumbupVideoIdsResponse, error)
 }
@@ -74,6 +76,15 @@ func (c *favoriteClient) CheckThumbup(ctx context.Context, in *CheckThumbupReque
 	return out, nil
 }
 
+func (c *favoriteClient) MCheckThumbup(ctx context.Context, in *MCheckThumbupRequest, opts ...grpc.CallOption) (*MCheckThumbupResponse, error) {
+	out := new(MCheckThumbupResponse)
+	err := c.cc.Invoke(ctx, Favorite_MCheckThumbup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *favoriteClient) GetThumbupVideoIds(ctx context.Context, in *GetThumbupVideoIdsRequest, opts ...grpc.CallOption) (*GetThumbupVideoIdsResponse, error) {
 	out := new(GetThumbupVideoIdsResponse)
 	err := c.cc.Invoke(ctx, Favorite_GetThumbupVideoIds_FullMethodName, in, out, opts...)
@@ -93,6 +104,7 @@ type FavoriteServer interface {
 	DeleteThumbup(context.Context, *DeleteThumbupRequest) (*DeleteThumbupResponse, error)
 	// 检查用户对视频是否点过赞
 	CheckThumbup(context.Context, *CheckThumbupRequest) (*CheckThumbupResponse, error)
+	MCheckThumbup(context.Context, *MCheckThumbupRequest) (*MCheckThumbupResponse, error)
 	// 获取用户点赞的视频id
 	GetThumbupVideoIds(context.Context, *GetThumbupVideoIdsRequest) (*GetThumbupVideoIdsResponse, error)
 	mustEmbedUnimplementedFavoriteServer()
@@ -110,6 +122,9 @@ func (UnimplementedFavoriteServer) DeleteThumbup(context.Context, *DeleteThumbup
 }
 func (UnimplementedFavoriteServer) CheckThumbup(context.Context, *CheckThumbupRequest) (*CheckThumbupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckThumbup not implemented")
+}
+func (UnimplementedFavoriteServer) MCheckThumbup(context.Context, *MCheckThumbupRequest) (*MCheckThumbupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MCheckThumbup not implemented")
 }
 func (UnimplementedFavoriteServer) GetThumbupVideoIds(context.Context, *GetThumbupVideoIdsRequest) (*GetThumbupVideoIdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetThumbupVideoIds not implemented")
@@ -181,6 +196,24 @@ func _Favorite_CheckThumbup_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Favorite_MCheckThumbup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MCheckThumbupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FavoriteServer).MCheckThumbup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Favorite_MCheckThumbup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FavoriteServer).MCheckThumbup(ctx, req.(*MCheckThumbupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Favorite_GetThumbupVideoIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetThumbupVideoIdsRequest)
 	if err := dec(in); err != nil {
@@ -217,6 +250,10 @@ var Favorite_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckThumbup",
 			Handler:    _Favorite_CheckThumbup_Handler,
+		},
+		{
+			MethodName: "MCheckThumbup",
+			Handler:    _Favorite_MCheckThumbup_Handler,
 		},
 		{
 			MethodName: "GetThumbupVideoIds",

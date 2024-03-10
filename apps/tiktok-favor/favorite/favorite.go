@@ -21,6 +21,8 @@ type (
 	DeleteThumbupResponse      = pb.DeleteThumbupResponse
 	GetThumbupVideoIdsRequest  = pb.GetThumbupVideoIdsRequest
 	GetThumbupVideoIdsResponse = pb.GetThumbupVideoIdsResponse
+	MCheckThumbupRequest       = pb.MCheckThumbupRequest
+	MCheckThumbupResponse      = pb.MCheckThumbupResponse
 
 	Favorite interface {
 		// 添加点赞操作
@@ -29,6 +31,7 @@ type (
 		DeleteThumbup(ctx context.Context, in *DeleteThumbupRequest, opts ...grpc.CallOption) (*DeleteThumbupResponse, error)
 		// 检查用户对视频是否点过赞
 		CheckThumbup(ctx context.Context, in *CheckThumbupRequest, opts ...grpc.CallOption) (*CheckThumbupResponse, error)
+		MCheckThumbup(ctx context.Context, in *MCheckThumbupRequest, opts ...grpc.CallOption) (*MCheckThumbupResponse, error)
 		// 获取用户点赞的视频id
 		GetThumbupVideoIds(ctx context.Context, in *GetThumbupVideoIdsRequest, opts ...grpc.CallOption) (*GetThumbupVideoIdsResponse, error)
 	}
@@ -60,6 +63,11 @@ func (m *defaultFavorite) DeleteThumbup(ctx context.Context, in *DeleteThumbupRe
 func (m *defaultFavorite) CheckThumbup(ctx context.Context, in *CheckThumbupRequest, opts ...grpc.CallOption) (*CheckThumbupResponse, error) {
 	client := pb.NewFavoriteClient(m.cli.Conn())
 	return client.CheckThumbup(ctx, in, opts...)
+}
+
+func (m *defaultFavorite) MCheckThumbup(ctx context.Context, in *MCheckThumbupRequest, opts ...grpc.CallOption) (*MCheckThumbupResponse, error) {
+	client := pb.NewFavoriteClient(m.cli.Conn())
+	return client.MCheckThumbup(ctx, in, opts...)
 }
 
 // 获取用户点赞的视频id

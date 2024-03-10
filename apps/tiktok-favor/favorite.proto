@@ -12,7 +12,7 @@ service Favorite {
   rpc DeleteThumbup(delete_thumbup_request) returns(delete_thumbup_response);
   // 检查用户对视频是否点过赞
   rpc CheckThumbup(check_thumbup_request) returns(check_thumbup_response);
-
+  rpc MCheckThumbup(MCheckThumbupRequest) returns(MCheckThumbupResponse);
   // 获取用户点赞的视频id
   rpc GetThumbupVideoIds(get_thumbup_video_ids_request) returns (get_thumbup_video_ids_response);
 
@@ -40,6 +40,15 @@ message check_thumbup_request {
 
 message check_thumbup_response {
   int32 is_thumbup = 1;
+}
+
+message MCheckThumbupRequest {
+  int64 user_id = 1;
+  repeated int64 video_ids = 2;
+}
+
+message MCheckThumbupResponse {
+  repeated bool is_thumbup = 1;
 }
 
 message get_thumbup_video_ids_request {

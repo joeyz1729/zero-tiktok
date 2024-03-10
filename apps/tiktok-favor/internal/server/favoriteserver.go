@@ -40,6 +40,11 @@ func (s *FavoriteServer) CheckThumbup(ctx context.Context, in *pb.CheckThumbupRe
 	return l.CheckThumbup(in)
 }
 
+func (s *FavoriteServer) MCheckThumbup(ctx context.Context, in *pb.MCheckThumbupRequest) (*pb.MCheckThumbupResponse, error) {
+	l := logic.NewMCheckThumbupLogic(ctx, s.svcCtx)
+	return l.MCheckThumbup(in)
+}
+
 // 获取用户点赞的视频id
 func (s *FavoriteServer) GetThumbupVideoIds(ctx context.Context, in *pb.GetThumbupVideoIdsRequest) (*pb.GetThumbupVideoIdsResponse, error) {
 	l := logic.NewGetThumbupVideoIdsLogic(ctx, s.svcCtx)
