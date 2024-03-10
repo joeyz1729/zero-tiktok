@@ -13,40 +13,22 @@ import (
 )
 
 type (
-	FeedRequest                 = pb.FeedRequest
-	FeedResponse                = pb.FeedResponse
-	GetFavorListRequest         = pb.GetFavorListRequest
-	GetFavorListResponse        = pb.GetFavorListResponse
-	GetListByAuthorIdRequest    = pb.GetListByAuthorIdRequest
-	GetListByAuthorIdResponse   = pb.GetListByAuthorIdResponse
-	GetListByUserIdRequest      = pb.GetListByUserIdRequest
-	GetListByUserIdResponse     = pb.GetListByUserIdResponse
-	GetVideoByIdRequest         = pb.GetVideoByIdRequest
-	GetVideoByIdResponse        = pb.GetVideoByIdResponse
-	GetVideosByIdsRequest       = pb.GetVideosByIdsRequest
-	GetVideosByIdsResponse      = pb.GetVideosByIdsResponse
-	PublishActionRequest        = pb.PublishActionRequest
-	PublishActionResponse       = pb.PublishActionResponse
-	PublishListRequest          = pb.PublishListRequest
-	PublishListResponse         = pb.PublishListResponse
-	UpdateFavoriteCountRequest  = pb.UpdateFavoriteCountRequest
-	UpdateFavoriteCountResponse = pb.UpdateFavoriteCountResponse
-	User                        = pb.User
-	Video                       = pb.Video
+	FeedRequest           = pb.FeedRequest
+	FeedResponse          = pb.FeedResponse
+	GetVideosRequest      = pb.GetVideosRequest
+	GetVideosResponse     = pb.GetVideosResponse
+	PublishActionRequest  = pb.PublishActionRequest
+	PublishActionResponse = pb.PublishActionResponse
+	PublishListRequest    = pb.PublishListRequest
+	PublishListResponse   = pb.PublishListResponse
+	User                  = pb.User
+	Video                 = pb.Video
 
 	VideoService interface {
-		// http
-		PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
-		// 查询视频流
 		Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
-		// 查询指定用户发布的视频列表
+		PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error)
 		PublishList(ctx context.Context, in *PublishListRequest, opts ...grpc.CallOption) (*PublishListResponse, error)
-		// tiktok-favor
-		GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error)
-		// 根据视频id查询视频详细信息，不包括作者详细信息
-		GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error)
-		// 根据视频id查询视频详细信息，不包括作者详细信息
-		GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error)
+		GetVideos(ctx context.Context, in *GetVideosRequest, opts ...grpc.CallOption) (*GetVideosResponse, error)
 	}
 
 	defaultVideoService struct {
@@ -60,38 +42,22 @@ func NewVideoService(cli zrpc.Client) VideoService {
 	}
 }
 
-// http
-func (m *defaultVideoService) PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error) {
-	client := pb.NewVideoServiceClient(m.cli.Conn())
-	return client.PublishAction(ctx, in, opts...)
-}
-
-// 查询视频流
 func (m *defaultVideoService) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
 	client := pb.NewVideoServiceClient(m.cli.Conn())
 	return client.Feed(ctx, in, opts...)
 }
 
-// 查询指定用户发布的视频列表
+func (m *defaultVideoService) PublishAction(ctx context.Context, in *PublishActionRequest, opts ...grpc.CallOption) (*PublishActionResponse, error) {
+	client := pb.NewVideoServiceClient(m.cli.Conn())
+	return client.PublishAction(ctx, in, opts...)
+}
+
 func (m *defaultVideoService) PublishList(ctx context.Context, in *PublishListRequest, opts ...grpc.CallOption) (*PublishListResponse, error) {
 	client := pb.NewVideoServiceClient(m.cli.Conn())
 	return client.PublishList(ctx, in, opts...)
 }
 
-// tiktok-favor
-func (m *defaultVideoService) GetListByAuthorId(ctx context.Context, in *GetListByAuthorIdRequest, opts ...grpc.CallOption) (*GetListByAuthorIdResponse, error) {
+func (m *defaultVideoService) GetVideos(ctx context.Context, in *GetVideosRequest, opts ...grpc.CallOption) (*GetVideosResponse, error) {
 	client := pb.NewVideoServiceClient(m.cli.Conn())
-	return client.GetListByAuthorId(ctx, in, opts...)
-}
-
-// 根据视频id查询视频详细信息，不包括作者详细信息
-func (m *defaultVideoService) GetVideoById(ctx context.Context, in *GetVideoByIdRequest, opts ...grpc.CallOption) (*GetVideoByIdResponse, error) {
-	client := pb.NewVideoServiceClient(m.cli.Conn())
-	return client.GetVideoById(ctx, in, opts...)
-}
-
-// 根据视频id查询视频详细信息，不包括作者详细信息
-func (m *defaultVideoService) GetVideosByIds(ctx context.Context, in *GetVideosByIdsRequest, opts ...grpc.CallOption) (*GetVideosByIdsResponse, error) {
-	client := pb.NewVideoServiceClient(m.cli.Conn())
-	return client.GetVideosByIds(ctx, in, opts...)
+	return client.GetVideos(ctx, in, opts...)
 }

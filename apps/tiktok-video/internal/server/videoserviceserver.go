@@ -22,38 +22,22 @@ func NewVideoServiceServer(svcCtx *svc.ServiceContext) *VideoServiceServer {
 	}
 }
 
-// http
-func (s *VideoServiceServer) PublishAction(ctx context.Context, in *pb.PublishActionRequest) (*pb.PublishActionResponse, error) {
-	l := logic.NewPublishActionLogic(ctx, s.svcCtx)
-	return l.PublishAction(in)
-}
-
-// 查询视频流
 func (s *VideoServiceServer) Feed(ctx context.Context, in *pb.FeedRequest) (*pb.FeedResponse, error) {
 	l := logic.NewFeedLogic(ctx, s.svcCtx)
 	return l.Feed(in)
 }
 
-// 查询指定用户发布的视频列表
+func (s *VideoServiceServer) PublishAction(ctx context.Context, in *pb.PublishActionRequest) (*pb.PublishActionResponse, error) {
+	l := logic.NewPublishActionLogic(ctx, s.svcCtx)
+	return l.PublishAction(in)
+}
+
 func (s *VideoServiceServer) PublishList(ctx context.Context, in *pb.PublishListRequest) (*pb.PublishListResponse, error) {
 	l := logic.NewPublishListLogic(ctx, s.svcCtx)
 	return l.PublishList(in)
 }
 
-// tiktok-favor
-func (s *VideoServiceServer) GetListByAuthorId(ctx context.Context, in *pb.GetListByAuthorIdRequest) (*pb.GetListByAuthorIdResponse, error) {
-	l := logic.NewGetListByAuthorIdLogic(ctx, s.svcCtx)
-	return l.GetListByAuthorId(in)
-}
-
-// 根据视频id查询视频详细信息，不包括作者详细信息
-func (s *VideoServiceServer) GetVideoById(ctx context.Context, in *pb.GetVideoByIdRequest) (*pb.GetVideoByIdResponse, error) {
-	l := logic.NewGetVideoByIdLogic(ctx, s.svcCtx)
-	return l.GetVideoById(in)
-}
-
-// 根据视频id查询视频详细信息，不包括作者详细信息
-func (s *VideoServiceServer) GetVideosByIds(ctx context.Context, in *pb.GetVideosByIdsRequest) (*pb.GetVideosByIdsResponse, error) {
-	l := logic.NewGetVideosByIdsLogic(ctx, s.svcCtx)
-	return l.GetVideosByIds(in)
+func (s *VideoServiceServer) GetVideos(ctx context.Context, in *pb.GetVideosRequest) (*pb.GetVideosResponse, error) {
+	l := logic.NewGetVideosLogic(ctx, s.svcCtx)
+	return l.GetVideos(in)
 }

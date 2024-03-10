@@ -43,14 +43,14 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		panic(err)
 	}
 
-	reader := kafka.NewReader(kafka.ReaderConfig{
+	kafkaConfig := &kafka.ReaderConfig{
 		Brokers:     c.Kafka.Brokers,
 		Topic:       c.Kafka.Topic,
 		Partition:   0,
 		MaxBytes:    10e6, // 10MB
 		GroupID:     "tiktok-user",
 		StartOffset: kafka.LastOffset,
-	})
+	}
 	repo := repository.NewRepo(db, rdb)
 
 	return &ServiceContext{
@@ -58,7 +58,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		FollowRepo: repo,
 		Worker: &job.Worker{
 			Repo:        repo,
-			KafkaReader: reader,
+			KafkaConfig: kafkaConfig,
 		},
 		UserRpc: userservice.NewUserService(zrpc.MustNewClient(c.UserRpc)),
 	}

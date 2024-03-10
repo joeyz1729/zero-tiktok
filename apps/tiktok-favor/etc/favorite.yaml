@@ -38,3 +38,9 @@ VideoRpc:
       - 127.0.0.1:2379
     Key: tiktok-video
   NonBlock: true
+
+
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  Topic: tiktok_user_user

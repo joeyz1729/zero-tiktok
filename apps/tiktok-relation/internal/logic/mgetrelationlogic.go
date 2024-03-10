@@ -27,6 +27,11 @@ func (l *MGetRelationLogic) MGetRelation(in *pb.MGetRelationRequest) (*pb.MGetRe
 	var resp = new(pb.MGetRelationResponse)
 	resp.IsFollowed = make([]bool, len(in.ToUserIds))
 	resp.IsFollowing = make([]bool, len(in.ToUserIds))
+
+	if in.UserId == 0 {
+		return resp, nil
+	}
+
 	for i, uid := range in.ToUserIds {
 		following, err := l.svcCtx.FollowRepo.CheckRelation(l.ctx, in.UserId, uid)
 		if err != nil {

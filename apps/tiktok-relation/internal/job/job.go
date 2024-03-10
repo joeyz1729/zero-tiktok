@@ -7,8 +7,10 @@ import (
 
 type Worker struct {
 	Repo        *repository.Repo
-	KafkaReader *kafka.Reader
+	KafkaConfig *kafka.ReaderConfig
 }
+
+// todo
 
 //func (w *Worker) Start(ctx context.Context) error {
 //	for {
