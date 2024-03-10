@@ -9,7 +9,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-func VideoPublishStart(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+func VideoPublish(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
 	handler := func(msg *worker.Msg) error {
 		switch msg.Type {
 		case "INSERT":

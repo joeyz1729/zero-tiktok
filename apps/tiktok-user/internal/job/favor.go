@@ -6,6 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
+	"github.com/zeromicro/go-zero/core/logx"
 	"strconv"
 )
 
@@ -27,12 +28,16 @@ func FavoriteCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *reposi
 			}
 			err = db.UpdateFavoriteCount(userId, incr, repo.DB)
 			if err != nil {
+				logx.Errorw("update favorite count", logx.Field("err", err),
+					logx.Field("userId", userId))
 				return err
 			}
+			logx.Infow("update favorite count success", logx.Field("incr", incr),
+				logx.Field("userId", userId))
 		}
 		return nil
 	}
-	c.Topic = TopicRelation
+	c.Topic = TopicFavor
 	c.GroupID = GroupUpdateFavorCount
 	return &worker.Worker{
 		Handler:      handler,

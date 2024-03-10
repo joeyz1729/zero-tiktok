@@ -33,6 +33,7 @@ type Msg struct {
 }
 
 func Start(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) {
-	go VideoPublishStart(ctx, c, repo)
-	go VideoCountWorker(ctx, c, repo)
+	go VideoPublish(ctx, c, repo).Start(ctx)
+	go VideoCountWorker(ctx, c, repo).Start(ctx)
+	go UpdateFavorCount(ctx, c, repo).Start(ctx)
 }

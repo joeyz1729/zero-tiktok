@@ -10,6 +10,7 @@ const (
 	TopicUser      = "tiktok_user_user"
 	TopicUserCount = "tiktok_user_user_count"
 	TopicRelation  = "tiktok_relation_relation"
+	TopicFavor     = "tiktok_thumbup_thumbup"
 	TopicVideo     = "tiktok_video_video"
 
 	GroupUpdateWorkCount     = "db_update_work_count"

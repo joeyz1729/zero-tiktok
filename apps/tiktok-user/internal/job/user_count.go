@@ -6,6 +6,7 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
 	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func UserCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
@@ -17,8 +18,12 @@ func UserCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository
 		for _, data := range msg.Data {
 			err := es.UpdateUserCount(ctx, data, repo.ES)
 			if err != nil {
+				logx.Errorw("update user count", logx.Field("err", err),
+					logx.Field("data", data))
 				return err
 			}
+			logx.Infow("update user count success",
+				logx.Field("toUserId", data))
 		}
 
 		return nil

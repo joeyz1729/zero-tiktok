@@ -26,7 +26,7 @@ func VideoCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *repositor
 		}
 		return nil
 	}
-	c.Topic = TopicVideo
+	c.Topic = TopicVideoCount
 	c.GroupID = GroupUpdateVideoCount
 	return &worker.Worker{
 		Handler:      handler,

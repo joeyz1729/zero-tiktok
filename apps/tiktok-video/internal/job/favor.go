@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func UpdateFavorCountStart(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+func UpdateFavorCount(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
 	handler := func(msg *worker.Msg) error {
 		var incr int64
 		switch msg.Type {
