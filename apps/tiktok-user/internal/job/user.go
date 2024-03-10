@@ -2,47 +2,33 @@ package job
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/es"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
-// CreateUserStart 创建新用户时更新user_count表和es。
-func (w *Worker) CreateUserStart(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicUser
-	w.ReaderConfig.GroupID = GroupCreateUser
-	reader := kafka.NewReader(w.ReaderConfig)
-	for {
-		m, err := reader.ReadMessage(ctx)
-		if errors.Is(err, context.Canceled) {
-			return err
-		}
-		if err != nil {
-			break
-		}
-		msg := new(Msg)
-		if err := json.Unmarshal(m.Value, msg); err != nil {
-			continue
-		}
+func CreateUserWorker(ctx context.Context, c config.KafkaConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
 		if msg.Type == "INSERT" {
 			for _, data := range msg.Data {
-				w.EsCreateUser(ctx, data)
+				err := es.CreateUser(ctx, data, repo.ES)
+				if err != nil {
+					return err
+				}
 			}
-		} else {
-
 		}
+		return nil
 	}
-	return nil
-}
+	return &worker.Worker{
+		Handler: handler,
+		ReaderConfig: kafka.ReaderConfig{
+			Brokers: c.Brokers,
+			Topic:   TopicUser,
+			GroupID: GroupCreateUser,
+			// todo
+		},
+	}
 
-func (w *Worker) EsCreateUser(ctx context.Context, data map[string]interface{}) {
-	err := es.CreateUser(ctx, data, w.Repo.ES)
-	if err != nil {
-		logx.Errorw("es create user", logx.Field("err", err))
-		return
-	}
-	logx.Infow("es create user success", logx.Field("data", data))
-	return
 }

@@ -2,73 +2,64 @@ package job
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
-	"github.com/zeromicro/go-zero/core/logx"
+	"gorm.io/gorm"
 	"strconv"
 )
 
-// RelationStart 关注动作之后，更新双方用户的计数信息。
-func (w *Worker) RelationStart(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicRelation
-	w.ReaderConfig.GroupID = TopicRelation
-	reader := kafka.NewReader(w.ReaderConfig)
-	for {
-		m, err := reader.ReadMessage(ctx)
-		if errors.Is(err, context.Canceled) {
-			return err
-		}
-		if err != nil {
-			break
-		}
-		msg := new(Msg)
-		if err := json.Unmarshal(m.Value, msg); err != nil {
-			continue
-		}
-		logx.Info(reader.Offset(), msg.Data)
+func incrCount(ctx context.Context, data map[string]interface{}, DB *gorm.DB) error {
+	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
+	if err != nil {
+		return err
+	}
+	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
+	if err != nil {
+		return err
+	}
+	return db.UpdateRelationCount(userId, toUserId, 1, DB)
+}
+
+func decrCount(ctx context.Context, data map[string]interface{}, DB *gorm.DB) error {
+	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
+	if err != nil {
+		return err
+	}
+	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
+	if err != nil {
+		return err
+	}
+	return db.UpdateRelationCount(userId, toUserId, -1, DB)
+}
+
+func RelationWorker(ctx context.Context, c config.KafkaConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
 		if msg.Type == "INSERT" {
 			for idx := range msg.Data {
-				err = w.incrCount(ctx, msg.Data[idx])
-				if err != nil {
-					logx.Error(err)
+				if err := incrCount(ctx, msg.Data[idx], repo.DB); err != nil {
+					return err
 				}
 			}
 		} else if msg.Type == "DELETE" {
 			for idx := range msg.Data {
-				err = w.decrCount(ctx, msg.Data[idx])
-				if err != nil {
-					logx.Error(err)
+				if err := decrCount(ctx, msg.Data[idx], repo.DB); err != nil {
+					return err
 				}
 			}
 		}
+		return nil
 	}
-	return nil
-}
+	return &worker.Worker{
+		Handler: handler,
+		ReaderConfig: kafka.ReaderConfig{
+			Brokers: c.Brokers,
+			Topic:   TopicRelation,
+			GroupID: GroupUpdateRelationCount,
+			// todo
+		},
+	}
 
-func (w *Worker) incrCount(ctx context.Context, data map[string]interface{}) error {
-	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	logx.Infow("add follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return db.UpdateRelationCount(userId, toUserId, 1, w.Repo.DB)
-}
-
-func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) error {
-	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
-	if err != nil {
-		return err
-	}
-	logx.Infow("del follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-	return db.UpdateRelationCount(userId, toUserId, -1, w.Repo.DB)
 }

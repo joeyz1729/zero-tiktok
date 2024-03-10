@@ -11,17 +11,18 @@ type Config struct {
 
 	Repo RepoConfig
 
+	Kafka     KafkaConfig
 	Snowflake struct {
 		StartTime string
 		MachineId uint16
 	}
 
-	Kafka struct {
-		Brokers []string
-		Topic   string
-	}
-
 	Salt string
+}
+
+type KafkaConfig struct {
+	Brokers []string
+	Topic   string
 }
 
 type RepoConfig struct {

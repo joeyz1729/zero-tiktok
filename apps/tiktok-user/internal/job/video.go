@@ -2,48 +2,45 @@ package job
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
+	"gorm.io/gorm"
 	"strconv"
 )
 
-// VideoPublishStart 上传视频时事务更新video和video_count，通过mq同步canal。
-func (w *Worker) VideoPublishStart(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicVideo
-	w.ReaderConfig.GroupID = GroupUpdateWorkCount
-	reader := kafka.NewReader(w.ReaderConfig)
-	for {
-		m, err := reader.ReadMessage(ctx)
-		if errors.Is(err, context.Canceled) {
-			return err
-		}
-		if err != nil {
-			break
-		}
-		msg := new(Msg)
-		if err := json.Unmarshal(m.Value, msg); err != nil {
-			continue
-		}
+func VideoPublishWorker(ctx context.Context, c config.KafkaConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
 		if msg.Type == "INSERT" {
 			for _, data := range msg.Data {
-				w.updateWorkCount(data)
+				updateWorkCount(data, repo.DB)
 			}
 		}
+		return nil
 	}
-	return nil
+	return &worker.Worker{
+		Handler: handler,
+		ReaderConfig: kafka.ReaderConfig{
+			Brokers: c.Brokers,
+			Topic:   TopicVideo,
+			GroupID: GroupUpdateWorkCount,
+			// todo
+		},
+	}
+
 }
 
-func (w *Worker) updateWorkCount(data map[string]interface{}) {
+func updateWorkCount(data map[string]interface{}, DB *gorm.DB) {
 	userId, err := strconv.ParseInt(data["author_id"].(string), 10, 64)
 	if err != nil {
 		logx.Errorw("get author_id from msg data", logx.Field("err", err))
 		return
 	}
 
-	err = db.UpdateWorkCount(userId, 1, w.Repo.DB)
+	err = db.UpdateWorkCount(userId, 1, DB)
 	if err != nil {
 		logx.Errorw("db update work count", logx.Field("err", err))
 		return

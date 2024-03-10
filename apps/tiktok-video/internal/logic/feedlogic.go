@@ -53,7 +53,9 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 				return
 			}
 			// 2->3 根据author ids查询author详细信息，然后根据user id和author id查询关注信息
-			author, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userservice.GetUserByIdRequest{UserId: in.UserId})
+			_, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{ // todo
+				UserIds: []int64{in.UserId},
+			})
 			if err != nil {
 				errCh <- err
 				return
@@ -66,13 +68,9 @@ func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 			}
 			// todo
 			v := &pb.Video{
-				Id: vid,
+				Id:     vid,
 				Author: &pb.User{
-					Id:              author.Id,
-					Name:            author.Name,
-					Avatar:          author.Avatar,
-					BackgroundImage: author.BackgroundImage,
-					Signature:       author.Signature,
+					// todo
 				},
 				Title:      vi.Title,
 				PlayUrl:    vi.PlayURL,

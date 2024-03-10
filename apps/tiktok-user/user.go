@@ -4,12 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/job"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/server"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/pb"
 	"github.com/joeyz1729/zero-tiktok/pkg/tool"
-
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -38,9 +39,8 @@ func main() {
 	tool.NewSalt(c.Salt)
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
-	go ctx.Worker.CreateUserStart(context.Background())
-	go ctx.Worker.UserCountStart(context.Background())
-	go ctx.Worker.RelationStart(context.Background())
-	go ctx.Worker.VideoPublishStart(context.Background())
+
+	job.Start(context.TODO(), c.Kafka, ctx.UserRepo)
+
 	s.Start()
 }
