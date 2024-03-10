@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	VideoService_Feed_FullMethodName          = "/video.VideoService/Feed"
+	VideoService_Feed_FullMethodName          = "/video.VideoService/FeedIds"
 	VideoService_PublishAction_FullMethodName = "/video.VideoService/PublishAction"
 	VideoService_PublishList_FullMethodName   = "/video.VideoService/PublishList"
 	VideoService_GetVideos_FullMethodName     = "/video.VideoService/GetVideos"
@@ -95,7 +95,7 @@ type UnimplementedVideoServiceServer struct {
 }
 
 func (UnimplementedVideoServiceServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method FeedIds not implemented")
 }
 func (UnimplementedVideoServiceServer) PublishAction(context.Context, *PublishActionRequest) (*PublishActionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishAction not implemented")
@@ -199,7 +199,7 @@ var VideoService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*VideoServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Feed",
+			MethodName: "FeedIds",
 			Handler:    _VideoService_Feed_Handler,
 		},
 		{

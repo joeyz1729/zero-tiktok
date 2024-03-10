@@ -3,6 +3,7 @@ package job
 import (
 	"context"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
 	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
@@ -23,6 +24,13 @@ func VideoPublish(ctx context.Context, c kafka.ReaderConfig, repo *repository.Re
 				return err
 			}
 			logx.Infow("es create video success", logx.Field("data", data))
+			err = cache.AddFeed(ctx, data, repo.RDB)
+			if err != nil {
+				logx.Errorw("cache add feed id", logx.Field("err", err),
+					logx.Field("data", data))
+				return err
+			}
+			logx.Infow("cache add feed id success", logx.Field("data", data))
 		}
 		return nil
 	}

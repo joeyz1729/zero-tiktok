@@ -4,12 +4,9 @@ import (
 	"context"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-favor/favorite"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/dto"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/pb"
-	"sync"
-	"time"
-
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -30,65 +27,85 @@ func NewFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FeedLogic {
 func (l *FeedLogic) Feed(in *pb.FeedRequest) (*pb.FeedResponse, error) {
 	resp := new(pb.FeedResponse)
 	// 1 根据last_time查询video id列表，注意要限制查询条数
-	videoIds, nextTime, err := repository.Feed(l.ctx, in.LatestTime)
+	videoIds, nextTime, err := l.svcCtx.Repo.FeedIds(l.ctx, in.LatestTime)
 	if err != nil {
-		logx.Error("get feed ids ", err)
+		logx.Errorw("get feed video ids", logx.Field("err", err),
+			logx.Field("latestTime", in.LatestTime))
 		return nil, err
-	}
-	if len(videoIds) == 0 {
-		return &pb.FeedResponse{NextTime: time.Now().Unix(), VideoList: []*pb.Video{}}, nil
-	}
-	// 可以并发请求，多条video不相关
-	feedList := make([]*pb.Video, len(videoIds))
-	var wg sync.WaitGroup
-	errCh := make(chan error, len(videoIds))
-	wg.Add(len(videoIds))
-	for i, vid := range videoIds {
-		go func(i int, vid int64) {
-			defer wg.Done()
-			// 2 根据video ids查询video详细信息，
-			vi, err := l.svcCtx.Repo.GetVideoById(l.ctx, vid)
-			if err != nil {
-				errCh <- err
-				return
-			}
-			// 2->3 根据author ids查询author详细信息，然后根据user id和author id查询关注信息
-			_, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{ // todo
-				UserIds: []int64{in.UserId},
-			})
-			if err != nil {
-				errCh <- err
-				return
-			}
-			// 2 根据vid uid查询点赞信息
-			favor, err := l.svcCtx.FavorRpc.CheckThumbup(l.ctx, &favorite.CheckThumbupRequest{UserId: in.UserId, VideoId: vid})
-			if err != nil {
-				errCh <- err
-				return
-			}
-			// todo
-			v := &pb.Video{
-				Id:     vid,
-				Author: &pb.User{
-					// todo
-				},
-				Title:      vi.Title,
-				PlayUrl:    vi.PlayURL,
-				CoverUrl:   vi.CoverURL,
-				IsFavorite: favor.IsThumbup == int32(1),
-			}
-			feedList[i] = v
-		}(i, vid.ID)
-	}
-	wg.Wait()
-	select {
-	case err := <-errCh:
-		logx.Error("concurrency query videoservice ", err)
-		return nil, err
-	default:
 	}
 
-	resp.VideoList = feedList
-	resp.NextTime = nextTime - 1
+	videos := make([]*dto.Video, len(videoIds))
+	for i, vid := range videoIds {
+		video, err := l.svcCtx.Repo.GetVideoById(l.ctx, vid)
+		if err != nil {
+			logx.Errorw("get video by id", logx.Field("err", err),
+				logx.Field("videoId", vid))
+			return nil, err
+		}
+		videos[i] = video
+	}
+
+	// 批量查询用户信息
+	var (
+		userIds   = make([]int64, 0)
+		userIdMap = make(map[int64]struct{})
+		userMap   = make(map[int64]*pb.User)
+	)
+	for _, video := range videos {
+		userIdMap[video.AuthorID] = struct{}{}
+	}
+	for uid := range userIdMap {
+		userIds = append(userIds, uid)
+	}
+	users, err := l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{
+		UserIds: userIds,
+		UserId:  in.UserId,
+	})
+	if err != nil {
+		logx.Errorw("user rpc get users", logx.Field("err", err))
+		return nil, err
+	}
+	for _, user := range users.UserList {
+		userMap[user.Id] = &pb.User{
+			Id:              user.Id,
+			Name:            user.Name,
+			FollowCount:     user.FollowCount,
+			FollowerCount:   user.FollowerCount,
+			IsFollow:        user.IsFollow,
+			Avatar:          user.Avatar,
+			BackgroundImage: user.BackgroundImage,
+			Signature:       user.Signature,
+			TotalFavorited:  user.TotalFavorited,
+			WorkCount:       user.WorkCount,
+			FavoriteCount:   user.FavoriteCount,
+		}
+	}
+
+	// 批量查询点赞信息
+	favor, err := l.svcCtx.FavorRpc.MCheckThumbup(l.ctx, &favorite.MCheckThumbupRequest{
+		UserId:   in.UserId,
+		VideoIds: videoIds,
+	})
+	if err != nil {
+		logx.Errorw("favor rpc check thumbup", logx.Field("err", err),
+			logx.Field("userId", in.UserId), logx.Field("videoIds", videoIds))
+		return nil, err
+	}
+
+	// 组装返回结果
+	resp.VideoList = make([]*pb.Video, len(videos))
+	resp.NextTime = nextTime
+	for i, v := range videos {
+		resp.VideoList[i] = &pb.Video{
+			Id:            v.ID,
+			Author:        userMap[v.ID],
+			PlayUrl:       v.PlayURL,
+			CoverUrl:      v.CoverURL,
+			Title:         v.Title,
+			FavoriteCount: v.ThumbupCount,
+			CommentCount:  v.CommentCount,
+			IsFavorite:    favor.IsThumbup[i],
+		}
+	}
 	return resp, nil
 }

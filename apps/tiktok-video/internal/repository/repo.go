@@ -6,7 +6,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/cache"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/dto"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -132,6 +131,11 @@ func (repo *Repo) GetVideosByAuthor(ctx context.Context, uid int64) ([]*dto.Vide
 	return videos, nil
 }
 
-func Feed(ctx context.Context, lastTime int64) ([]*db.Video, int64, error) {
-	return nil, 0, nil
+func (repo *Repo) FeedIds(ctx context.Context, lastTime int64) ([]int64, int64, error) {
+	ids, nextTime, err := cache.GetFeedIds(ctx, lastTime, repo.RDB)
+	if err != nil {
+		return nil, 0, err
+	}
+	return ids, nextTime, nil
+
 }

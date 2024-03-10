@@ -816,11 +816,11 @@ var file_video_proto_depIdxs = []int32{
 	9, // 1: video.publish_list_response.video_list:type_name -> video.Video
 	9, // 2: video.get_videos_response.video_list:type_name -> video.Video
 	8, // 3: video.Video.author:type_name -> video.User
-	0, // 4: video.VideoService.Feed:input_type -> video.feed_request
+	0, // 4: video.VideoService.FeedIds:input_type -> video.feed_request
 	2, // 5: video.VideoService.PublishAction:input_type -> video.publish_action_request
 	4, // 6: video.VideoService.PublishList:input_type -> video.publish_list_request
 	6, // 7: video.VideoService.GetVideos:input_type -> video.get_videos_request
-	1, // 8: video.VideoService.Feed:output_type -> video.feed_response
+	1, // 8: video.VideoService.FeedIds:output_type -> video.feed_response
 	3, // 9: video.VideoService.PublishAction:output_type -> video.publish_action_response
 	5, // 10: video.VideoService.PublishList:output_type -> video.publish_list_response
 	7, // 11: video.VideoService.GetVideos:output_type -> video.get_videos_response
