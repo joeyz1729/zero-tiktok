@@ -35,21 +35,23 @@ func (l *InfoLogic) Info(req *types.UserInfoRequest) (resp *types.UserInfoRespon
 	userId := claims.UserId // 该用户id
 	logx.Infof("userid:%d\n", userId)
 	toUserId := req.UserId // 查询用户id
-	resp.UserInfo = types.User{}
-	var userRes = &userservice.UserInfoResponse{}
-	userRes, err = l.svcCtx.UserRpc.UserInfo(l.ctx, &userservice.UserInfoRequest{UserId: toUserId})
+	var userRes = &userservice.GetUsersResponse{}
+	userRes, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{
+		UserIds: []int64{toUserId}})
 	if err != nil {
 		return nil, err
 	}
-	resp.UserInfo.Id = toUserId
-	resp.UserInfo.Name = userRes.User.Name
-	resp.UserInfo.Avatar = userRes.User.Avatar
-	resp.UserInfo.BackgroundImage = userRes.User.BackgroundImage
-	resp.UserInfo.Signature = userRes.User.Signature
+	resp.UserInfo = types.User{
+		Id:              userRes.UserList[0].Id,
+		Name:            userRes.UserList[0].Name,
+		Avatar:          userRes.UserList[0].Avatar,
+		BackgroundImage: userRes.UserList[0].BackgroundImage,
+		Signature:       userRes.UserList[0].Signature,
+		FollowCount:     userRes.UserList[0].FollowCount,
+		FollowerCount:   userRes.UserList[0].FollowerCount,
+		TotalFavorited:  userRes.UserList[0].TotalFavorited,
+		FavoriteCount:   userRes.UserList[0].FavoriteCount,
+	}
 
-	//resp.UserInfo.FollowCount = userRes.User.FollowCount
-	//resp.UserInfo.FollowerCount = userRes.User.FollowerCount
-	//resp.UserInfo.TotalFavorited = userRes.User.TotalFavorited
-	//resp.UserInfo.FavoriteCount = userRes.User.FavoriteCount
 	return resp, nil
 }

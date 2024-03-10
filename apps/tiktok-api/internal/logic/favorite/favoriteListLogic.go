@@ -35,6 +35,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	idsRes, err = l.svcCtx.FavoriteRpc.GetThumbupVideoIds(l.ctx, &favorite.GetThumbupVideoIdsRequest{
 		UserId: req.UserId,
 	})
+
 	length := len(idsRes.VideoIds)
 	logx.Info("get favorite videoservice ids: ", idsRes.VideoIds)
 	// 出错或者没有数据
@@ -53,8 +54,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	}
 
 	// 3. videoservice tiktok-user 根据 videoservice ids 列表获取详细的视频信息
-	videosRes := new(videoservice.GetVideosByIdsResponse)
-	videosRes, err = l.svcCtx.VideoRpc.GetVideosByIds(l.ctx, &videoservice.GetVideosByIdsRequest{
+	videosRes := new(videoservice.GetVideosResponse)
+	videosRes, err = l.svcCtx.VideoRpc.GetVideos(l.ctx, &videoservice.GetVideosRequest{
 		UserId:   req.UserId,
 		VideoIds: idsRes.VideoIds,
 	})
@@ -85,50 +86,3 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	resp.StatusMsg = "success"
 	return
 }
-
-//resp.VideoList = make([]types.Video, idsRes.VideoNum)
-//for i, vid := range idsRes.VideoIds {
-//
-//var videoRes = new(videoservice.GetVideoByIdResponse)
-//videoRes, err = l.svcCtx.VideoRpc.GetVideoById(l.ctx, &videoservice.GetVideoByIdRequest{
-//VideoId: vid,
-//})
-//if err != nil {
-//logx.Errorw("videoservice tiktok-user failed",
-//logx.Field("err", err),
-//)
-//resp.VideoList = []types.Video{}
-//resp.StatusCode = http.StatusInternalServerError
-//resp.StatusMsg = "videoservice tiktok-user failed"
-//return resp, nil
-//}
-//if videoRes.VideoInfo == nil {
-//continue
-//}
-//var userRes = new(tiktok-user.GetUserByIdResponse)
-//userRes, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &tiktok-user.GetUserByIdRequest{
-//UserId: videoRes.VideoInfo.AuthorId,
-//})
-//if err != nil {
-//logx.Errorw("tiktok-user tiktok-user failed",
-//logx.Field("err", err),
-//)
-//resp.StatusCode = http.StatusInternalServerError
-//resp.StatusMsg = "tiktok-user tiktok-user failed"
-//return resp, nil
-//}
-//
-//resp.VideoList[i] = types.Video{
-//Id: vid,
-//Author: types.Author(types.User{
-//Id:              videoRes.VideoInfo.AuthorId,
-//Name:            userRes.Name,
-//Avatar:          userRes.Avatar,
-//BackgroundImage: userRes.BackgroundImage,
-//Signature:       userRes.Signature,
-//}),
-//PlayUrl:  videoRes.VideoInfo.PlayUrl,
-//CoverUrl: videoRes.VideoInfo.CoverUrl,
-//Title:    videoRes.VideoInfo.Title,
-//}
-//}

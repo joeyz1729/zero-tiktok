@@ -49,7 +49,7 @@ func (l *RelationActionLogic) RelationAction(req *types.RelationActionRequest) (
 		resp.StatusMsg = "can not follow oneself"
 		return resp, nil
 	}
-	_, err = l.svcCtx.UserRpc.GetUserById(l.ctx, &userservice.GetUserByIdRequest{UserId: req.ToUserId})
+	_, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{UserIds: []int64{req.ToUserId}})
 	if err != nil {
 		resp.StatusCode = http.StatusBadRequest
 		resp.StatusMsg = err.Error()

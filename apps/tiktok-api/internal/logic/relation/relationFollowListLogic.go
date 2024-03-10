@@ -5,7 +5,6 @@ import (
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/svc"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-api/internal/types"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-relation/follow"
-	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/userservice"
 	"net/http"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -29,24 +28,17 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 	resp = new(types.FollowListResponse)
 	// 获取列表
 	followRes, err := l.svcCtx.FollowRpc.GetFollowList(l.ctx, &follow.GetFollowListRequest{
-		UserId: req.UserId,
+		ToUserId: req.UserId,
+		UserId:   0,
 	})
 	if err != nil {
 		resp.StatusCode = http.StatusInternalServerError
 		resp.StatusMsg = err.Error()
 		return resp, nil
 	}
-	// 获取用户详细信息
-	usersRes := new(userservice.GetUsersResponse)
-	usersRes, err = l.svcCtx.UserRpc.GetUsers(l.ctx, &userservice.GetUsersRequest{
-		UserIds: followRes.FollowedIds,
-	})
-	if err != nil {
-		return nil, err
-	}
 	// 拼接结果
-	userList := make([]types.UserInfo, len(followRes.FollowedIds))
-	for i, userInfo := range usersRes.UserList {
+	userList := make([]types.UserInfo, len(followRes.List))
+	for i, userInfo := range followRes.List {
 		userList[i] = types.UserInfo{
 			Id:              userInfo.Id,
 			Name:            userInfo.Name,
@@ -60,8 +52,7 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.FollowListReques
 			TotalFavorited: userInfo.TotalFavorited,
 			FavoriteCount:  userInfo.FavoriteCount,
 			WorkCount:      userInfo.WorkCount,
-
-			IsFollow: followRes.Relations[i],
+			IsFollow:       userInfo.IsFollow,
 		}
 	}
 	resp.UserList = userList
