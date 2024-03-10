@@ -1,9 +1,68 @@
 package job
 
-import "context"
+import (
+	"context"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
+	"github.com/segmentio/kafka-go"
+	"strconv"
+)
 
-// FavorStart 视频点赞之后，更新用户和作者的计数信息。
-func (w *Worker) FavorStart(ctx context.Context) error {
-	// todo
-	return nil
+func FavoriteCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
+		var incr int64
+		switch msg.Type {
+		case "INSERT":
+			incr = 1
+		case "DELETE":
+			incr = -1
+		default:
+			return nil
+		}
+		for _, data := range msg.Data {
+			userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
+			if err != nil {
+				return err
+			}
+			err = db.UpdateFavoriteCount(userId, incr, repo.DB)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	c.Topic = TopicRelation
+	c.GroupID = GroupUpdateFavorCount
+	return &worker.Worker{
+		Handler:      handler,
+		ReaderConfig: c,
+	}
+
+}
+
+func TotalFavoritedWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
+		var incr int64
+		if msg.Type == "INSERT" {
+			incr = 1
+		} else if msg.Type == "DELETE" {
+			incr = -1
+		}
+		for _, data := range msg.Data {
+			userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
+			if err != nil {
+				return err
+			}
+			return db.UpdateFavoriteCount(userId, incr, repo.DB)
+		}
+		return nil
+	}
+	c.Topic = TopicRelation
+	c.GroupID = GroupUpdateFavorCount
+	return &worker.Worker{
+		Handler:      handler,
+		ReaderConfig: c,
+	}
+
 }

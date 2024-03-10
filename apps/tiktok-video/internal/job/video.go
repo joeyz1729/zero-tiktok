@@ -2,44 +2,36 @@ package job
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-// VideoPublishStart 上传视频时事务更新video和video_count，通过mq同步canal。
-func (w *Worker) VideoPublishStart(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicVideo
-	w.ReaderConfig.GroupID = GroupCreateVideo
-	reader := kafka.NewReader(w.ReaderConfig)
-	for {
-		m, err := reader.ReadMessage(ctx)
-		if errors.Is(err, context.Canceled) {
-			return err
+func VideoPublishStart(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
+		switch msg.Type {
+		case "INSERT":
+		default:
+			return nil
 		}
-		if err != nil {
-			break
-		}
-		msg := new(Msg)
-		if err := json.Unmarshal(m.Value, msg); err != nil {
-			continue
-		}
-		if msg.Type == "INSERT" {
-			for _, data := range msg.Data {
-				w.EsCreateVideo(ctx, data)
+		for _, data := range msg.Data {
+			err := es.CreateVideo(ctx, data, repo.ES)
+			if err != nil {
+				logx.Errorw("es create video", logx.Field("err", err))
+				return err
 			}
+			logx.Infow("es create video success", logx.Field("data", data))
 		}
+		return nil
 	}
-	return nil
-}
 
-func (w *Worker) EsCreateVideo(ctx context.Context, data map[string]interface{}) {
-	err := es.CreateVideo(ctx, data, w.Repo.ES)
-	if err != nil {
-		logx.Errorw("es create video", logx.Field("err", err))
+	c.Topic = TopicVideo
+	c.GroupID = GroupCreateVideo
+	return &worker.Worker{
+		Handler:      handler,
+		ReaderConfig: c,
 	}
-	logx.Infow("es create video success", logx.Field("data", data))
-	return
+
 }

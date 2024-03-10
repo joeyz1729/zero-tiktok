@@ -21,12 +21,17 @@ type Config struct {
 		MachineId uint16
 	}
 
-	Kafka struct {
-		Brokers []string
-		Topic   string
-	}
+	Kafka KafkaConfig
 
 	Salt string
+}
+
+type KafkaConfig struct {
+	Brokers     []string
+	Topic       string
+	Partition   int
+	MaxBytes    int
+	StartOffset int64
 }
 
 type RepoConfig struct {

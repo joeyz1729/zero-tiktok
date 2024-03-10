@@ -40,3 +40,35 @@ func CreateVideoCount(ctx context.Context, data map[string]interface{}, db *gorm
 	}
 	return db.Table(TableNameVideoCount).Create(&count).Error
 }
+
+func UpdateThumbupCount(videoId int64, incr int64, DB *gorm.DB) error {
+	err := DB.Table(TableNameVideoCount).Transaction(func(tx *gorm.DB) error {
+		var videoCount VideoCount
+		if err := tx.First(&videoCount, videoId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", videoId).
+			Updates(map[string]interface{}{"thumbup_count": videoCount.ThumbupCount + incr}).Error; err != nil {
+			return err
+		}
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
+}
+
+func UpdateCommentCount(videoId int64, incr int64, DB *gorm.DB) error {
+	err := DB.Table(TableNameVideoCount).Transaction(func(tx *gorm.DB) error {
+		var videoCount VideoCount
+		if err := tx.First(&videoCount, videoId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", videoId).
+			Updates(map[string]interface{}{"comment_count": videoCount.CommentCount + incr}).Error; err != nil {
+			return err
+		}
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
+}

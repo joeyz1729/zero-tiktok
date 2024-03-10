@@ -2,35 +2,50 @@ package job
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/db"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
+	"github.com/zeromicro/go-zero/core/logx"
+	"strconv"
 )
 
-// UpdateCommentCount 更新视频对应的评价数
-func (w *Worker) UpdateCommentCount(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicComment
-	w.ReaderConfig.GroupID = TopicComment
-	reader := kafka.NewReader(w.ReaderConfig)
-	for {
-		m, err := reader.ReadMessage(ctx)
-		if errors.Is(err, context.Canceled) {
-			return err
-		}
-		if err != nil {
-			break
-		}
-		msg := new(Msg)
-		if err := json.Unmarshal(m.Value, msg); err != nil {
-			continue
-		}
-		if msg.Type == "INSERT" {
-			//for _, data := range msg.Data {
-			//
-			//}
-		} else {
+// todo
 
+func UpdateCommentCount(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
+		var incr int64
+		switch msg.Type {
+		case "INSERT":
+			incr = 1
+		case "DELETE":
+			incr = -1
+		default:
+			return nil
 		}
+		for _, data := range msg.Data {
+			videoId, err := strconv.ParseInt(data["video_id"].(string), 10, 64)
+			if err != nil {
+				logx.Errorw("parse video id from message data", logx.Field("err", err),
+					logx.Field("data", data))
+				return err
+			}
+			err = db.UpdateCommentCount(videoId, incr, repo.DB)
+			if err != nil {
+				logx.Errorw("update comment count", logx.Field("err", err),
+					logx.Field("videoId", videoId))
+				return err
+			}
+			logx.Infow("update thumbup count success", logx.Field("videoId", videoId))
+		}
+		return nil
 	}
-	return nil
+
+	c.Topic = TopicComment
+	c.GroupID = GroupUpdateCommentCount
+	return &worker.Worker{
+		Handler:      handler,
+		ReaderConfig: c,
+	}
+
 }

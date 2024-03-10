@@ -58,6 +58,8 @@ func GetVideosByAuthor(ctx context.Context, uid int64, esClient *elasticsearch.T
 	return videos, nil
 }
 
-func UpdateVideoCount(ctx context.Context, data map[string]interface{}) error {
-	return nil
+func UpdateVideoCount(ctx context.Context, data map[string]interface{}, esClient *elasticsearch.TypedClient) error {
+	userId := data["id"].(string)
+	_, err := esClient.Update(VideoIndex, userId).Doc(data).Do(ctx)
+	return err
 }

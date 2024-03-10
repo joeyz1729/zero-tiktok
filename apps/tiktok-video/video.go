@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/job"
+	"github.com/segmentio/kafka-go"
 
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/server"
@@ -44,7 +46,13 @@ func main() {
 
 	tool.NewSalt(c.Salt)
 
-	go ctx.Worker.VideoPublishStart(context.TODO())
+	job.Start(context.TODO(), kafka.ReaderConfig{
+		Brokers:     c.Kafka.Brokers,
+		Partition:   c.Kafka.Partition,
+		MaxBytes:    c.Kafka.MaxBytes,
+		StartOffset: c.Kafka.StartOffset,
+	}, ctx.Repo)
+
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 	s.Start()
 }

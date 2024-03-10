@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/segmentio/kafka-go"
 
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/config"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-user/internal/job"
@@ -40,7 +41,12 @@ func main() {
 
 	fmt.Printf("Starting tiktok-user server at %s...\n", c.ListenOn)
 
-	job.Start(context.TODO(), c.Kafka, ctx.UserRepo)
+	job.Start(context.TODO(), kafka.ReaderConfig{
+		Brokers:     c.Kafka.Brokers,
+		Partition:   c.Kafka.Partition,
+		MaxBytes:    c.Kafka.MaxBytes,
+		StartOffset: c.Kafka.StartOffset,
+	}, ctx.UserRepo)
 
 	s.Start()
 }

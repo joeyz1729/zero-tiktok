@@ -21,8 +21,11 @@ type Config struct {
 }
 
 type KafkaConfig struct {
-	Brokers []string
-	Topic   string
+	Brokers     []string
+	Topic       string
+	Partition   int
+	MaxBytes    int
+	StartOffset int64
 }
 
 type RepoConfig struct {

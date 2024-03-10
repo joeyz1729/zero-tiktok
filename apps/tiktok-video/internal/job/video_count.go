@@ -2,62 +2,35 @@ package job
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
+	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/es"
+	"github.com/joeyz1729/zero-tiktok/pkg/worker"
 	"github.com/segmentio/kafka-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-// EsUpdateCount video计数信息更新之后，同步到es中。
-func (w *Worker) EsUpdateCount(ctx context.Context) error {
-	w.ReaderConfig.Topic = TopicVideo
-	w.ReaderConfig.GroupID = TopicVideo
-	reader := kafka.NewReader(w.ReaderConfig)
-	for {
-		m, err := reader.ReadMessage(ctx)
-		if errors.Is(err, context.Canceled) {
-			return err
+func VideoCountWorker(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) *worker.Worker {
+	handler := func(msg *worker.Msg) error {
+		switch msg.Type {
+		case "UPDATE":
+		default:
+			return nil
 		}
-		if err != nil {
-			break
+		for _, data := range msg.Data {
+			err := es.UpdateVideoCount(ctx, data, repo.ES)
+			if err != nil {
+				logx.Errorw("es update video count", logx.Field("err", err))
+				return err
+			}
+			logx.Infow("es update video count success", logx.Field("data", data))
 		}
-		msg := new(Msg)
-		if err := json.Unmarshal(m.Value, msg); err != nil {
-			continue
-		}
-		logx.Info(reader.Offset(), msg.Data)
-		if msg.Type == "INSERT" {
-			//for idx := range msg.Data {
-			//}
-		} else if msg.Type == "DELETE" {
-		}
+		return nil
 	}
-	return nil
-}
+	c.Topic = TopicVideo
+	c.GroupID = GroupUpdateVideoCount
+	return &worker.Worker{
+		Handler:      handler,
+		ReaderConfig: c,
+	}
 
-//func (w *Worker) incrCount(ctx context.Context, data map[string]interface{}) error {
-//	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-//	if err != nil {
-//		return err
-//	}
-//	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
-//	if err != nil {
-//		return err
-//	}
-//	logx.Infow("add follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-//	return nil
-//}
-//
-//func (w *Worker) decrCount(ctx context.Context, data map[string]interface{}) error {
-//	userId, err := strconv.ParseInt(data["user_id"].(string), 10, 64)
-//	if err != nil {
-//		return err
-//	}
-//	toUserId, err := strconv.ParseInt(data["followed_id"].(string), 10, 64)
-//	if err != nil {
-//		return err
-//	}
-//	logx.Infow("del follow", logx.Field("user_id", userId), logx.Field("toUserId", toUserId))
-//	//return w.Repo.DBUpdateCount(userId, toUserId, -1)
-//	return nil
-//}
+}

@@ -132,3 +132,37 @@ func UpdateFavorCount(userId, authorId int64, incr int64, DB *gorm.DB) error {
 	})
 	return err
 }
+
+func UpdateFavoriteCount(userId int64, incr int64, DB *gorm.DB) error {
+	DB = DB.Table(TableNameUserCount)
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var userCount UserCount
+		if err := tx.First(&userCount, userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", userId).
+			Updates(map[string]interface{}{"favorite_count": userCount.FavoriteCount + incr}).Error; err != nil {
+			return err
+		}
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
+}
+
+func UpdateTotalFavorited(userId int64, incr int64, DB *gorm.DB) error {
+	DB = DB.Table(TableNameUserCount)
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var userCount = UserCount{}
+		if err := tx.First(&userCount, userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", userId).
+			Updates(map[string]interface{}{"total_favorited": userCount.TotalFavorited + incr}).Error; err != nil {
+			return err
+		}
+		// 返回 nil 提交事务
+		return nil
+	})
+	return err
+}

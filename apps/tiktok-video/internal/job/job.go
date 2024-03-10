@@ -1,6 +1,8 @@
 package job
 
 import (
+	"context"
+
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository"
 	"github.com/segmentio/kafka-go"
 )
@@ -14,7 +16,7 @@ const (
 	GroupCreateVideo        = "es_create_video"
 	GroupUpdateVideoCount   = "es_update_video_count"
 	GroupUpdateCommentCount = "db_update_comment_count"
-	GroupUpdateFavorCount   = "db_update_favor_count"
+	GroupUpdateFavorCount   = "db_update_video_favor_count"
 )
 
 type Worker struct {
@@ -28,4 +30,9 @@ type Msg struct {
 	Table    string                   `json:"table"`
 	IsDdl    bool                     `json:"isDdl"`
 	Data     []map[string]interface{} `json:"data"`
+}
+
+func Start(ctx context.Context, c kafka.ReaderConfig, repo *repository.Repo) {
+	go VideoPublishStart(ctx, c, repo)
+	go VideoCountWorker(ctx, c, repo)
 }

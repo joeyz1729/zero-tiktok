@@ -56,3 +56,6 @@ Kafka:
   Brokers:
     - 127.0.0.1:9092
   Topic: tiktok_video_video
+  Partition: 0
+  MaxBytes: 10e6
+  StartOffset: -1
