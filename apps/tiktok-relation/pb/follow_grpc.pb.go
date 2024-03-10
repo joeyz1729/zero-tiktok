@@ -24,22 +24,19 @@ const (
 	Follow_GetFollowList_FullMethodName   = "/follow.Follow/GetFollowList"
 	Follow_GetFollowerList_FullMethodName = "/follow.Follow/GetFollowerList"
 	Follow_GetRelation_FullMethodName     = "/follow.Follow/GetRelation"
+	Follow_MGetRelation_FullMethodName    = "/follow.Follow/MGetRelation"
 )
 
 // FollowClient is the client API for Follow service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FollowClient interface {
-	// http
-	// 关注操作
 	AddFollow(ctx context.Context, in *AddFollowRequest, opts ...grpc.CallOption) (*AddFollowResponse, error)
 	DelFollow(ctx context.Context, in *DelFollowRequest, opts ...grpc.CallOption) (*DelFollowResponse, error)
-	// 获取关注者列表
 	GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListResponse, error)
 	GetFollowerList(ctx context.Context, in *GetFollowerListRequest, opts ...grpc.CallOption) (*GetFollowerListResponse, error)
-	// grpc
-	// 查询关系
 	GetRelation(ctx context.Context, in *GetRelationRequest, opts ...grpc.CallOption) (*GetRelationResponse, error)
+	MGetRelation(ctx context.Context, in *MGetRelationRequest, opts ...grpc.CallOption) (*MGetRelationResponse, error)
 }
 
 type followClient struct {
@@ -95,20 +92,25 @@ func (c *followClient) GetRelation(ctx context.Context, in *GetRelationRequest, 
 	return out, nil
 }
 
+func (c *followClient) MGetRelation(ctx context.Context, in *MGetRelationRequest, opts ...grpc.CallOption) (*MGetRelationResponse, error) {
+	out := new(MGetRelationResponse)
+	err := c.cc.Invoke(ctx, Follow_MGetRelation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FollowServer is the server API for Follow service.
 // All implementations must embed UnimplementedFollowServer
 // for forward compatibility
 type FollowServer interface {
-	// http
-	// 关注操作
 	AddFollow(context.Context, *AddFollowRequest) (*AddFollowResponse, error)
 	DelFollow(context.Context, *DelFollowRequest) (*DelFollowResponse, error)
-	// 获取关注者列表
 	GetFollowList(context.Context, *GetFollowListRequest) (*GetFollowListResponse, error)
 	GetFollowerList(context.Context, *GetFollowerListRequest) (*GetFollowerListResponse, error)
-	// grpc
-	// 查询关系
 	GetRelation(context.Context, *GetRelationRequest) (*GetRelationResponse, error)
+	MGetRelation(context.Context, *MGetRelationRequest) (*MGetRelationResponse, error)
 	mustEmbedUnimplementedFollowServer()
 }
 
@@ -130,6 +132,9 @@ func (UnimplementedFollowServer) GetFollowerList(context.Context, *GetFollowerLi
 }
 func (UnimplementedFollowServer) GetRelation(context.Context, *GetRelationRequest) (*GetRelationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRelation not implemented")
+}
+func (UnimplementedFollowServer) MGetRelation(context.Context, *MGetRelationRequest) (*MGetRelationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MGetRelation not implemented")
 }
 func (UnimplementedFollowServer) mustEmbedUnimplementedFollowServer() {}
 
@@ -234,6 +239,24 @@ func _Follow_GetRelation_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Follow_MGetRelation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MGetRelationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FollowServer).MGetRelation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Follow_MGetRelation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FollowServer).MGetRelation(ctx, req.(*MGetRelationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Follow_ServiceDesc is the grpc.ServiceDesc for Follow service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -260,6 +283,10 @@ var Follow_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRelation",
 			Handler:    _Follow_GetRelation_Handler,
+		},
+		{
+			MethodName: "MGetRelation",
+			Handler:    _Follow_MGetRelation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

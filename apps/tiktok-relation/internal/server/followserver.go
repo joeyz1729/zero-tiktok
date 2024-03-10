@@ -22,7 +22,6 @@ func NewFollowServer(svcCtx *svc.ServiceContext) *FollowServer {
 	}
 }
 
-// http
 func (s *FollowServer) AddFollow(ctx context.Context, in *pb.AddFollowRequest) (*pb.AddFollowResponse, error) {
 	l := logic.NewAddFollowLogic(ctx, s.svcCtx)
 	return l.AddFollow(in)
@@ -33,7 +32,6 @@ func (s *FollowServer) DelFollow(ctx context.Context, in *pb.DelFollowRequest) (
 	return l.DelFollow(in)
 }
 
-// 获取关注者列表
 func (s *FollowServer) GetFollowList(ctx context.Context, in *pb.GetFollowListRequest) (*pb.GetFollowListResponse, error) {
 	l := logic.NewGetFollowListLogic(ctx, s.svcCtx)
 	return l.GetFollowList(in)
@@ -44,8 +42,12 @@ func (s *FollowServer) GetFollowerList(ctx context.Context, in *pb.GetFollowerLi
 	return l.GetFollowerList(in)
 }
 
-// grpc
 func (s *FollowServer) GetRelation(ctx context.Context, in *pb.GetRelationRequest) (*pb.GetRelationResponse, error) {
 	l := logic.NewGetRelationLogic(ctx, s.svcCtx)
 	return l.GetRelation(in)
+}
+
+func (s *FollowServer) MGetRelation(ctx context.Context, in *pb.MGetRelationRequest) (*pb.MGetRelationResponse, error) {
+	l := logic.NewMGetRelationLogic(ctx, s.svcCtx)
+	return l.MGetRelation(in)
 }

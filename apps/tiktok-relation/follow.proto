@@ -4,22 +4,15 @@ package follow;
 option go_package="./pb";
 
 service Follow {
-  // http
-  // 关注操作
   rpc AddFollow(add_follow_request) returns(add_follow_response);
   rpc DelFollow(del_follow_request) returns(del_follow_response);
-  // 获取关注者列表
+
   rpc GetFollowList(get_follow_list_request) returns(get_follow_list_response);
   rpc GetFollowerList(get_follower_list_request) returns(get_follower_list_response);
 
-  // grpc
-  // 查询关系
-  rpc GetRelation(get_relation_request) returns(get_relation_response);
 
-//  // 获取粉丝列表
-//  rpc GetFollowerIds(get_follower_ids_request) returns(get_follower_ids_response);
-//  // 获取关注者列表
-//  rpc GetFollowIds(get_follow_ids_request) returns(get_follow_ids_response);
+  rpc GetRelation(get_relation_request) returns(get_relation_response);
+  rpc MGetRelation(MGetRelationRequest) returns(MGetRelationResponse);
 }
 
 
@@ -62,24 +55,15 @@ message get_relation_response {
   bool is_followed = 2;
 }
 
-//message get_follow_ids_request {
-//  int64 user_id = 1;
-//  int64 page = 2;
-//  int64 size = 3;
-//}
-//
-//message get_follow_ids_response {
-//  repeated int64 follow_ids = 1;
-//}
-//message get_follower_ids_request {
-//  int64 user_id = 1;
-//  uint64 cursor = 2;
-//  int64 page_size = 3;
-//}
-//message get_follower_ids_response {
-//  repeated int64 follower_ids = 1;
-//  int64 next_cursor = 2;
-//}
+message MGetRelationRequest {
+  int64 user_id = 1;
+  repeated int64 to_user_ids = 2;
+}
+
+message MGetRelationResponse {
+  repeated bool is_following = 1;
+  repeated bool is_followed = 2;
+}
 
 message User {
   int64 id = 1; // 用户id
