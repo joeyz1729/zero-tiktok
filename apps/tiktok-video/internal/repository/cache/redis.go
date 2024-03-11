@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-redis/redis/v8"
 	"github.com/joeyz1729/zero-tiktok/apps/tiktok-video/internal/repository/dto"
+	"math/rand"
 	"strconv"
 	"time"
 )
@@ -30,7 +31,8 @@ func AddVideo(ctx context.Context, video *dto.Video, rdb *redis.Client) error {
 	if err != nil {
 		return err
 	}
-	_, err = rdb.Set(ctx, getVideoKey(video.ID), data, NormalTTL).Result()
+	rd := time.Duration(rand.Intn(5*60)) * time.Second
+	_, err = rdb.Set(ctx, getVideoKey(video.ID), data, NormalTTL+rd).Result()
 	return err
 }
 
@@ -52,7 +54,8 @@ func AddPublishList(ctx context.Context, uid int64, videoIds []int64, rdb *redis
 	if err != nil {
 		return err
 	}
-	_, err = rdb.Expire(ctx, getPublishListKey(uid), NormalTTL).Result()
+	rd := time.Duration(rand.Intn(5*60)) * time.Second
+	_, err = rdb.Expire(ctx, getPublishListKey(uid), NormalTTL+rd).Result()
 	return err
 }
 

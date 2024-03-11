@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	jsoniter "github.com/json-iterator/go"
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -14,20 +15,9 @@ import (
 )
 
 const (
-	UserInfoPrefix  = "tiktok:user:info:"
-	UserCountPrefix = "tiktok:user:count:"
-)
-
-const (
-	FieldUsername        = "username"
-	FieldAvatar          = "avatar"
-	FieldBackgroundImage = "bgimg"
-	FieldSignature       = "sign"
-	FieldFollowedCount   = "followedcount"
-	FieldFollowerCount   = "followercount"
-	FieldTotalFavorited  = "totalfavorited"
-	FieldWorkCount       = "workcount"
-	FieldFavoriteCount   = "favoritecount"
+	UserInfoPrefix = "tiktok:user:info:"
+	NormalTTL      = 24 * time.Hour
+	InvalidTTL     = 5 * time.Minute
 )
 
 var (
@@ -59,6 +49,7 @@ func AddUser(detail *dto.User, RDB *redis.Client) error {
 		return err
 	}
 	key := UserInfoPrefix + strconv.Itoa(int(detail.ID))
-	_, err = RDB.Set(context.Background(), key, string(b), 24*time.Hour).Result()
+	rd := time.Duration(rand.Intn(5*60)) * time.Second
+	_, err = RDB.Set(context.Background(), key, string(b), NormalTTL+rd).Result()
 	return err
 }
